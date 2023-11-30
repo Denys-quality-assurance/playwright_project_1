@@ -8,12 +8,12 @@ pipeline {
         }
         stage('Install dependencies') {
             steps {
-                sh 'npm ci'
+                bat 'npm ci'
             }
         }
         stage('Run tests') {
             steps {
-                sh 'node login-test.js'
+                bat 'node login-test.js'
             }
         }
     }
