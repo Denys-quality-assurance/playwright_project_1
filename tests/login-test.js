@@ -16,6 +16,7 @@ async function loginAutomation() {
 
   console.log('Login successful');
 
+  //Close the browser after completion
   await browser.close();
 }
 
