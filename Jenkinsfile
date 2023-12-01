@@ -13,7 +13,7 @@ pipeline {
         }
         stage('Run tests') {
             steps {
-                bat 'tests\\login-test.js'
+                bat 'node tests\\login-test.js'
             }
         }
     }
