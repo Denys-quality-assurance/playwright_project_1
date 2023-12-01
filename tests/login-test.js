@@ -2,7 +2,7 @@ const { chromium } = require('playwright');
 
 async function loginAutomation() {
   //Launch the browser, open a new page, and navigate to the-internet.herokuapp.com
-  const browser = await chromium.launch({ headless: false });
+  const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage();
   await page.goto('https://the-internet.herokuapp.com/login');
 
