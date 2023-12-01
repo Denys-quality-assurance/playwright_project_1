@@ -2,7 +2,7 @@ const { chromium } = require('playwright');
 
 async function loginAutomation() {
   //Launch the browser, open a new page, and navigate to the-internet.herokuapp.com
-  const browser = await chromium.launch({ headless: true });
+  const browser = await chromium.launch({ headless: false });
   const page = await browser.newPage();
   await page.goto('https://the-internet.herokuapp.com/login');
 
@@ -13,8 +13,11 @@ async function loginAutomation() {
 
   //Wait for success modal
   await page.waitForSelector('.flash.success', { timeout: 5000 });
+  const element = page.locator('.flash.success');
 
-  console.log('Login successful');
+  const text = await element.textContent();
+
+  console.log(text);
 
   //Close the browser after completion
   await browser.close();
