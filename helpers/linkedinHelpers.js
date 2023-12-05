@@ -1,42 +1,69 @@
+const SELECTORS = require('./selectors');
+
 module.exports = {
   loginToLinkedIn: async function (page, credentials) {
-    //Navigate to the LinkedIn login page
-    await page.goto('https://www.linkedin.com/login');
-    //Type the email and password into their respective input fields
-    console.log('Type the email and password into their respective input fields');
-    await page.waitForSelector('.login__form_action_container button');
-    await page.fill('#username', credentials.username);
-    await page.fill('#password', credentials.password);
+    try {
+      //Navigate to the LinkedIn login page
+      await page.goto('https://www.linkedin.com/login');
+      await page.waitForSelector(SELECTORS.LOGIN_BUTTON);
 
-    //Click on the Sign-in button to submit the login form
-    console.log('Click on the Sign-in button to submit the login form');
-    await page.click('.login__form_action_container button');
+      //Type the email and password into their respective input fields
+      console.log('Type the email and password into their respective input fields');
+      await page.fill(SELECTORS.LOGIN_EMAIL, credentials.username);
+      await page.fill(SELECTORS.LOGIN_PASSWORD, credentials.password);
 
-    //Wait for the main page to load after a successful login
-    console.log('Wait for the main page to load after a successful login');
-    await page.waitForSelector('.global-nav__primary-link-me-menu-trigger');
+      //Click on the Sign-in button to submit the login form
+      console.log('Click on the Sign-in button to submit the login form');
+      await page.click(SELECTORS.LOGIN_BUTTON);
+
+      //Wait for the main page to load after a successful login
+      console.log('Wait for the main page to load after a successful login');
+      await page.waitForSelector(SELECTORS.AVATAR_ICON);
+    } catch (err) {
+      console.error('loginToLinkedIn error:', err);
+    }
   },
 
   getCookies: async function (page) {
-    // Log cookies
-    const cookies = await page.context().cookies();
-    console.log('Cookies:', cookies);
+    try {
+      // Log cookies
+      const cookies = await page.context().cookies();
+      console.log('Cookies:', cookies);
+    } catch (err) {
+      console.error('getCookies error:', err);
+    }
   },
 
   getLocalStorage: async function (page) {
-    // Log local storage
-    const localStorageData = await page.evaluate(() => window.localStorage);
-    console.log('Local Storage:', localStorageData);
+    try {
+      // Log local storage
+      const localStorageData = await page.evaluate(() => window.localStorage);
+      console.log('Local Storage:', localStorageData);
+    } catch (err) {
+      console.error('getLocalStorage error:', err);
+    }
   },
 
   searchOnLinkedIn: async function (page, searchQuery) {
-    // Type the search query in the search box and press Enter
-    console.log('Type the search query in the search box and press Enter');
-    await page.fill('input.search-global-typeahead__input', searchQuery);
-    await page.keyboard.press('Enter');
+    try {
+      // Type the search query in the search box and press Enter
+      console.log('Type the search query in the search box and press Enter');
+      await page.fill(SELECTORS.SEARCH_BOX, searchQuery);
+      await page.keyboard.press('Enter');
 
-    // Wait for the search results page to load
-    console.log('Wait for the search results page to load');
-    await page.waitForSelector('.reusable-search__entity-result-list');
+      // Wait for the search results page to load
+      console.log('Wait for the search results page to load');
+      await page.waitForSelector(SELECTORS.SEARCH_RESULTS);
+    } catch (err) {
+      console.error('searchOnLinkedIn error:', err);
+    }
+  },
+
+  closeBrowser: async function (browser) {
+    if (browser) {
+      //Closing the browser instance
+      console.log('Closing the browser instance');
+      await browser.close();
+    }
   },
 };

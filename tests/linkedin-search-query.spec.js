@@ -1,17 +1,21 @@
 const { chromium } = require('playwright');
 const credentials = require('../credentials');
-const { loginToLinkedIn, getCookies, getLocalStorage, searchOnLinkedIn } = require('../helpers/linkedinHelpers');
+const { loginToLinkedIn, searchOnLinkedIn, closeBrowser } = require('../helpers/linkedinHelpers');
 
 (async () => {
-  //Create a browser instance, open a new page, and login
-  const browser = await chromium.launch({ headless: false });
-  const page = await browser.newPage();
-  await loginToLinkedIn(page, credentials);
+  let browser;
+  try {
+    //Create a browser instance, open a new page, and login
+    browser = await chromium.launch({ headless: false });
+    const page = await browser.newPage();
+    await loginToLinkedIn(page, credentials);
 
-  // Type the search query in the search box and press Enter
-  await searchOnLinkedIn(page, 'Playwright');
-
-  //Close the browser instance
-  console.log('Close the browser instance');
-  await browser.close();
+    // Type the search query in the search box and press Enter
+    await searchOnLinkedIn(page, 'Playwright');
+  } catch (err) {
+    console.error('Error occurred:', err);
+  } finally {
+    //Closing the browser instance
+    await closeBrowser(browser);
+  }
 })();
