@@ -36,7 +36,7 @@ const credentials = require('../credentials');
   await page.click('.full-width.mt4');
   await page.waitForSelector('[data-id="sign-in-form__submit-btn"]');
 
-  //Close the browser instance after completing the login and logout process
-  console.log('Close the browser instance after completing the login and logout process');
+  //Close the browser instance
+  console.log('Close the browser instance');
   await browser.close();
 })();
