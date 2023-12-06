@@ -14,8 +14,15 @@ const SELECTORS = {
   // Dropdown user menu selectors
   SIGNOUT_BUTTON_USER_MENU: '.global-nav__secondary-link.mv1', // Sign-out button in the dropdown user menu
 
-  // General purpose submit button
+  // Logout page
   SUBMIT_BUTTON: '[data-id="sign-in-form__submit-btn"]', // Submit button on logout page
+
+  // Profile page
+  FOLLOW_BUTTON: '.pvs-profile-actions__action[aria-label*="Follow "]', // Follow button to follow new profile
+  UNFOLLOW_BUTTON: '.pvs-profile-actions__action[aria-label*="Following"]', // Unollow button to follow new profile
+
+  // Unfollow modal
+  UNFOLLOW_BUTTON_MODAL: '.artdeco-button--primary.artdeco-modal__confirm-dialog-btn', // Unollow button on the unfollow modal
 };
 
 module.exports = SELECTORS;
