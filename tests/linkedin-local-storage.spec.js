@@ -1,5 +1,5 @@
 const { chromium } = require('playwright');
-const credentials = require('../credentials');
+const credentials = require('../helpers/credentials');
 const { loginToLinkedIn, getLocalStorage, closeBrowser } = require('../helpers/linkedinHelpers');
 
 (async () => {

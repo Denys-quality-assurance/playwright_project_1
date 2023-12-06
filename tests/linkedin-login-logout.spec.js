@@ -1,5 +1,5 @@
 const { chromium } = require('playwright');
-const credentials = require('../credentials');
+const credentials = require('../helpers/credentials');
 const SELECTORS = require('../helpers/selectors');
 const { closeBrowser } = require('../helpers/linkedinHelpers');
 
