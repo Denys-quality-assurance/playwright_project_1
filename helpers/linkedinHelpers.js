@@ -1,10 +1,24 @@
+const { chromium } = require('playwright');
 const SELECTORS = require('./selectors');
 
 module.exports = {
+  // Create a browser instance, open a new page
+  launchBrowserWithPage: async function () {
+    try {
+      console.log('Create a browser instance, open a new page, and login');
+      const browser = await chromium.launch({ headless: false });
+      const page = await browser.newPage();
+      return { browser, page };
+    } catch (err) {
+      console.error('launchBrowserWithPage error:', err);
+    }
+  },
+
   // Login to LinkedIn profile
   loginToLinkedIn: async function (page, credentials) {
     try {
       //Navigate to the LinkedIn login page
+      console.log('Navigate to the LinkedIn login page');
       await page.goto('https://www.linkedin.com/login');
       await page.waitForSelector(SELECTORS.LOGIN_BUTTON);
 
@@ -19,7 +33,7 @@ module.exports = {
 
       //Wait for the main page to load after a successful login
       console.log('Wait for the main page to load after a successful login');
-      await page.waitForSelector(SELECTORS.AVATAR_ICON);
+      await page.waitForSelector(SELECTORS.AVATAR_ICON_MAIN);
     } catch (err) {
       console.error('loginToLinkedIn error:', err);
     }
@@ -76,7 +90,7 @@ module.exports = {
 
         console.log(`Following ${link}`);
       } catch (error) {
-        console.log(`Couldn't follow ${link}`);
+        console.log(`Follow error ${link}`, err);
       }
     }
   },
@@ -93,23 +107,27 @@ module.exports = {
 
         // Click the unfollof button if it's available on the unfollof modal
         console.log("Click the unfollof button if it's available on the unfollof modal");
-        await page.waitForSelector(SELECTORS.UNFOLLOW_BUTTON_MODAL, { timeout: 5000 });
-        await page.click(SELECTORS.UNFOLLOW_BUTTON_MODAL);
+        await page.waitForSelector(SELECTORS.UNFOLLOW_CONFIRMATION_BUTTON, { timeout: 5000 });
+        await page.click(SELECTORS.UNFOLLOW_CONFIRMATION_BUTTON);
         await page.waitForSelector(SELECTORS.FOLLOW_BUTTON, { timeout: 5000 });
 
         console.log(`Unfollowed ${link}`);
       } catch (error) {
-        console.log(`Couldn't unfollow ${link}`);
+        console.log(`Unfollow error ${link}`, err);
       }
     }
   },
 
   // Close browser
   closeBrowser: async function (browser) {
-    if (browser) {
-      //Closing the browser instance
-      console.log('Closing the browser instance');
-      await browser.close();
+    try {
+      if (browser) {
+        // Closing the browser instance
+        console.log('Closing the browser instance');
+        await browser.close();
+      }
+    } catch (error) {
+      console.log(`Couldn't unfollow ${link}`);
     }
   },
 };

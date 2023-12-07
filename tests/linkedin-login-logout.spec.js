@@ -1,14 +1,13 @@
-const { chromium } = require('playwright');
 const credentials = require('../helpers/credentials');
 const SELECTORS = require('../helpers/selectors');
-const { closeBrowser } = require('../helpers/linkedinHelpers');
+const { launchBrowserWithPage, closeBrowser } = require('../helpers/linkedinHelpers');
 
 (async () => {
   let browser;
   try {
-    //Create a browser instance, open a new page
-    browser = await chromium.launch({ headless: false });
-    const page = await browser.newPage();
+    // Create a browser instance, open a new page
+    const { browser: newBrowser, page } = await launchBrowserWithPage();
+    browser = newBrowser;
 
     //Navigate to the LinkedIn login page
     await page.goto('https://www.linkedin.com/login');
@@ -25,11 +24,11 @@ const { closeBrowser } = require('../helpers/linkedinHelpers');
 
     //Wait for the main page to load after a successful login
     console.log('Wait for the main page to load after a successful login');
-    await page.waitForSelector(SELECTORS.AVATAR_ICON);
+    await page.waitForSelector(SELECTORS.AVATAR_ICON_MAIN);
 
     //Click on the avatar icon to open the user menu
     console.log('Click on the avatar icon to open the user menu');
-    await page.click(SELECTORS.AVATAR_ICON);
+    await page.click(SELECTORS.AVATAR_ICON_MAIN);
     await page.waitForSelector(SELECTORS.SIGNOUT_BUTTON_USER_MENU);
 
     //Click on 'Sign out' button in the user menu
@@ -39,7 +38,7 @@ const { closeBrowser } = require('../helpers/linkedinHelpers');
   } catch (err) {
     console.error('Error occurred:', err);
   } finally {
-    //Closing the browser instance
+    // Closing the browser instance
     await closeBrowser(browser);
   }
 })();

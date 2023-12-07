@@ -1,6 +1,6 @@
-const { chromium } = require('playwright');
 const credentials = require('../helpers/credentials');
 const {
+  launchBrowserWithPage,
   loginToLinkedIn,
   followMultipleProfiles,
   unfollowMultipleProfiles,
@@ -10,9 +10,9 @@ const {
 (async () => {
   let browser;
   try {
-    //Create a browser instance, open a new page, and login
-    browser = await chromium.launch({ headless: false });
-    const page = await browser.newPage();
+    // Create a browser instance, open a new page, and login
+    const { browser: newBrowser, page } = await launchBrowserWithPage();
+    browser = newBrowser;
     await loginToLinkedIn(page, credentials);
 
     // Define an array of LinkedIn profile links you want to fallow to.
@@ -29,7 +29,7 @@ const {
   } catch (err) {
     console.error('Error occurred:', err);
   } finally {
-    //Closing the browser instance
+    // Closing the browser instance
     await closeBrowser(browser);
   }
 })();
