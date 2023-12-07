@@ -1,4 +1,4 @@
-const credentials = require('../helpers/credentials');
+const { credentials, imagePath } = require('../helpers/credentials');
 const SELECTORS = require('../helpers/selectors');
 const { launchBrowserWithPage, loginToLinkedIn, closeBrowser } = require('../helpers/linkedinHelpers');
 
@@ -21,9 +21,8 @@ const { launchBrowserWithPage, loginToLinkedIn, closeBrowser } = require('../hel
     await page.click(SELECTORS.ADD_PHOTO_BUTTON);
     await page.waitForSelector(SELECTORS.UPLOAD_PHOTO_BUTTON);
 
-    // Upload profile picture
+    // Upload profile picture from the specified image path
     console.log('Upload profile picture');
-    const imagePath = 'C:\\Users\\Denys_Matolikov\\Downloads\\OIG.9atye.2Om9dB5eX9KCUu.jpg'; // Set the path to the image you want to upload
     const inputFile = await page.$(SELECTORS.UPLOAD_PHOTO_BUTTON);
     await inputFile.setInputFiles(imagePath);
     await page.waitForSelector(SELECTORS.SAVE_PHOTO_BUTTON);

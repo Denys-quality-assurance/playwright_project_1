@@ -1,4 +1,4 @@
-const credentials = require('../helpers/credentials');
+const { credentials } = require('../helpers/credentials');
 const { launchBrowserWithPage, loginToLinkedIn, getLocalStorage, closeBrowser } = require('../helpers/linkedinHelpers');
 
 (async () => {

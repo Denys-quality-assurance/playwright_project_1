@@ -1,4 +1,4 @@
-const credentials = require('../helpers/credentials');
+const { credentials } = require('../helpers/credentials');
 const SELECTORS = require('../helpers/selectors');
 const { launchBrowserWithPage, closeBrowser } = require('../helpers/linkedinHelpers');
 
