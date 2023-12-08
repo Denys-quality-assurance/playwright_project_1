@@ -7,6 +7,7 @@ const { pipeline } = require('stream');
 module.exports = {
   // Download image to the system's directory for temporary files
   downloadImageToTempDir: async function (url) {
+    console.log("Download image to the system's directory for temporary files");
     return new Promise((resolve, reject) => {
       https
         .get(url, (response) => {
@@ -45,5 +46,16 @@ module.exports = {
           reject(error);
         });
     });
+  },
+
+  // Delete the file temporaty file
+  deleteTempFile: function (filePath) {
+    console.log('Delete the temporaty file');
+    try {
+      fs.unlinkSync(filePath);
+      console.log('Successfully deleted the file');
+    } catch (err) {
+      console.error('Error while deleting the file: ', err);
+    }
   },
 };
