@@ -1,15 +1,14 @@
 const { credentials, imagePath } = require('../helpers/credentials');
 const SELECTORS = require('../helpers/linkedinSelectors');
-const { launchBrowserWithPage, loginToLinkedIn, closeBrowser } = require('../helpers/linkedinHelpers');
-const { downloadImageToTempDir, deleteTempFile } = require('../helpers/generalHelpers');
-const pictureUrl =
-  'https://i.natgeofe.com/n/548467d8-c5f1-4551-9f58-6817a8d2c45e/NationalGeographic_2572187_square.jpg';
+const { launchBrowserWithPage, loginToLinkedIn, closeBrowser } = require('../helpers/playwrightHelpers');
+const { downloadImageFromUrlToTempDir, deleteTempFile } = require('../helpers/generalHelpers');
+const SOURCES = require('../helpers/externalSources');
 
 (async () => {
   let browser;
   try {
-    // Download image to the system's directory for temporary files
-    const imagePath = await downloadImageToTempDir(pictureUrl);
+    // Download image from url to the system's directory for temporary files
+    const imagePath = await downloadImageFromUrlToTempDir(SOURCES.profilePictureUrl);
 
     // Create a browser instance, open a new page, and login
     const { browser: newBrowser, page } = await launchBrowserWithPage();
@@ -57,8 +56,8 @@ const pictureUrl =
     // Delete profile photo
     console.log('Delete profile photo');
     await page.click(SELECTORS.DELETE_PHOTO_BUTTON);
-    await page.waitForSelector(SELECTORS.DELETE_PHOTO_CONFIRMATION_BUTTON);
-    await page.click(SELECTORS.DELETE_PHOTO_CONFIRMATION_BUTTON);
+    await page.waitForSelector(SELECTORS.CONFIRMATION_BUTTON);
+    await page.click(SELECTORS.CONFIRMATION_BUTTON);
 
     // Wait for the default profile picture to load
     console.log('Wait for the default profile picture to load');

@@ -5,9 +5,9 @@ const path = require('path');
 const { pipeline } = require('stream');
 
 module.exports = {
-  // Download image to the system's directory for temporary files
-  downloadImageToTempDir: async function (url) {
-    console.log("Download image to the system's directory for temporary files");
+  // Download image from url to the system's directory for temporary files
+  downloadImageFromUrlToTempDir: async function (url) {
+    console.log("Download image from url to the system's directory for temporary files");
     return new Promise((resolve, reject) => {
       https
         .get(url, (response) => {
@@ -19,9 +19,10 @@ module.exports = {
             reject(new Error(`Failed to download image from ${url}, status code: ${response.statusCode}`));
             return;
           }
-
-          const tmpDir = os.tmpdir(); // Get the system's temp directory
-          const filePath = path.join(tmpDir, 'profile_picture.jpg'); // Path to a new temp file
+          // Get the system's temp directory
+          const tmpDir = os.tmpdir();
+          // Path to a new temp file
+          const filePath = path.join(tmpDir, 'profile_picture.jpg');
 
           const fileStream = fs.createWriteStream(filePath);
 
@@ -46,6 +47,22 @@ module.exports = {
           reject(error);
         });
     });
+  },
+
+  // Check file exists
+  checkFileExists: function (filePath) {
+    console.log('Check file exists');
+    try {
+      if (fs.existsSync(filePath)) {
+        //file exists
+        console.log('File exists');
+        return true;
+      }
+    } catch (err) {
+      console.error(err);
+      return false;
+    }
+    return false;
   },
 
   // Delete the file temporaty file

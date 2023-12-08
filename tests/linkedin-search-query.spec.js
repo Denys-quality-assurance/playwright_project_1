@@ -4,7 +4,7 @@ const {
   loginToLinkedIn,
   searchOnLinkedIn,
   closeBrowser,
-} = require('../helpers/linkedinHelpers');
+} = require('../helpers/playwrightHelpers');
 
 (async () => {
   let browser;

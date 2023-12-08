@@ -5,7 +5,7 @@ const {
   followMultipleProfiles,
   unfollowMultipleProfiles,
   closeBrowser,
-} = require('../helpers/linkedinHelpers');
+} = require('../helpers/playwrightHelpers');
 
 (async () => {
   let browser;

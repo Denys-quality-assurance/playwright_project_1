@@ -1,5 +1,5 @@
 const { credentials } = require('../helpers/credentials');
-const { launchBrowserWithPage, loginToLinkedIn, getCookies, closeBrowser } = require('../helpers/linkedinHelpers');
+const { launchBrowserWithPage, loginToLinkedIn, getCookies, closeBrowser } = require('../helpers/playwrightHelpers');
 
 (async () => {
   let browser;

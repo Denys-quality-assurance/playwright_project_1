@@ -107,8 +107,8 @@ module.exports = {
 
         // Click the unfollof button if it's available on the unfollof modal
         console.log("Click the unfollof button if it's available on the unfollof modal");
-        await page.waitForSelector(SELECTORS.UNFOLLOW_CONFIRMATION_BUTTON, { timeout: 5000 });
-        await page.click(SELECTORS.UNFOLLOW_CONFIRMATION_BUTTON);
+        await page.waitForSelector(SELECTORS.CONFIRMATION_BUTTON, { timeout: 5000 });
+        await page.click(SELECTORS.CONFIRMATION_BUTTON);
         await page.waitForSelector(SELECTORS.FOLLOW_BUTTON, { timeout: 5000 });
 
         console.log(`Unfollowed ${link}`);
