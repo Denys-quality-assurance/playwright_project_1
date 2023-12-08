@@ -1,5 +1,5 @@
 const { chromium } = require('playwright');
-const SELECTORS = require('./selectors');
+const SELECTORS = require('./linkedinSelectors');
 
 module.exports = {
   // Create a browser instance, open a new page

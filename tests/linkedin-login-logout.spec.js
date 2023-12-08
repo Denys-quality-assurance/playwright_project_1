@@ -1,5 +1,5 @@
 const { credentials } = require('../helpers/credentials');
-const SELECTORS = require('../helpers/selectors');
+const SELECTORS = require('../helpers/linkedinSelectors');
 const { launchBrowserWithPage, closeBrowser } = require('../helpers/linkedinHelpers');
 
 (async () => {

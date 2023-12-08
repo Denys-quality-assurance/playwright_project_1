@@ -1,10 +1,17 @@
 const { credentials, imagePath } = require('../helpers/credentials');
-const SELECTORS = require('../helpers/selectors');
+const SELECTORS = require('../helpers/linkedinSelectors');
 const { launchBrowserWithPage, loginToLinkedIn, closeBrowser } = require('../helpers/linkedinHelpers');
+const { downloadImageToTempDir } = require('../helpers/generalHelpers');
+const pictureUrl =
+  'https://i.natgeofe.com/n/548467d8-c5f1-4551-9f58-6817a8d2c45e/NationalGeographic_2572187_square.jpg';
 
 (async () => {
   let browser;
   try {
+    // Download image to the system's directory for temporary files
+    console.log("Download image to the system's directory for temporary files");
+    const imagePath = await downloadImageToTempDir(pictureUrl);
+
     // Create a browser instance, open a new page, and login
     const { browser: newBrowser, page } = await launchBrowserWithPage();
     browser = newBrowser;
