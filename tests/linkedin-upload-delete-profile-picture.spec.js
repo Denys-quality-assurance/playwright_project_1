@@ -13,7 +13,7 @@ const SOURCES = require('../helpers/externalSources');
     // Create a browser instance, open a new page, and login
     const { browser: newBrowser, page } = await launchBrowserWithPage();
     browser = newBrowser;
-    await loginToLinkedIn(page, credentials);
+    await loginToLinkedIn(page);
 
     // Open My profile page
     console.log('Open My profile page');

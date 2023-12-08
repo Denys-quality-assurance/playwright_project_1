@@ -1,5 +1,6 @@
 const { chromium } = require('playwright');
 const SELECTORS = require('./linkedinSelectors');
+const { credentials } = require('../helpers/credentials');
 
 module.exports = {
   // Create a browser instance, open a new page
@@ -15,7 +16,7 @@ module.exports = {
   },
 
   // Login to LinkedIn profile
-  loginToLinkedIn: async function (page, credentials) {
+  loginToLinkedIn: async function (page) {
     try {
       //Navigate to the LinkedIn login page
       console.log('Navigate to the LinkedIn login page');
@@ -68,10 +69,6 @@ module.exports = {
       console.log('Type the search query in the search box and press Enter');
       await page.fill(SELECTORS.SEARCH_BOX, searchQuery);
       await page.keyboard.press('Enter');
-
-      // Wait for the search results page to load
-      console.log('Wait for the search results page to load');
-      await page.waitForSelector(SELECTORS.SEARCH_RESULTS);
     } catch (err) {
       console.error('searchOnLinkedIn error:', err);
     }

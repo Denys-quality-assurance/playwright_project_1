@@ -13,7 +13,7 @@ pipeline {
         }
         stage('Run tests') {
             steps {
-                bat 'node tests\\login-test.js'
+                bat 'npx playwright test linkedin-search-query.spec.js'
             }
         }
     }

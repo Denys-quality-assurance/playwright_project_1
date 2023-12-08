@@ -9,7 +9,8 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
+  "devDependencies": {
+    "@playwright/test": "^1.40.1",
     "playwright": "^1.40.1"
   }
 }

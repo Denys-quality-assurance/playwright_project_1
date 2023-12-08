@@ -1,25 +1,15 @@
-const { credentials } = require('../helpers/credentials');
-const {
-  launchBrowserWithPage,
-  loginToLinkedIn,
-  searchOnLinkedIn,
-  closeBrowser,
-} = require('../helpers/playwrightHelpers');
+import { test, expect } from '@playwright/test';
+const { loginToLinkedIn, searchOnLinkedIn } = require('../helpers/playwrightHelpers');
+const SELECTORS = require('../helpers/linkedinSelectors');
 
-(async () => {
-  let browser;
-  try {
-    // Create a browser instance, open a new page, and login
-    const { browser: newBrowser, page } = await launchBrowserWithPage();
-    browser = newBrowser;
-    await loginToLinkedIn(page, credentials);
+test('Search results are visible', async ({ page }) => {
+  await loginToLinkedIn(page);
 
-    // Type the search query in the search box and press Enter
-    await searchOnLinkedIn(page, 'Playwright');
-  } catch (err) {
-    console.error('Error occurred:', err);
-  } finally {
-    // Closing the browser instance
-    await closeBrowser(browser);
-  }
-})();
+  // Type the search query in the search box and press Enter
+  await searchOnLinkedIn(page, 'Playwright');
+  await page.waitForSelector(SELECTORS.SEARCH_RESULTS);
+
+  // Check if the search results page is loading
+  console.log('Check if the search results page is loading');
+  expect(await page.isVisible(SELECTORS.SEARCH_RESULTS)).toBe(true);
+});

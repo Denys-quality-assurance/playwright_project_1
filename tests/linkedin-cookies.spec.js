@@ -7,7 +7,7 @@ const { launchBrowserWithPage, loginToLinkedIn, getCookies, closeBrowser } = req
     // Create a browser instance, open a new page, and login
     const { browser: newBrowser, page } = await launchBrowserWithPage();
     browser = newBrowser;
-    await loginToLinkedIn(page, credentials);
+    await loginToLinkedIn(page);
 
     // Log cookies
     await getCookies(page);

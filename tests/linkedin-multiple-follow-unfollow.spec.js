@@ -13,7 +13,7 @@ const {
     // Create a browser instance, open a new page, and login
     const { browser: newBrowser, page } = await launchBrowserWithPage();
     browser = newBrowser;
-    await loginToLinkedIn(page, credentials);
+    await loginToLinkedIn(page);
 
     // Define an array of LinkedIn profile links you want to fallow to.
     const profileLinks = [
