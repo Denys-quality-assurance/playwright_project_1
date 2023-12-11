@@ -14,11 +14,11 @@ pipeline {
                 bat 'npm ci'
             }
         }
-        // stage('Install browsers') {
-        //     steps {
-        //         bat 'npx playwright install'
-        //     }
-        // }
+        stage('Install browsers') {
+            steps {
+                bat 'npx playwright install'
+            }
+        }
         stage('Run tests') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'linkedin_credentials', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) 
