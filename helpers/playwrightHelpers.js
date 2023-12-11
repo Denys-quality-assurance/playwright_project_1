@@ -1,6 +1,5 @@
 const { chromium } = require('playwright');
 const SELECTORS = require('./linkedinSelectors');
-const { credentials } = require('../helpers/credentials');
 
 module.exports = {
   // Create a browser instance, open a new page
@@ -25,8 +24,8 @@ module.exports = {
 
       //Type the email and password into their respective input fields
       console.log('Type the email and password into their respective input fields');
-      await page.fill(SELECTORS.LOGIN_EMAIL, credentials.username);
-      await page.fill(SELECTORS.LOGIN_PASSWORD, credentials.password);
+      await page.fill(SELECTORS.LOGIN_EMAIL, process.env.USERNAME);
+      await page.fill(SELECTORS.LOGIN_PASSWORD, process.env.PASSWORD);
 
       //Click on the Sign-in button to submit the login form
       console.log('Click on the Sign-in button to submit the login form');
