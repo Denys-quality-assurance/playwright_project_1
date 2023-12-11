@@ -13,7 +13,10 @@ pipeline {
         }
         stage('Run tests') {
             steps {
-                bat 'npx playwright test linkedin-search-query.spec.js'
+                withCredentials([usernamePassword(credentialsId: 'my_credentials_id', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) 
+                {
+                    bat 'npx playwright test linkedin-search-query.spec.js'
+                }
             }
         }
     }
