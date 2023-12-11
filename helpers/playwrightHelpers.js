@@ -1,5 +1,6 @@
 const { chromium } = require('playwright');
 const SELECTORS = require('./linkedinSelectors');
+require('dotenv').config();
 
 module.exports = {
   // Create a browser instance, open a new page
