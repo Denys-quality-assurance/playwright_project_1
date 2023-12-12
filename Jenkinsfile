@@ -21,7 +21,7 @@ pipeline {
         }
         stage('Run tests on Chromium') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'linkedin_credentials', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) 
+                withCredentials([usernamePassword(credentialsId: 'linkedin_credentials', passwordVariable: 'PASSWORD', usernameVariable: 'EMAIL')]) 
                 {
                     bat 'npx playwright test linkedin-search-query.spec.js --project=chromium'
                 }
@@ -29,7 +29,7 @@ pipeline {
         }
         stage('Run tests on Firefox') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'linkedin_credentials', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) 
+                withCredentials([usernamePassword(credentialsId: 'linkedin_credentials', passwordVariable: 'PASSWORD', usernameVariable: 'EMAIL')]) 
                 {
                     bat 'npx playwright test linkedin-search-query.spec.js --project=firefox'
                 }
@@ -37,7 +37,7 @@ pipeline {
         }
         stage('Run tests on Webkit') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'linkedin_credentials', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) 
+                withCredentials([usernamePassword(credentialsId: 'linkedin_credentials', passwordVariable: 'PASSWORD', usernameVariable: 'EMAIL')]) 
                 {
                     bat 'npx playwright test linkedin-search-query.spec.js --project=webkit'
                 }

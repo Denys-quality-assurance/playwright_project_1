@@ -25,7 +25,7 @@ module.exports = {
 
       //Type the email and password into their respective input fields
       console.log('Type the email and password into their respective input fields');
-      await page.fill(SELECTORS.LOGIN_EMAIL, process.env.USERNAME);
+      await page.fill(SELECTORS.LOGIN_EMAIL, process.env.EMAIL);
       await page.fill(SELECTORS.LOGIN_PASSWORD, process.env.PASSWORD);
 
       //Click on the Sign-in button to submit the login form

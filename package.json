@@ -4,7 +4,7 @@
   "description": "",
   "main": "lesson2.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx playwright test linkedin-search-query.spec.js --project=chromium"
   },
   "keywords": [],
   "author": "",

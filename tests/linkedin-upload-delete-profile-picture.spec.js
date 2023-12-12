@@ -1,4 +1,3 @@
-const { credentials, imagePath } = require('../helpers/credentials');
 const SELECTORS = require('../helpers/linkedinSelectors');
 const { launchBrowserWithPage, loginToLinkedIn, closeBrowser } = require('../helpers/playwrightHelpers');
 const { downloadImageFromUrlToTempDir, deleteTempFile } = require('../helpers/generalHelpers');
