@@ -7,7 +7,6 @@ const { pipeline } = require('stream');
 module.exports = {
   // Download image from url to the system's directory for temporary files
   downloadImageFromUrlToTempDir: async function (url) {
-    console.log("Download image from url to the system's directory for temporary files");
     return new Promise((resolve, reject) => {
       https
         .get(url, (response) => {
@@ -51,11 +50,10 @@ module.exports = {
 
   // Check file exists
   checkFileExists: function (filePath) {
-    console.log('Check file exists');
     try {
       if (fs.existsSync(filePath)) {
         //file exists
-        console.log('File exists');
+
         return true;
       }
     } catch (err) {
@@ -67,10 +65,8 @@ module.exports = {
 
   // Delete the file temporaty file
   deleteTempFile: function (filePath) {
-    console.log('Delete the temporaty file');
     try {
       fs.unlinkSync(filePath);
-      console.log('Successfully deleted the file');
     } catch (err) {
       console.error('Error while deleting the file: ', err);
     }

@@ -14,12 +14,12 @@ const pictureUrl =
     await loginToLinkedIn(page);
 
     // Open My profile page
-    console.log('Open My profile page');
+
     await page.waitForSelector(SELECTORS.AVATAR_ICON);
     await page.click(SELECTORS.AVATAR_ICON);
 
     // Go to Resume builder
-    console.log('Go to Resume builder');
+
     await page.waitForSelector(SELECTORS.MORE_ACTIONS_BUTTON);
     await page.click(SELECTORS.MORE_ACTIONS_BUTTON);
     await page.waitForSelector(SELECTORS.BUILD_RESUME_BUTTON);
@@ -27,7 +27,7 @@ const pictureUrl =
     await page.waitForSelector(SELECTORS.CREATE_RESUME_BUTTON);
 
     // Create a Resume from profile
-    console.log('Create a Resume from profile');
+
     await page.click(SELECTORS.CREATE_RESUME_BUTTON);
     await page.waitForSelector(SELECTORS.JOB_TITLE_COMBOBOX);
     await page.fill(SELECTORS.JOB_TITLE_COMBOBOX, 'Student');
@@ -38,25 +38,25 @@ const pictureUrl =
     await page.waitForSelector(SELECTORS.DOWNLOAD_RESUME_BUTTON);
 
     // Download the Resume
-    console.log('Download the Resume');
+
     await page.click(SELECTORS.DOWNLOAD_RESUME_BUTTON);
 
     // Wait for the Resume download to complete
-    console.log('Wait for the file download to complete');
+
     const download = await page.waitForEvent('download');
     const downloadPath = await download.path();
 
     // Check Resume downloaded
-    console.log('Check Resume downloaded');
+
     checkFileExists(downloadPath);
 
     // Go to Resume builder
-    console.log('Go to Resume builder');
+
     await page.waitForSelector(SELECTORS.VIEW_RESUMES);
     await page.click(SELECTORS.VIEW_RESUMES);
 
     // Delete the Resume from LinkedIn
-    console.log('Delete the Resume from LinkedIn');
+
     await page.click(SELECTORS.SHOW_OPTIONS_FOR_RESUME_BUTTON);
     await page.waitForSelector(SELECTORS.DELETE_RESUME_BUTTON);
     await page.click(SELECTORS.DELETE_RESUME_BUTTON);
@@ -64,7 +64,7 @@ const pictureUrl =
     await page.click(SELECTORS.CONFIRMATION_BUTTON);
 
     // Wait for the Resume to be hidden
-    console.log('Wait for the Resume to be hidden');
+
     await page.waitForSelector(SELECTORS.SHOW_OPTIONS_FOR_RESUME_BUTTON, { state: 'hidden' });
 
     // Delete the Resume from PC
