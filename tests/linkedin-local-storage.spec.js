@@ -1,25 +1,20 @@
-const { credentials } = require('../helpers/credentials');
-const {
-  launchBrowserWithPage,
-  loginToLinkedIn,
-  getLocalStorage,
-  closeBrowser,
-} = require('../helpers/playwrightHelpers');
+import { test, expect } from '@playwright/test';
+const { loginToLinkedIn, getLocalStorage } = require('../helpers/playwrightHelpers');
 
-(async () => {
-  let browser;
-  try {
-    // Create a browser instance, open a new page, and login
-    const { browser: newBrowser, page } = await launchBrowserWithPage();
-    browser = newBrowser;
-    await loginToLinkedIn(page);
+test('Check StorageData content after login to LinkedIn', async ({ page }) => {
+  await loginToLinkedIn(page);
+  // StorageData after login to LinkedIn
+  const localStorageData = await getLocalStorage(page);
 
-    // Log local storage
-    await getLocalStorage(page);
-  } catch (err) {
-    console.error('Error occurred:', err);
-  } finally {
-    // Closing the browser instance
-    await closeBrowser(browser);
-  }
-})();
+  // StorageData content
+  const isBadgesExists = 'voyager-web:badges' in localStorageData;
+  const isNewTabBeaconExists = 'voyager-web:new-tab-beacon' in localStorageData;
+
+  // Check if StorageData include 'voyager-web:badges' after login to LinkedIn
+  expect(isBadgesExists).toBe(true, "StorageData don't include 'voyager-web:badges' after login to LinkedIn");
+  // Check if StorageData include 'voyager-web:new-tab-beacon' after login to LinkedIn
+  expect(isNewTabBeaconExists).toBe(
+    true,
+    "StorageData don't include 'voyager-web:new-tab-beacon' after login to LinkedIn"
+  );
+});

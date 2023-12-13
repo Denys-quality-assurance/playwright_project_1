@@ -54,6 +54,7 @@ module.exports = {
     try {
       // Log local storage
       const localStorageData = await page.evaluate(() => window.localStorage);
+      return localStorageData;
     } catch (err) {
       console.error('getLocalStorage error:', err);
     }
