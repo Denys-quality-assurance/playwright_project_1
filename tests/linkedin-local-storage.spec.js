@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 const { loginToLinkedIn, getLocalStorage } = require('../helpers/playwrightHelpers');
 
-test('Check StorageData content after login to LinkedIn', async ({ page }) => {
+test('Validates existence of specific local storage properties post LinkedIn login', async ({ page }) => {
   await loginToLinkedIn(page);
   // StorageData after login to LinkedIn
   const localStorageData = await getLocalStorage(page);
