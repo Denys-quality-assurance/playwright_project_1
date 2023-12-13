@@ -39,11 +39,11 @@ module.exports = {
     }
   },
 
-  // Get and log Coolies
+  // Get Cookies
   getCookies: async function (page) {
     try {
-      // Log cookies
       const cookies = await page.context().cookies();
+      return cookies;
     } catch (err) {
       console.error('getCookies error:', err);
     }
