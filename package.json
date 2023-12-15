@@ -4,7 +4,7 @@
   "description": "",
   "main": "lesson2.js",
   "scripts": {
-    "test": "npx playwright test linkedin-search-query.spec.js --project=chromium"
+    "test": "npx playwright test googleSearch.test.js --project=chromium"
   },
   "keywords": [],
   "author": "",
