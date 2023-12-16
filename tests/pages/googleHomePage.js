@@ -64,7 +64,7 @@ class GoogleHomePage {
         let resultText = await searchResult.textContent();
         resultText = resultText.toLowerCase();
         query = query.toLowerCase();
-        // Check if the text contains 'Playwright'
+        // Check if the text contains query
         if (resultText.includes(query)) {
           result = true;
         } else {
