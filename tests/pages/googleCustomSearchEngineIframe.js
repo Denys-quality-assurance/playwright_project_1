@@ -3,18 +3,18 @@ class GoogleCustomSearchEnginePage {
     this.page = page;
     this.frame = null;
     this.frameSelectors = [
-      "[src*='https://www.gstatic.com/atari/embeds/']:first-of-type", // Google Custom Search Engine outer iFrame
-      '#innerFrame', // Google Custom Search Engine inner iFrame
-      '#userHtmlFrame',
+      `[src*='https://www.gstatic.com/atari/embeds/']:first-of-type`, // Google Custom Search Engine outer iFrame
+      `#innerFrame`, // Google Custom Search Engine inner iFrame
+      `#userHtmlFrame`,
     ]; // Google Custom Search Engine user iFrame
-    this.searchInputTextArea = '.gsc-input-box >> [name="search"]'; // Search query imput area
-    this.searchResult = '.gsc-results >> .gsc-result'; // One search result
+    this.searchInputTextArea = `.gsc-input-box >> [name="search"]`; // Search query imput area
+    this.searchResult = `.gsc-results >> .gsc-result`; // One search result
   }
   // Navigate to Home page
   async init() {
     try {
       await this.page.goto(
-        'https://www.steegle.com/google-sites/how-to/insert-custom-code/google-custom-search-engine'
+        `https://www.steegle.com/google-sites/how-to/insert-custom-code/google-custom-search-engine`
       );
       // Get nested iFrame
       this.frame = await this.getNestedFrame(this.page, this.frameSelectors);

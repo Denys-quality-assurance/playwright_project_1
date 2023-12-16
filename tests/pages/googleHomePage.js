@@ -1,15 +1,15 @@
 class GoogleHomePage {
   constructor(page) {
     this.page = page;
-    this.cookiesModal = '#CXQnmb'; // Cookies consent modal
-    this.rejectAllCookiesButton = 'button#W0wltc'; // Reject all cookies button
-    this.searchInputTextArea = 'textarea[name=q]'; // Search query imput area
-    this.searchResult = '.MjjYud >> .g'; // One search result
+    this.cookiesModal = `#CXQnmb`; // Cookies consent modal
+    this.rejectAllCookiesButton = `button#W0wltc`; // Reject all cookies button
+    this.searchInputTextArea = `textarea[name=q]`; // Search query imput area
+    this.searchResult = `.MjjYud >> .g`; // One search result
   }
   // Navigate to Home page
   async navigate() {
     try {
-      await this.page.goto('https://www.google.com');
+      await this.page.goto(`https://www.google.com`);
     } catch (error) {
       console.log(`Failed to navigate to Home page: ${error.message}`);
       throw error; // re-throw the error to fail the test
@@ -73,6 +73,16 @@ class GoogleHomePage {
       console.log(`Failed to validate search results contain query: ${error.message}`);
       throw error; // re-throw the error to fail the test
     }
+  }
+
+  // Get text content from array of objects
+  async getTextContent(object) {
+    let results = [];
+    for (let i = 0; i < object.length; i++) {
+      const text = await object[i].innerText();
+      results.push(text);
+    }
+    return results;
   }
 }
 
