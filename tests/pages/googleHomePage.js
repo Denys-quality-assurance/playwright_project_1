@@ -58,21 +58,17 @@ class GoogleHomePage {
   // Validate search results contain query
   async validateSearchResultsContainQuery(searchResults, query) {
     try {
-      let result;
       for (let searchResult of searchResults) {
         // Get the text of each searchResult
         let resultText = await searchResult.textContent();
         resultText = resultText.toLowerCase();
         query = query.toLowerCase();
         // Check if the text contains query
-        if (resultText.includes(query)) {
-          result = true;
-        } else {
-          result = false;
-          return result;
+        if (!resultText.includes(query)) {
+          return false;
         }
       }
-      return result;
+      return true;
     } catch (error) {
       console.log(`Failed to validate search results contain query: ${error.message}`);
       throw error; // re-throw the error to fail the test

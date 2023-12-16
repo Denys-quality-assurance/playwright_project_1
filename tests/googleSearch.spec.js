@@ -11,7 +11,7 @@ test.describe("Google Home Page: Search results testing for query 'Playwright'",
     await googleHomePage.rejectAllCookies();
   });
 
-  test('Google search results page contains query', async ({ page }) => {
+  test('Google search results page contains query', async () => {
     await googleHomePage.searchFor('Playwright');
 
     // Check if each search result actually contains query in its text
@@ -20,10 +20,10 @@ test.describe("Google Home Page: Search results testing for query 'Playwright'",
       searchResults,
       'Playwright'
     );
-    expect(doesEachSearchResultContainQuery).toBe(true, 'Not each search result contains query');
+    expect(doesEachSearchResultContainQuery).toBe(true, 'At least one search result does not contain the query');
   });
 
-  test("Google search results page contains more than 10 results for 'Playwright' query", async ({ page }) => {
+  test("Google search results page contains more than 10 results for 'Playwright' query", async () => {
     await googleHomePage.searchFor('Playwright');
 
     // Checking if the search results page contains more than 10 results for 'Playwright' query
