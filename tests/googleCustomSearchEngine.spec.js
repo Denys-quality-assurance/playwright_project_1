@@ -1,5 +1,6 @@
 const { test, expect } = require('@playwright/test');
 const GoogleCustomSearchEnginePage = require('./pages/googleCustomSearchEngineIframe');
+const query = 'Google';
 
 test.describe(`Google Custom Search Engine: Search results testing for query 'Google'`, () => {
   let googleCSEPage;
@@ -11,19 +12,19 @@ test.describe(`Google Custom Search Engine: Search results testing for query 'Go
   });
 
   test(`Google CSE search results page contains query`, async () => {
-    await googleCSEPage.searchFor('Google');
+    await googleCSEPage.searchFor(query);
 
     // Check if each search result actually contains query in its text
     const searchResults = await googleCSEPage.getSearchResults();
     const doesEachSearchResultContainQuery = await googleCSEPage.validateSearchResultsContainQuery(
       searchResults,
-      'Google'
+      query
     );
     expect(doesEachSearchResultContainQuery).toBe(true, `At least one search result does not contain the query`);
   });
 
   test(`Google search results page contains 10 results on 1 page for 'Google' query`, async () => {
-    await googleCSEPage.searchFor('Google');
+    await googleCSEPage.searchFor(query);
 
     // Checking if the search results page contains 10 results on 1 page for 'Google' query
     const searchResults = await googleCSEPage.getSearchResults();

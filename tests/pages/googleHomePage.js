@@ -11,7 +11,7 @@ class GoogleHomePage {
     try {
       await this.page.goto(`https://www.google.com`);
     } catch (error) {
-      console.log(`Failed to navigate to Home page: ${error.message}`);
+      console.error(`Failed to navigate to Home page: ${error.message}`);
       throw error; // re-throw the error to fail the test
     }
   }
@@ -24,7 +24,18 @@ class GoogleHomePage {
       await this.page.click(this.rejectAllCookiesButton);
       await this.page.waitForSelector(this.cookiesModal, { state: 'hidden' });
     } catch (error) {
-      console.log(`Failed to reject all Cookies: ${error.message}`);
+      console.error(`Failed to reject all Cookies: ${error.message}`);
+      throw error; // re-throw the error to fail the test
+    }
+  }
+
+  // Navigate to page and reject all Cookies if it's needed
+  async navigateAndRejectCookies() {
+    try {
+      await this.navigate();
+      if (await this.page.isVisible(this.cookiesModal)) await this.rejectAllCookies();
+    } catch (error) {
+      console.error(`Failed to navigate to page and reject all Cookies: ${error.message}`);
       throw error; // re-throw the error to fail the test
     }
   }
@@ -38,7 +49,18 @@ class GoogleHomePage {
       // Waiting for search result page to appear
       await this.page.waitForLoadState('networkidle');
     } catch (error) {
-      console.log(`Failed to search: ${error.message}`);
+      console.error(`Failed to search: ${error.message}`);
+      throw error; // re-throw the error to fail the test
+    }
+  }
+
+  // Navigate to page, reject all Cookies and search for query
+  async navigateAndSearch(query) {
+    try {
+      await this.navigateAndRejectCookies();
+      await this.searchFor(query);
+    } catch (error) {
+      console.error(`Failed to navigate to page, reject all Cookies and search for query: ${error.message}`);
       throw error; // re-throw the error to fail the test
     }
   }
@@ -50,7 +72,7 @@ class GoogleHomePage {
       const searchResults = await this.page.$$(this.searchResult);
       return searchResults;
     } catch (error) {
-      console.log(`Failed to get search results: ${error.message}`);
+      console.error(`Failed to get search results: ${error.message}`);
       throw error; // re-throw the error to fail the test
     }
   }
@@ -70,19 +92,24 @@ class GoogleHomePage {
       }
       return true;
     } catch (error) {
-      console.log(`Failed to validate search results contain query: ${error.message}`);
+      console.error(`Failed to validate search results contain query: ${error.message}`);
       throw error; // re-throw the error to fail the test
     }
   }
 
   // Get text content from array of objects
-  async getTextContent(object) {
-    let results = [];
-    for (let i = 0; i < object.length; i++) {
-      const text = await object[i].innerText();
-      results.push(text);
+  async getTextContent(objects) {
+    try {
+      let results = [];
+      for (let i = 0; i < objects.length; i++) {
+        const text = await objects[i].innerText();
+        results.push(text);
+      }
+      return results;
+    } catch (error) {
+      console.error(`Failed to get text content from array of objects: ${error.message}`);
+      throw error; // re-throw the error to fail the test
     }
-    return results;
   }
 }
 
