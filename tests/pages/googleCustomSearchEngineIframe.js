@@ -19,7 +19,7 @@ class GoogleCustomSearchEnginePage {
       // Get nested iFrame
       this.frame = await this.getNestedFrame(this.page, this.frameSelectors);
     } catch (error) {
-      console.log(`Failed to navigate to CSE iFrame: ${error.message}`);
+      console.error(`Failed to navigate to CSE iFrame: ${error.message}`);
       throw error; // re-throw the error to fail the test
     }
   }
@@ -36,7 +36,7 @@ class GoogleCustomSearchEnginePage {
       }
       return frame;
     } catch (error) {
-      console.log(`Failed to retrieve the nested iframe: ${error.message}`);
+      console.error(`Failed to retrieve the nested iframe: ${error.message}`);
       throw error; // re-throw the error to fail the test
     }
   };
@@ -50,7 +50,7 @@ class GoogleCustomSearchEnginePage {
       // Waiting for search result page to appear
       await this.frame.waitForLoadState('networkidle');
     } catch (error) {
-      console.log(`Failed to search: ${error.message}`);
+      console.error(`Failed to search: ${error.message}`);
       throw error; // re-throw the error to fail the test
     }
   }
@@ -62,7 +62,7 @@ class GoogleCustomSearchEnginePage {
       const searchResults = await this.frame.$$(this.searchResult);
       return searchResults;
     } catch (error) {
-      console.log(`Failed to get search results: ${error.message}`);
+      console.error(`Failed to get search results: ${error.message}`);
       throw error; // re-throw the error to fail the test
     }
   }
@@ -82,7 +82,7 @@ class GoogleCustomSearchEnginePage {
       }
       return true;
     } catch (error) {
-      console.log(`Failed to validate search results contain query: ${error.message}`);
+      console.error(`Failed to validate search results contain query: ${error.message}`);
       throw error; // re-throw the error to fail the test
     }
   }
