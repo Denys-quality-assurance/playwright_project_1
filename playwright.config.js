@@ -8,6 +8,7 @@ module.exports = {
       use: {
         browserName: 'chromium',
         headless: false,
+        viewport: { width: 1920, height: 1080 },
       },
     },
     {
@@ -16,6 +17,7 @@ module.exports = {
       use: {
         browserName: 'firefox',
         headless: false,
+        viewport: { width: 1920, height: 1080 },
       },
     },
     {
@@ -24,6 +26,7 @@ module.exports = {
       use: {
         browserName: 'webkit',
         headless: false,
+        viewport: { width: 1920, height: 1080 },
       },
     },
   ],

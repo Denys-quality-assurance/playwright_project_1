@@ -16,16 +16,16 @@ class GoogleHomePage {
     }
   }
 
-  // Reject all Cookies
-  async rejectAllCookies() {
-    try {
-      // wait for cookies modal
-      await this.page.waitForSelector(this.cookiesModal);
-      await this.page.click(this.rejectAllCookiesButton);
-      await this.page.waitForSelector(this.cookiesModal, { state: 'hidden' });
-    } catch (error) {
-      console.error(`Failed to reject all Cookies: ${error.message}`);
-      throw error; // re-throw the error to fail the test
+  // Reject all Cookies if it's needed
+  async rejectCookiesIfExist() {
+    if (await this.page.isVisible(this.cookiesModal)) {
+      try {
+        await this.page.click(this.rejectAllCookiesButton);
+        await this.page.waitForSelector(this.cookiesModal, { state: 'hidden' });
+      } catch (error) {
+        console.error(`Failed to reject all Cookies: ${error.message}`);
+        throw error; // re-throw the error to fail the test
+      }
     }
   }
 
@@ -33,7 +33,7 @@ class GoogleHomePage {
   async navigateAndRejectCookies() {
     try {
       await this.navigate();
-      if (await this.page.isVisible(this.cookiesModal)) await this.rejectAllCookies();
+      await this.rejectCookiesIfExist();
     } catch (error) {
       console.error(`Failed to navigate to page and reject all Cookies: ${error.message}`);
       throw error; // re-throw the error to fail the test
