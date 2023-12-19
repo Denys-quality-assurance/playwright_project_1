@@ -23,7 +23,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'linkedin_credentials', passwordVariable: 'PASSWORD', usernameVariable: 'EMAIL')]) 
                 {
-                    bat 'npx playwright test --project=chromium'
+                    bat 'npx playwright test tests/ --project=chromium'
                 }
             }
         }
@@ -31,7 +31,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'linkedin_credentials', passwordVariable: 'PASSWORD', usernameVariable: 'EMAIL')]) 
                 {
-                    bat 'npx playwright test --project=firefox'
+                    bat 'npx playwright test tests/ --project=firefox'
                 }
             }
         }
@@ -39,7 +39,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'linkedin_credentials', passwordVariable: 'PASSWORD', usernameVariable: 'EMAIL')]) 
                 {
-                    bat 'npx playwright test --project=webkit'
+                    bat 'npx playwright test tests/ --project=webkit'
                 }
             }
         }        
