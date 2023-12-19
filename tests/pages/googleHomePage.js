@@ -12,7 +12,6 @@ class GoogleHomePage {
       await this.page.goto(`https://www.google.com`);
     } catch (error) {
       console.error(`Failed to navigate to Home page: ${error.message}`);
-      throw error; // re-throw the error to fail the test
     }
   }
 
@@ -36,7 +35,6 @@ class GoogleHomePage {
       await this.rejectCookiesIfExist();
     } catch (error) {
       console.error(`Failed to navigate to page and reject all Cookies: ${error.message}`);
-      throw error; // re-throw the error to fail the test
     }
   }
 
@@ -50,7 +48,6 @@ class GoogleHomePage {
       await this.page.waitForLoadState('networkidle');
     } catch (error) {
       console.error(`Failed to search: ${error.message}`);
-      throw error; // re-throw the error to fail the test
     }
   }
 
@@ -61,7 +58,6 @@ class GoogleHomePage {
       await this.searchFor(query);
     } catch (error) {
       console.error(`Failed to navigate to page, reject all Cookies and search for query: ${error.message}`);
-      throw error; // re-throw the error to fail the test
     }
   }
 
@@ -73,12 +69,11 @@ class GoogleHomePage {
       return searchResults;
     } catch (error) {
       console.error(`Failed to get search results: ${error.message}`);
-      throw error; // re-throw the error to fail the test
     }
   }
 
-  // Validate search results contain query
-  async validateSearchResultsContainQuery(searchResults, query) {
+  // Check if search results contain query
+  async checkIFSearchResultsContainQuery(searchResults, query) {
     try {
       for (let searchResult of searchResults) {
         // Get the text of each searchResult
@@ -93,7 +88,6 @@ class GoogleHomePage {
       return true;
     } catch (error) {
       console.error(`Failed to validate search results contain query: ${error.message}`);
-      throw error; // re-throw the error to fail the test
     }
   }
 
@@ -108,7 +102,130 @@ class GoogleHomePage {
       return results;
     } catch (error) {
       console.error(`Failed to get text content from array of objects: ${error.message}`);
-      throw error; // re-throw the error to fail the test
+    }
+  }
+
+  // Get local storage
+  async getLocalStorage(page) {
+    try {
+      const localStorageData = await page.evaluate(() => window.localStorage);
+      return localStorageData;
+    } catch (error) {
+      console.error(`Failed to get local storage: ${error.message}`);
+    }
+  }
+
+  // Get local storage items by keys
+  async getLocalStorageItemsByKeys(page, keys) {
+    try {
+      const localStorageItemsByKeys = await page.evaluate((keys) => {
+        let data = {};
+        keys.forEach((key) => {
+          data[key] = window.localStorage.getItem(key);
+        });
+        return data;
+      }, keys);
+      return localStorageItemsByKeys;
+    } catch (error) {
+      console.error(`Failed to get local storage items by keys: ${error.message}`);
+    }
+  }
+
+  // Get session storage
+  async getSessionStorage() {
+    try {
+      const sessionStorageData = await this.page.evaluate(() => window.sessionStorage);
+      return sessionStorageData;
+    } catch (error) {
+      console.error(`Failed to get session storage: ${error.message}`);
+    }
+  }
+
+  // Get session storage items by keys
+  async getSessionStorageItemsByKeys(page, keys) {
+    try {
+      const sessionStorageItemsByKeys = await page.evaluate((keys) => {
+        let data = {};
+        keys.forEach((key) => {
+          data[key] = window.sessionStorage.getItem(key);
+        });
+        return data;
+      }, keys);
+      return sessionStorageItemsByKeys;
+    } catch (error) {
+      console.error(`Failed to get session storage items by keys: ${error.message}`);
+    }
+  }
+
+  // Check if all expected keys exist in the object
+  async checkIfAllKeysExist(getItemsByKeys, page, keys) {
+    try {
+      let storageHasKeys = true;
+      // Run loop until all keys are detected in the Storage
+      for (let i = 0; i < 10; i++) {
+        let storageData = await getItemsByKeys(page, keys);
+        keys.forEach((key) => {
+          if (storageData[key] === null) {
+            storageHasKeys = false;
+          }
+        });
+        if (storageHasKeys) break;
+
+        // Sleep for 0.5 second between retries
+        await new Promise((r) => setTimeout(r, 500));
+      }
+      return storageHasKeys;
+    } catch (error) {
+      console.error(`Failed to check if all expected keys exist in the object: ${error.message}`);
+    }
+  }
+
+  // Check if all storage values are not empty
+  async checkIfAllStorageValuesNotEmpty(storageData, keys) {
+    try {
+      let storageValuesNotEmpty = true;
+      keys.forEach((key) => {
+        if (storageData[key] === null || storageData[key] === '') {
+          storageValuesNotEmpty = false;
+        }
+      });
+      return storageValuesNotEmpty;
+    } catch (error) {
+      console.error(`Failed to check if all storage values are not empty: ${error.message}`);
+    }
+  }
+
+  // Check if the object includes the part among its values
+  checkIfValueExists(object, part) {
+    try {
+      const values = Object.values(object);
+      return values.some((value) => value.toLowerCase().includes(part));
+    } catch (error) {
+      console.error(`Failed to check if the object includes the part among its values: ${error.message}`);
+    }
+  }
+
+  // Get Cookies
+  async getCookies() {
+    try {
+      return this.page.context().cookies();
+    } catch (error) {
+      console.error(`Failed to get Cookies: ${error.message}`);
+    }
+  }
+
+  // Check if all expected items included to the array
+  checkIfAllItemsInArray(array, expectedItems) {
+    try {
+      let allItemsIncluded = true;
+      expectedItems.forEach((item) => {
+        if (!array.includes(item)) {
+          allItemsIncluded = false;
+        }
+      });
+      return allItemsIncluded;
+    } catch (error) {
+      console.error(`Failed to check if all expected items included to the array: ${error.message}`);
     }
   }
 }

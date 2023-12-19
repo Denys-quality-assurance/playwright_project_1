@@ -1,6 +1,9 @@
 const { test, expect } = require('@playwright/test');
 const GoogleHomePage = require('./pages/googleHomePage');
 const query = 'Playwright';
+const expectedLocalStorageKeys = [`sb_wiz.zpc.gws-wiz-serp.`, `_c;;i`, `ds;;frib`, `sb_wiz.qc`]; // Expected Local storage's keys
+const expectedSessionStorageKeys = [`_c;;i`]; // Expected session storage's keys
+const expectedCookiesNames = ['__Secure-ENID', 'CONSENT', 'AEC', 'SOCS', 'DV']; // Expected cookies names
 
 test.describe(`Google Home Page: Search results testing for query 'Playwright'`, () => {
   let googleHomePage;
@@ -22,7 +25,7 @@ test.describe(`Google Home Page: Search results testing for query 'Playwright'`,
   test(`Google search results page contains query`, async () => {
     // Check if each search result actually contains query in its text
     const searchResults = await googleHomePage.getSearchResults();
-    const doesEachSearchResultContainQuery = await googleHomePage.validateSearchResultsContainQuery(
+    const doesEachSearchResultContainQuery = await googleHomePage.checkIFSearchResultsContainQuery(
       searchResults,
       query
     );
@@ -57,5 +60,64 @@ test.describe(`Google Home Page: Search results testing for query 'Playwright'`,
       searchResultsTexts2,
       `Search results from two pages with the same query are not equal`
     );
+  });
+
+  test(`Check local storage content`, async ({ page }) => {
+    // Check that all expected keys included to the Local storage
+    let localStorageHasKeys = await googleHomePage.checkIfAllKeysExist(
+      googleHomePage.getLocalStorageItemsByKeys,
+      page,
+      expectedLocalStorageKeys
+    );
+
+    expect(localStorageHasKeys).toBe(true, `At least 1 key is not included in the local storage`);
+
+    // Check that all Local storage values are not empty
+    let localStorageData = await googleHomePage.getLocalStorageItemsByKeys(page, expectedLocalStorageKeys);
+    let localStorageValuesNotEmpty = await googleHomePage.checkIfAllStorageValuesNotEmpty(
+      localStorageData,
+      expectedLocalStorageKeys
+    );
+
+    expect(localStorageValuesNotEmpty).toBe(true, `At least 1 local storage value is empty`);
+  });
+
+  test(`Check session storage content`, async ({ page }) => {
+    // Check that all expected keys included to the Session storage
+    let sessionStorageHasKeys = await googleHomePage.checkIfAllKeysExist(
+      googleHomePage.getSessionStorageItemsByKeys,
+      page,
+      expectedSessionStorageKeys
+    );
+
+    expect(sessionStorageHasKeys).toBe(true, `At least 1 key is not included in the session storage`);
+
+    // Check if the search request value stored in the session storage
+    const sessionStorageData = await googleHomePage.getSessionStorage();
+    const isSearchRequestStoredInSession = googleHomePage.checkIfValueExists(sessionStorageData, '/search?q=playwrigh');
+
+    expect(isSearchRequestStoredInSession).toBe(true, `Search request value is not stored in the session storage`);
+
+    // Check that all Session storage values are not empty
+    const sessionStoragekeys = Object.keys(sessionStorageData);
+    let sessionStorageValuesNotEmpty = await googleHomePage.checkIfAllStorageValuesNotEmpty(
+      sessionStoragekeys,
+      expectedSessionStorageKeys
+    );
+
+    expect(sessionStorageValuesNotEmpty).toBe(true, `At least 1 session storage value is empty`);
+  });
+
+  test(`Check cookies content`, async ({}) => {
+    // Check that all expected names included to the cookies
+    const cookies = await googleHomePage.getCookies();
+    const cookieNames = cookies.map((cookie) => cookie.name);
+    let cookiesIncludeAllNames = googleHomePage.checkIfAllItemsInArray(cookieNames, expectedCookiesNames);
+
+    expect(cookiesIncludeAllNames).toBe(true, `At least 1 name is not included in the cookies`);
+
+    // Check that all cookies have non-empty values
+    const cookiesValuesNotEmpty = cookies.every((cookie) => cookie.value !== '');
+    expect(cookiesValuesNotEmpty).toBe(true, `At least 1 cookie value is empty`);
   });
 });

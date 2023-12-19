@@ -16,10 +16,7 @@ test.describe(`Google Custom Search Engine: Search results testing for query 'Go
 
     // Check if each search result actually contains query in its text
     const searchResults = await googleCSEPage.getSearchResults();
-    const doesEachSearchResultContainQuery = await googleCSEPage.validateSearchResultsContainQuery(
-      searchResults,
-      query
-    );
+    const doesEachSearchResultContainQuery = await googleCSEPage.checkIFSearchResultsContainQuery(searchResults, query);
     expect(doesEachSearchResultContainQuery).toBe(true, `At least one search result does not contain the query`);
   });
 
