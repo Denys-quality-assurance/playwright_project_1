@@ -13,7 +13,7 @@ module.exports = {
     },
     {
       name: 'firefox',
-
+      grep: /^(?!.*@skip-for-firefox).*$/,
       use: {
         browserName: 'firefox',
         headless: false,

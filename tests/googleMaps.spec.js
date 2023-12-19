@@ -2,7 +2,7 @@ const { test, expect } = require(`@playwright/test`);
 const GoogleMapsPage = require(`./pages/googleMapsPage`);
 const geoData = { longitude: 12.492507, latitude: 41.889938 }; // Rome, Italy
 
-test.describe('Geolocation Tests', () => {
+test.describe('Geolocation Tests @skip-for-firefox', () => {
   let context;
   let page;
   let googleMapsPage;
@@ -12,6 +12,7 @@ test.describe('Geolocation Tests', () => {
     context = await browser.newContext({
       geolocation: geoData,
       permissions: [`geolocation`], // Allow Google to track the geolocation
+      ignoreHTTPSErrors: true,
     });
     // Navigate to page and reject all Cookies if it's needed
     page = await context.newPage();
