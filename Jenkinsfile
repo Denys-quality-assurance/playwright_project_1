@@ -23,7 +23,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'linkedin_credentials', passwordVariable: 'PASSWORD', usernameVariable: 'EMAIL')]) 
                 {
-                    bat 'npx playwright test linkedin-search-query.spec.js --project=chromium'
+                    bat 'npx playwright test --project=chromium'
                 }
             }
         }
@@ -31,7 +31,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'linkedin_credentials', passwordVariable: 'PASSWORD', usernameVariable: 'EMAIL')]) 
                 {
-                    bat 'npx playwright test linkedin-search-query.spec.js --project=firefox'
+                    bat 'npx playwright test --project=firefox'
                 }
             }
         }
@@ -39,7 +39,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'linkedin_credentials', passwordVariable: 'PASSWORD', usernameVariable: 'EMAIL')]) 
                 {
-                    bat 'npx playwright test linkedin-search-query.spec.js --project=webkit'
+                    bat 'npx playwright test --project=webkit'
                 }
             }
         }        
