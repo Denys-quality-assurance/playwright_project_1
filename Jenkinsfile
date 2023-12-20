@@ -6,34 +6,95 @@ pipeline {
     stages {
         stage('Run tests') {
             parallel {
-                stage('Run tests on Chromium') {
+                stage('Chromium') {
                     agent any
-                    steps {
-                        git url: 'https://github.com/DenysMatolikov/playwright_project_1', branch: 'main'
-                        bat 'npm ci'
-                        bat 'npx playwright install chromium'
-                        // withCredentials([usernamePassword(credentialsId: 'credentials', passwordVariable: 'PASSWORD', usernameVariable: 'EMAIL')]) 
-                        bat 'npx playwright test tests/ --project=chromium'
+                    stages {
+                        stage('Checkout') {
+                            steps {
+                                git url: 'https://github.com/DenysMatolikov/playwright_project_1',
+                                    branch: 'main'
+                            }
+                        }
+                        stage('Install dependencies') {
+                            steps {
+                                bat 'npm ci'
+                            }
+                        }
+                        stage('Install browsers') {
+                            steps {
+                                bat 'npx playwright install chromium'
+                            }
+                        }
+                        stage('Run tests') {
+                            steps {
+                                // withCredentials([usernamePassword(credentialsId: 'credentials', passwordVariable: 'PASSWORD', usernameVariable: 'EMAIL')]) 
+                                bat 'npx playwright test tests/ --project=chromium'
+                            }
+                        }
                     }
                 }
-                stage('Run tests on Firefox') {
+                stage('Firefox') {
                     agent any
-                    steps {
-                        git url: 'https://github.com/DenysMatolikov/playwright_project_1', branch: 'main'
-                        bat 'npm ci'
-                        bat 'npx playwright install firefox'
-                        // withCredentials([usernamePassword(credentialsId: 'credentials', passwordVariable: 'PASSWORD', usernameVariable: 'EMAIL')]) 
-                        bat 'npx playwright test tests/ --project=firefox'
+                    stages {
+                        stage('Run tests on Firefox') {
+                            agent any
+                            stages {
+                                stage('Checkout') {
+                                    steps {
+                                        git url: 'https://github.com/DenysMatolikov/playwright_project_1',
+                                            branch: 'main'
+                                    }
+                                }
+                                stage('Install dependencies') {
+                                    steps {
+                                        bat 'npm ci'
+                                    }
+                                }
+                                stage('Install browsers') {
+                                    steps {
+                                        bat 'npx playwright install firefox'
+                                    }
+                                }
+                                stage('Run tests') {
+                                    steps {
+                                        // withCredentials([usernamePassword(credentialsId: 'credentials', passwordVariable: 'PASSWORD', usernameVariable: 'EMAIL')]) 
+                                        bat 'npx playwright test tests/ --project=firefox'
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
-                stage('Run tests on Webkit') {
+                stage('Webkit') {
                     agent any
-                    steps {
-                        git url: 'https://github.com/DenysMatolikov/playwright_project_1', branch: 'main'
-                        bat 'npm ci'
-                        bat 'npx playwright install webkit'
-                        // withCredentials([usernamePassword(credentialsId: 'credentials', passwordVariable: 'PASSWORD', usernameVariable: 'EMAIL')]) 
-                        bat 'npx playwright test tests/ --project=webkit'
+                    stages {
+                        stage('Run tests on Webkit') {
+                            agent any
+                            stages {
+                                stage('Checkout') {
+                                    steps {
+                                        git url: 'https://github.com/DenysMatolikov/playwright_project_1',
+                                            branch: 'main'
+                                    }
+                                }
+                                stage('Install dependencies') {
+                                    steps {
+                                        bat 'npm ci'
+                                    }
+                                }
+                                stage('Install browsers') {
+                                    steps {
+                                        bat 'npx playwright install webkit'
+                                    }
+                                }
+                                stage('Run tests') {
+                                    steps {
+                                        // withCredentials([usernamePassword(credentialsId: 'credentials', passwordVariable: 'PASSWORD', usernameVariable: 'EMAIL')]) 
+                                        bat 'npx playwright test tests/ --project=webkit'
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
