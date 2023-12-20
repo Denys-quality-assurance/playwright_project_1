@@ -6,7 +6,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/DenysMatolikov/playwright_project_1'
+                git url: 'https://github.com/DenysMatolikov/playwright_project_1',
+                git branch: 'main'
             }
         }
         stage('Install dependencies') {
