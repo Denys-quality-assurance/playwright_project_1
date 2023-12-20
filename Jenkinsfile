@@ -29,29 +29,21 @@ pipeline {
     }
 }
 
-def runTests(browser) {
-    stages {
-        stage('Checkout for ${browser}') {
-            steps {
-                git url: 'https://github.com/DenysMatolikov/playwright_project_1',
-                    branch: 'main'
-            }
+void runTests(String browser) {
+    script {
+        stage("Checkout ${browser}") {
+            git url: 'https://github.com/DenysMatolikov/playwright_project_1', branch: 'main'
         }
-        stage('Install dependencies for ${browser}') {
-            steps {
-                bat 'npm ci'
-            }
+        stage("Install dependencies ${browser}") {
+            bat 'npm ci'
         }
-        stage('Install browser for ${browser}') {
-            steps {
-                bat 'npx playwright install ${browser}'
-            }
+        stage("Install browser ${browser}") {
+            bat "npx playwright install ${browser}"
         }
-        stage('Run tests for ${browser}') {
-            steps {
-                // withCredentials([usernamePassword(credentialsId: 'credentials', passwordVariable: 'PASSWORD', usernameVariable: 'EMAIL')]) 
-                bat 'npx playwright test tests/ --project=${browser}'
-            }
+        stage("Run tests ${browser}") {
+            // withCredentials([usernamePassword(credentialsId: 'credentials', passwordVariable: 'PASSWORD', usernameVariable: 'EMAIL')]){    
+            bat "npx playwright test tests/ --project=${browser}"
+            //}
         }
     }
 }
