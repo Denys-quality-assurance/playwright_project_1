@@ -1,12 +1,12 @@
 pipeline {
     agent any
     environment {
-        PLAYWRIGHT_BROWSERS_PATH = '0'
+        PLAYWRIGHT_BROWSERS_PATH = '0' //to download browsers into the project's local node_modules folder - a directory Jenkins can read
     }
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/DenysMatolikov/playwright_project_1', branch: 'main'
+                git url: 'https://github.com/DenysMatolikov/playwright_project_1'
             }
         }
         stage('Install dependencies') {

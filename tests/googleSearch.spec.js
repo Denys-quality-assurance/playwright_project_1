@@ -94,7 +94,9 @@ test.describe(`Google Home Page: Search results testing for query 'Playwright'`,
 
     // Check if the search request value stored in the session storage
     const sessionStorageData = await googleHomePage.getSessionStorage();
-    const isSearchRequestStoredInSession = googleHomePage.checkIfValueExists(sessionStorageData, '/search?q=playwrigh');
+    const searchRequest = '/search?q=' + query;
+    console.log(searchRequest);
+    const isSearchRequestStoredInSession = googleHomePage.checkIfValueExists(sessionStorageData, searchRequest);
 
     expect(isSearchRequestStoredInSession).toBe(true, `Search request value is not stored in the session storage`);
 

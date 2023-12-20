@@ -105,15 +105,15 @@ class GoogleHomePage {
     }
   }
 
-  // Get local storage
-  async getLocalStorage(page) {
-    try {
-      const localStorageData = await page.evaluate(() => window.localStorage);
-      return localStorageData;
-    } catch (error) {
-      console.error(`Failed to get local storage: ${error.message}`);
-    }
-  }
+  // Get local storage - isn't used
+  // async getLocalStorage(page) {
+  //   try {
+  //     const localStorageData = await page.evaluate(() => window.localStorage);
+  //     return localStorageData;
+  //   } catch (error) {
+  //     console.error(`Failed to get local storage: ${error.message}`);
+  //   }
+  // }
 
   // Get local storage items by keys
   async getLocalStorageItemsByKeys(page, keys) {
@@ -199,7 +199,7 @@ class GoogleHomePage {
   checkIfValueExists(object, part) {
     try {
       const values = Object.values(object);
-      return values.some((value) => value.toLowerCase().includes(part));
+      return values.some((value) => value.toLowerCase().includes(part.toLowerCase()));
     } catch (error) {
       console.error(`Failed to check if the object includes the part among its values: ${error.message}`);
     }
