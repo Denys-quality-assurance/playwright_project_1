@@ -9,23 +9,23 @@ pipeline {
                 stage('Chromium') {
                     agent any
                     stages {
-                        stage('Checkout') {
+                        stage('Checkout for Chromium') {
                             steps {
                                 git url: 'https://github.com/DenysMatolikov/playwright_project_1',
                                     branch: 'main'
                             }
                         }
-                        stage('Install dependencies') {
+                        stage('Install dependencies for Chromium') {
                             steps {
                                 bat 'npm ci'
                             }
                         }
-                        stage('Install browsers') {
+                        stage('Install browser for Chromium') {
                             steps {
                                 bat 'npx playwright install chromium'
                             }
                         }
-                        stage('Run tests') {
+                        stage('Run tests for Chromium') {
                             steps {
                                 // withCredentials([usernamePassword(credentialsId: 'credentials', passwordVariable: 'PASSWORD', usernameVariable: 'EMAIL')]) 
                                 bat 'npx playwright test tests/ --project=chromium'
@@ -36,31 +36,26 @@ pipeline {
                 stage('Firefox') {
                     agent any
                     stages {
-                        stage('Run tests on Firefox') {
-                            agent any
-                            stages {
-                                stage('Checkout') {
-                                    steps {
-                                        git url: 'https://github.com/DenysMatolikov/playwright_project_1',
-                                            branch: 'main'
-                                    }
-                                }
-                                stage('Install dependencies') {
-                                    steps {
-                                        bat 'npm ci'
-                                    }
-                                }
-                                stage('Install browsers') {
-                                    steps {
-                                        bat 'npx playwright install firefox'
-                                    }
-                                }
-                                stage('Run tests') {
-                                    steps {
-                                        // withCredentials([usernamePassword(credentialsId: 'credentials', passwordVariable: 'PASSWORD', usernameVariable: 'EMAIL')]) 
-                                        bat 'npx playwright test tests/ --project=firefox'
-                                    }
-                                }
+                        stage('Checkout for Firefox') {
+                            steps {
+                                git url: 'https://github.com/DenysMatolikov/playwright_project_1',
+                                    branch: 'main'
+                            }
+                        }
+                        stage('Install dependencies for Firefox') {
+                            steps {
+                                bat 'npm ci'
+                            }
+                        }
+                        stage('Install browser for Firefox') {
+                            steps {
+                                bat 'npx playwright install firefox'
+                            }
+                        }
+                        stage('Run tests for Firefox') {
+                            steps {
+                                // withCredentials([usernamePassword(credentialsId: 'credentials', passwordVariable: 'PASSWORD', usernameVariable: 'EMAIL')]) 
+                                bat 'npx playwright test tests/ --project=firefox'
                             }
                         }
                     }
@@ -68,31 +63,27 @@ pipeline {
                 stage('Webkit') {
                     agent any
                     stages {
-                        stage('Run tests on Webkit') {
-                            agent any
-                            stages {
-                                stage('Checkout') {
-                                    steps {
-                                        git url: 'https://github.com/DenysMatolikov/playwright_project_1',
-                                            branch: 'main'
-                                    }
-                                }
-                                stage('Install dependencies') {
-                                    steps {
-                                        bat 'npm ci'
-                                    }
-                                }
-                                stage('Install browsers') {
-                                    steps {
-                                        bat 'npx playwright install webkit'
-                                    }
-                                }
-                                stage('Run tests') {
-                                    steps {
-                                        // withCredentials([usernamePassword(credentialsId: 'credentials', passwordVariable: 'PASSWORD', usernameVariable: 'EMAIL')]) 
-                                        bat 'npx playwright test tests/ --project=webkit'
-                                    }
-                                }
+                        stage('Checkout for Webkit') {
+                            steps {
+                                git url: 'https://github.com/DenysMatolikov/playwright_project_1',
+                                    branch: 'main'
+                            }
+                        }
+                        stage('Install dependencies for Webkit') {
+                            steps {
+                                bat 'npm ci'
+                            }
+                        }
+                        stage('Install browser for Webkit') {
+                            steps {
+                                bat 'npx playwright install webkit'
+                            }
+                        }
+                        stage('Run tests for Webkit') {
+                            steps {
+                                // withCredentials([usernamePassword(credentialsId: 'credentials', passwordVariable: 'PASSWORD', usernameVariable: 'EMAIL')]) 
+                                bat 'npx playwright test tests/ --project=webkit'
+
                             }
                         }
                     }
