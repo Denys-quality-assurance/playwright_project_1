@@ -20,29 +20,37 @@ pipeline {
                 bat 'npx playwright install'
             }
         }
-        stage('Run tests on Chromium') {
+        stage('Run tests') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'linkedin_credentials', passwordVariable: 'PASSWORD', usernameVariable: 'EMAIL')]) 
-                {
-                    bat 'npx playwright test tests/ --project=chromium'
+                script {
+                    parallel {
+                        stage('Run tests on Chromium') {
+                            steps {
+                                // withCredentials([usernamePassword(credentialsId: 'credentials', passwordVariable: 'PASSWORD', usernameVariable: 'EMAIL')]) 
+                                {
+                                    bat 'npx playwright test tests/ --project=chromium'
+                                }
+                            }
+                        }
+                        stage('Run tests on Firefox') {
+                            steps {
+                                // withCredentials([usernamePassword(credentialsId: 'credentials', passwordVariable: 'PASSWORD', usernameVariable: 'EMAIL')]) 
+                                {
+                                    bat 'npx playwright test tests/ --project=firefox'
+                                }
+                            }
+                        }
+                        stage('Run tests on Webkit') {
+                            steps {
+                                // withCredentials([usernamePassword(credentialsId: 'credentials', passwordVariable: 'PASSWORD', usernameVariable: 'EMAIL')]) 
+                                {
+                                    bat 'npx playwright test tests/ --project=webkit'
+                                }
+                            }
+                        }  
+                    }
                 }
             }
-        }
-        stage('Run tests on Firefox') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'linkedin_credentials', passwordVariable: 'PASSWORD', usernameVariable: 'EMAIL')]) 
-                {
-                    bat 'npx playwright test tests/ --project=firefox'
-                }
-            }
-        }
-        stage('Run tests on Webkit') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'linkedin_credentials', passwordVariable: 'PASSWORD', usernameVariable: 'EMAIL')]) 
-                {
-                    bat 'npx playwright test tests/ --project=webkit'
-                }
-            }
-        }        
+        }      
     }
 }
