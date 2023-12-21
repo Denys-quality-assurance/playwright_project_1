@@ -6,7 +6,7 @@ class GoogleMapsPage {
     this.myPlaceButton = `button#sVuEFc`; // My place button
   }
   // Navigate to URL
-  async navigate(URL) {
+  async navigateHome(URL) {
     try {
       await this.page.goto(URL);
     } catch (error) {
@@ -29,9 +29,9 @@ class GoogleMapsPage {
 
   // Navigate to Google Maps
   async openGoogleMaps() {
-    await this.navigate(`https://www.google.com`);
+    await this.navigateHome(`https://www.google.com`);
     await this.rejectCookiesIfExist();
-    await this.navigate(`https://www.google.com/maps`);
+    await this.navigateHome(`https://www.google.com/maps`);
   }
 
   // Go to My Place

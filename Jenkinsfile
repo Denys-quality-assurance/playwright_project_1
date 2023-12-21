@@ -7,18 +7,21 @@ pipeline {
         stage('Run tests') {
             parallel {
                 stage('Chromium') {
+                    // agent { label 'chromium' } // specific agent for chromium tests
                     agent any
                     steps {
                         runTests('chromium')
                     }
                 }
                 stage('Firefox') {
+                    // agent { label 'firefox' } // specific agent for firefox tests
                     agent any
                     steps {
                         runTests('firefox')
                     }
                 }
                 stage('Webkit') {
+                    // agent { label 'webkit' } // specific agent for webkit tests
                     agent any
                     steps {
                         runTests('webkit')
