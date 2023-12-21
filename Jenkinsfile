@@ -1,9 +1,23 @@
 pipeline {
     agent none // don't allocate an executor for the entire Pipeline
     environment {
-        PLAYWRIGHT_BROWSERS_PATH = '0' //to download browsers into the project's local node_modules folder - a directory Jenkins can read
+        PLAYWRIGHT_BROWSERS_PATH = '0' // to download browsers into the project's local node_modules folder - a directory Jenkins can read
     }
     stages {
+        stage('Checkout latest branch') {
+            steps {
+                script {
+                    "git clone https://github.com/DenysMatolikov/playwright_project_1" // clone the repository to a local workspace
+                    // takes the first line of output; because we've sorted by committerdate, this will be the most recently updated branch
+                    def latestBranch = bat(
+                        script: "git for-each-ref --sort='-committerdate' --format='%(refname:short)' refs/remotes/origin | head -n1",
+                        returnStdout: true
+                    ).trim()
+
+                    echo "Checking out branch ${latestBranch}"
+                }
+            }
+        }
         stage('Run tests') {
             parallel {
                 stage('Chromium') {
@@ -35,7 +49,7 @@ pipeline {
 void runTests(String browser) {
     script {
         stage("Checkout ${browser}") {
-            git url: 'https://github.com/DenysMatolikov/playwright_project_1', branch: 'main'
+            git url: 'https://github.com/DenysMatolikov/playwright_project_1', branch: ${latestBranch}
         }
         stage("Install dependencies ${browser}") {
             bat 'npm ci'
