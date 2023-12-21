@@ -7,7 +7,7 @@ class GoogleHomePage {
     this.searchResult = `.MjjYud >> .g`; // One search result
   }
   // Navigate to Home page
-  async navigate() {
+  async navigateHome() {
     try {
       await this.page.goto(`https://www.google.com`);
     } catch (error) {
@@ -31,7 +31,7 @@ class GoogleHomePage {
   // Navigate to page and reject all Cookies if it's needed
   async navigateAndRejectCookies() {
     try {
-      await this.navigate();
+      await this.navigateHome();
       await this.rejectCookiesIfExist();
     } catch (error) {
       console.error(`Failed to navigate to page and reject all Cookies: ${error.message}`);
@@ -73,7 +73,7 @@ class GoogleHomePage {
   }
 
   // Check if search results contain query
-  async checkIFSearchResultsContainQuery(searchResults, query) {
+  async checkIfSearchResultsContainQuery(searchResults, query) {
     try {
       for (let searchResult of searchResults) {
         // Get the text of each searchResult

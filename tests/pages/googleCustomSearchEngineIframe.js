@@ -63,8 +63,8 @@ class GoogleCustomSearchEnginePage {
     }
   }
 
-  // Validate search results contain query
-  async checkIFSearchResultsContainQuery(searchResults, query) {
+  // Check if all search results contain query
+  async checkIfSearchResultsContainQuery(searchResults, query) {
     try {
       for (let searchResult of searchResults) {
         // Get the text of each searchResult
@@ -78,7 +78,7 @@ class GoogleCustomSearchEnginePage {
       }
       return true;
     } catch (error) {
-      console.error(`Failed to validate search results contain query: ${error.message}`);
+      console.error(`Failed to check if all search results contain query: ${error.message}`);
     }
   }
 }
