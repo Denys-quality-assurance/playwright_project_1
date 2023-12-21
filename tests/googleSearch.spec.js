@@ -25,7 +25,7 @@ test.describe(`Google Home Page: Search results testing for query 'Playwright'`,
   test(`Google search results page contains query`, async () => {
     // Check if each search result actually contains query in its text
     const searchResults = await googleHomePage.getSearchResults();
-    const doesEachSearchResultContainQuery = await googleHomePage.checkIFSearchResultsContainQuery(
+    const doesEachSearchResultContainQuery = await googleHomePage.checkIfSearchResultsContainQuery(
       searchResults,
       query
     );
