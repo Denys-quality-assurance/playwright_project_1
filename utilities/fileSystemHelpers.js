@@ -53,7 +53,6 @@ module.exports = {
     try {
       if (fs.existsSync(filePath)) {
         //file exists
-
         return true;
       }
     } catch (err) {

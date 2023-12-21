@@ -4,41 +4,34 @@ const { downloadImageFromUrlToTempDir, checkFileExists, deleteTempFile } = requi
 const query = 'cat jpg';
 
 test.describe(`Google Home Pictures Page: Download picture by query, Search by picture`, () => {
-  test(`User can download picture from test results, User can search by picture`, async ({ page }) => {
+  test.only(`User can download picture from test results, User can search by picture`, async ({ page }) => {
     // Navigate to Home page, reject all Cookies and search the query before each test in this block
     let googleHomePicturesPage = new GoogleHomePicturesPage(page);
     await googleHomePicturesPage.navigateAndSearchPictures(query);
 
     // Get text from the 1st search result
-    const pictureDescription = await page.$eval(googleHomePicturesPage.firstSearchResultTest, (el) => el.innerText);
+    const pictureDescription = await page.$eval(
+      googleHomePicturesPage.selectors.firstSearchResultText,
+      (el) => el.innerText
+    );
 
     // Click on the 1st search result to open picture preview
-    await page.click(googleHomePicturesPage.firstSearchResult);
-    await page.waitForSelector(googleHomePicturesPage.picturePriview);
-    const picturePriview = await page.$(googleHomePicturesPage.picturePriview);
+    const picturePriview = await googleHomePicturesPage.openPicturePreview(
+      googleHomePicturesPage.selectors.firstSearchResult
+    );
 
     // Get picture link of the preview
     const imageUrl = await picturePriview.getAttribute('src');
-    console.log('imageUrl: ', imageUrl);
 
     // Download picture from url to the system's directory for temporary files
     const imagePath = await downloadImageFromUrlToTempDir(imageUrl);
 
-    // Check picture downloaded
-    checkFileExists(imagePath);
+    // Check if the picture downloaded
+    const isPictureDownloaded = checkFileExists(imagePath);
+    expect(isPictureDownloaded).toBe(true, 'The picture is not saved in the file system');
 
-    // Click on the Search by picture button to open picture upload area
-    await page.click(googleHomePicturesPage.searchByPictureButton);
-    await page.waitForSelector(googleHomePicturesPage.pictureUploadButton);
-
-    // Listen for the 'filechooser' event that triggers when file chooser dialog opens
-    page.on('filechooser', async (fileChooser) => {
-      // Set files for upload. Provide your own file path
-      await fileChooser.setFiles(imagePath);
-    });
-
-    // Click the button that opens the file chooser dialog
-    await page.click(googleHomePicturesPage.pictureUploadButton); // Replace with your own selector
+    // Upload the picture to search by picture
+    await googleHomePicturesPage.uploadPictureToSearch(imagePath);
 
     // Get search results
     const searchResults = await googleHomePicturesPage.getSearchByPictureResults();
