@@ -4,9 +4,9 @@
   "description": "",
   "main": "lesson2.js",
   "scripts": {
-    "chromium tests": "npx playwright test --project=chromium",
-    "firefox tests": "npx playwright test --project=firefox",
-    "webkit tests": "npx playwright test --project=webkit"
+    "chromium": "npx playwright test --project=chromium",
+    "firefox": "npx playwright test --project=firefox",
+    "webkit": "npx playwright test --project=webkit"
   },
   "keywords": [],
   "author": "",
