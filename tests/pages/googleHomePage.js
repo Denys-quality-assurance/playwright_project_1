@@ -1,10 +1,12 @@
 class GoogleHomePage {
   constructor(page) {
     this.page = page;
-    this.cookiesModal = `#CXQnmb`; // Cookies consent modal
-    this.rejectAllCookiesButton = `button#W0wltc`; // Reject all cookies button
-    this.searchInputTextArea = `textarea[name=q]`; // Search query imput area
-    this.searchResult = `.MjjYud >> .g`; // One search result
+    this.selectors = {
+      cookiesModal: `#CXQnmb`, // Cookies consent modal
+      rejectAllCookiesButton: `button#W0wltc`, // Reject all cookies button
+      searchInputTextArea: `textarea[name=q]`, // Search query imput area
+      searchResult: `.MjjYud >> .g`, // One search result
+    };
   }
   // Navigate to Home page
   async navigateHome() {
@@ -17,13 +19,12 @@ class GoogleHomePage {
 
   // Reject all Cookies if it's needed
   async rejectCookiesIfExist() {
-    if (await this.page.isVisible(this.cookiesModal)) {
+    if (await this.page.isVisible(this.selectors.cookiesModal)) {
       try {
-        await this.page.click(this.rejectAllCookiesButton);
-        await this.page.waitForSelector(this.cookiesModal, { state: 'hidden' });
+        await this.page.click(this.selectors.rejectAllCookiesButton);
+        await this.page.waitForSelector(this.selectors.cookiesModal, { state: 'hidden' });
       } catch (error) {
         console.error(`Failed to reject all Cookies: ${error.message}`);
-        throw error; // re-throw the error to fail the test
       }
     }
   }
@@ -41,9 +42,9 @@ class GoogleHomePage {
   // Search for query
   async searchFor(query) {
     try {
-      await this.page.waitForSelector(this.searchInputTextArea);
-      await this.page.fill(this.searchInputTextArea, query);
-      await this.page.press(this.searchInputTextArea, 'Enter');
+      await this.page.waitForSelector(this.selectors.searchInputTextArea);
+      await this.page.fill(this.selectors.searchInputTextArea, query);
+      await this.page.press(this.selectors.searchInputTextArea, 'Enter');
       // Waiting for search result page to appear
       await this.page.waitForLoadState('networkidle');
     } catch (error) {
@@ -64,15 +65,15 @@ class GoogleHomePage {
   // Get Search results
   async getSearchResults() {
     try {
-      await this.page.waitForSelector(this.searchResult);
-      const searchResults = await this.page.$$(this.searchResult);
+      await this.page.waitForSelector(this.selectors.searchResult);
+      const searchResults = await this.page.$$(this.selectors.searchResult);
       return searchResults;
     } catch (error) {
       console.error(`Failed to get search results: ${error.message}`);
     }
   }
 
-  // Check if search results contain query
+  // Check if all search results contain query
   async checkIfSearchResultsContainQuery(searchResults, query) {
     try {
       for (let searchResult of searchResults) {

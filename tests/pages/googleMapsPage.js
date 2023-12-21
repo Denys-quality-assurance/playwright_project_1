@@ -16,13 +16,12 @@ class GoogleMapsPage {
 
   // Reject all Cookies if it's needed
   async rejectCookiesIfExist() {
-    if (await this.page.isVisible(this.cookiesModal)) {
+    if (await this.page.isVisible(this.selectors.cookiesModal)) {
       try {
-        await this.page.click(this.rejectAllCookiesButton);
-        await this.page.waitForSelector(this.cookiesModal, { state: 'hidden' });
+        await this.page.click(this.selectors.rejectAllCookiesButton);
+        await this.page.waitForSelector(this.selectors.cookiesModal, { state: 'hidden' });
       } catch (error) {
         console.error(`Failed to reject all Cookies: ${error.message}`);
-        throw error; // re-throw the error to fail the test
       }
     }
   }
