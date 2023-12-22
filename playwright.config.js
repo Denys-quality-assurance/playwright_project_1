@@ -1,4 +1,5 @@
 module.exports = {
+  workers: 5, // up to 5 tests concurrently
   timeout: 60000, // Timeout of 60 seconds
   retries: 2, // Defines the maximum attempts to retry a test after a failure
   projects: [
