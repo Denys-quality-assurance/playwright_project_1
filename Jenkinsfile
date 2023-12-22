@@ -15,7 +15,7 @@ pipeline {
                     latestBranch = powershell(returnStdout: true, 
                         script: '& { git for-each-ref --sort=-committerdate --format="%(refname:short)" refs/remotes/origin | Select-Object -First 1 }').trim()
             
-                    echo "Checking out branch ${latestBranch}"
+                    echo "The latest branch: ${latestBranch}"
                 }
             }
         }
@@ -50,7 +50,8 @@ pipeline {
 void runTests(String browser, String latestBranch) {
     script {
         stage("Checkout ${browser}") {
-            git url: 'https://github.com/DenysMatolikov/playwright_project_1', branch: "$latestBranch"
+            echo "Checking out branch ${latestBranch}"
+            git url: 'https://github.com/DenysMatolikov/playwright_project_1', branch: "${latestBranch}"
         }
         stage("Install dependencies ${browser}") {
             bat 'npm ci'
