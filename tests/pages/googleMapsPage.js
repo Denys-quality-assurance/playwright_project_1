@@ -1,9 +1,11 @@
 class GoogleMapsPage {
   constructor(page) {
     this.page = page;
-    this.cookiesModal = `#CXQnmb`; // Cookies consent modal
-    this.rejectAllCookiesButton = `button#W0wltc`; // Reject all cookies button
-    this.myPlaceButton = `button#sVuEFc`; // My place button
+    this.selectors = {
+      cookiesModal: `#CXQnmb`; // Cookies consent modal
+      rejectAllCookiesButton: `button#W0wltc`; // Reject all cookies button
+      myPlaceButton: `button#sVuEFc`; // My place button
+    }
   }
   // Navigate to URL
   async navigateHome(URL) {
@@ -35,7 +37,7 @@ class GoogleMapsPage {
 
   // Go to My Place
   async goToMyLocation() {
-    await this.page.click(this.myPlaceButton);
+    await this.page.click(this.selectors.myPlaceButton);
     await this.page.waitForNavigation();
   }
 }
