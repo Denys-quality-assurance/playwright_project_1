@@ -21,7 +21,7 @@ module.exports = {
           // Get the system's temp directory
           const tmpDir = os.tmpdir();
           // Path to a new temp file
-          const filePath = path.join(tmpDir, 'profile_picture.jpg');
+          const filePath = path.join(tmpDir, 'test_picture.jpg');
 
           const fileStream = fs.createWriteStream(filePath);
 
