@@ -4,13 +4,13 @@ pipeline {
         PLAYWRIGHT_BROWSERS_PATH = '0' // to download browsers into the project's local node_modules folder - a directory Jenkins can read
     }
     stages {
-        stage('Checkout latest branch') {
+        stage('Get latest branch') {
             agent any
             steps {
                 script {
                     "git clone https://github.com/DenysMatolikov/playwright_project_1" // clone the repository to a local workspace
                     // takes the first line of output; because we've sorted by committerdate, this will be the most recently updated branch
-                    def latestBranch = bat(
+                    latestBranch = bat(
                         script: "git for-each-ref --sort='-committerdate' --format='%(refname:short)' refs/remotes/origin | head -n1",
                         returnStdout: true
                     ).trim()
@@ -25,21 +25,21 @@ pipeline {
                     // agent { label 'chromium' } // specific agent for chromium tests
                     agent any
                     steps {
-                        runTests('chromium')
+                        runTests('chromium', latestBranch)
                     }
                 }
                 stage('Firefox') {
                     // agent { label 'firefox' } // specific agent for firefox tests
                     agent any
                     steps {
-                        runTests('firefox')
+                        runTests('firefox', latestBranch)
                     }
                 }
                 stage('Webkit') {
                     // agent { label 'webkit' } // specific agent for webkit tests
                     agent any
                     steps {
-                        runTests('webkit')
+                        runTests('webkit', latestBranch)
                     }
                 }
             }
@@ -47,7 +47,7 @@ pipeline {
     }
 }
 
-void runTests(String browser) {
+void runTests(String browser, String latestBranch) {
     script {
         stage("Checkout ${browser}") {
             git url: 'https://github.com/DenysMatolikov/playwright_project_1', branch: ${latestBranch}
