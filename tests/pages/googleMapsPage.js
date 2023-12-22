@@ -2,10 +2,10 @@ class GoogleMapsPage {
   constructor(page) {
     this.page = page;
     this.selectors = {
-      cookiesModal: `#CXQnmb`; // Cookies consent modal
-      rejectAllCookiesButton: `button#W0wltc`; // Reject all cookies button
-      myPlaceButton: `button#sVuEFc`; // My place button
-    }
+      cookiesModal: `#CXQnmb`, // Cookies consent modal
+      rejectAllCookiesButton: `button#W0wltc`, // Reject all cookies button
+      myPlaceButton: `button#sVuEFc`, // My place button
+    };
   }
   // Navigate to URL
   async navigateHome(URL) {
