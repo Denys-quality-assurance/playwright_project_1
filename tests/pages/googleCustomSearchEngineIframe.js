@@ -12,6 +12,7 @@ class GoogleCustomSearchEnginePage {
       searchResult: `.gsc-results >> .gsc-result`, // One search result
     };
   }
+
   // Navigate to Home page
   async init() {
     try {

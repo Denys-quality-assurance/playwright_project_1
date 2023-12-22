@@ -7,6 +7,7 @@ class GoogleMapsPage {
       myPlaceButton: `button#sVuEFc`, // My place button
     };
   }
+
   // Navigate to URL
   async navigateHome(URL) {
     try {

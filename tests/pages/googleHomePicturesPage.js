@@ -14,6 +14,7 @@ class GoogleHomePicturesPage {
       searchByPictureResults: `.UAiK1e[dir="ltr"]`, // List of results of search by picture
     };
   }
+
   // Navigate to Home page
   async navigateHome() {
     try {
