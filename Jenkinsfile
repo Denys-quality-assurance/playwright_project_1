@@ -12,14 +12,9 @@ pipeline {
                 script {
                     "git clone https://github.com/DenysMatolikov/playwright_project_1" // clone the repository to a local workspace
                     // takes the first line of output; because we've sorted by committerdate, this will be the most recently updated branch
-                    latestBranch = bat (
-                        script: '@echo off \n' +  
-                        'FOR /F "delims=" %%i IN (\'git for-each-ref --sort=-committerdate --format=%%(refname:short) refs/remotes/origin\') DO (\n' +
-                        ' echo %%i | powershell -Command "Get-Content -First 1"\n' +
-                        ' exit /b\n' +
-                        ')',
-                        returnStdout: true
-                        ).trim()
+                    latestBranch = powershell(returnStdout: true, 
+                        script: '& { git for-each-ref --sort=-committerdate --format="%(refname:short)" refs/remotes/origin | Select-Object -First 1 }').trim()
+            
                     echo "Checking out branch ${latestBranch}"
                 }
             }
