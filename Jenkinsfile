@@ -5,6 +5,7 @@ pipeline {
     }
     stages {
         stage('Checkout latest branch') {
+            agent any
             steps {
                 script {
                     "git clone https://github.com/DenysMatolikov/playwright_project_1" // clone the repository to a local workspace
