@@ -50,7 +50,7 @@ pipeline {
 void runTests(String browser, String latestBranch) {
     script {
         stage("Checkout ${browser}") {
-            git url: 'https://github.com/DenysMatolikov/playwright_project_1', branch: latestBranch
+            git url: 'https://github.com/DenysMatolikov/playwright_project_1', branch: "$latestBranch"
         }
         stage("Install dependencies ${browser}") {
             bat 'npm ci'
