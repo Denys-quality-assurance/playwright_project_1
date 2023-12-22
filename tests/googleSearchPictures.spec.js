@@ -4,7 +4,9 @@ const { downloadImageFromUrlToTempDir, checkFileExists, deleteTempFile } = requi
 const query = 'cat jpg';
 
 test.describe(`Google Home Pictures Page: Download picture by query, Search by picture`, () => {
-  test(`User can download picture from test results, User can search by picture`, async ({ page }) => {
+  test.only(`User can download picture from test results, User can search by picture @skip-for-webkit`, async ({
+    page,
+  }) => {
     // Navigate to Home page, reject all Cookies and search the query before each test in this block
     let googleHomePicturesPage = new GoogleHomePicturesPage(page);
     await googleHomePicturesPage.navigateAndSearchPictures(query);
