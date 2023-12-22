@@ -1,3 +1,5 @@
+def latestBranch = ''
+
 pipeline {
     agent none // don't allocate an executor for the entire Pipeline
     environment {
