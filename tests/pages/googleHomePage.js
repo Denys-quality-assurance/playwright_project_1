@@ -8,6 +8,7 @@ class GoogleHomePage {
       searchResult: `.MjjYud >> .g`, // One search result
     };
   }
+
   // Navigate to Home page
   async navigateHome() {
     try {
