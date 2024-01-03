@@ -1,5 +1,10 @@
 module.exports = {
-  workers: 5, // up to 5 tests concurrently
+  reporter: process.env.CI
+    ? [['dot'], ['html', { outputFile: 'report.html' }]] // for CI: use concise 'dot' and 'html' reporters
+    : [['list'], ['html', { outputFile: 'report.html' }]], // fol local run: use default 'list' and 'html' reporters
+  workers: process.env.CI
+    ? [process.env.CI_WORKERS || 5] // for CI: run up to 5 tests concurrently
+    : [2], // fol local run: run up to 2 tests concurrently
   // timeout: 0, // Unlimited Timeout for debugging
   timeout: 60000, // Timeout of 60 seconds
   retries: 2, // Defines the maximum attempts to retry a test after a failure

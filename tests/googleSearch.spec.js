@@ -1,13 +1,15 @@
-const { test, expect } = require('@playwright/test');
+import { expect } from '@playwright/test';
+import test from '../hooks/testWithScreenshotsAfterEachHook.mjs';
 const GoogleHomePage = require('./pages/googleHomePage');
 const query = 'Playwright';
 const expectedLocalStorageKeys = [`sb_wiz.zpc.gws-wiz-serp.`, `_c;;i`, `ds;;frib`, `sb_wiz.qc`]; // Expected Local storage's keys
 const expectedSessionStorageKeys = [`_c;;i`]; // Expected session storage's keys
 const expectedCookiesNames = ['__Secure-ENID', 'CONSENT', 'AEC', 'SOCS', 'DV']; // Expected cookies names
 
-test.describe(`Google Home Page: Search results testing for query 'Playwright'`, () => {
+test.describe.only(`Google Home Page: Search results testing for query 'Playwright'`, () => {
   let googleHomePage;
   let page2;
+  let testInfo;
 
   // Navigate to Home page, reject all Cookies and search the query before each test in this block
   test.beforeEach(async ({ page }) => {
@@ -18,6 +20,7 @@ test.describe(`Google Home Page: Search results testing for query 'Playwright'`,
   // Close the 2nd page if it's needed
   test.afterEach(async () => {
     if (page2) {
+      console.log('page2.close');
       await page2.close();
     }
   });

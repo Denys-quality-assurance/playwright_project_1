@@ -1,4 +1,6 @@
-const { test, expect } = require('@playwright/test');
+import { expect } from '@playwright/test';
+import test from '../hooks/testWithScreenshotsAfterEachHook.mjs';
+
 const GoogleCustomSearchEnginePage = require('./pages/googleCustomSearchEngineIframe');
 const query = 'Google';
 

@@ -1,4 +1,5 @@
-const { test, expect } = require(`@playwright/test`);
+import { expect } from '@playwright/test';
+import test from '../hooks/testWithScreenshotsAfterEachHook.mjs';
 const GoogleMapsPage = require(`./pages/googleMapsPage`);
 const geoData = { longitude: 12.492507, latitude: 41.889938 }; // Rome, Italy
 
