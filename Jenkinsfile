@@ -48,8 +48,9 @@ pipeline {
     }
     post {
         always {
-        archiveArtifacts 'playwright-report'
-        echo "Playwright report generated and archived: ${env.BUILD_URL}artifact/playwright-report/index.html"
+            agent any
+            archiveArtifacts 'playwright-report/*'
+            echo "Playwright report generated and archived: ${env.BUILD_URL}artifact/playwright-report/index.html"
         }
     }
 }
