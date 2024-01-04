@@ -33,6 +33,6 @@ module.exports = {
     },
   ],
   reporter: process.env.CI
-    ? [['dot'], ['html', { outputFolder: `playwright-report}` }]] // for CI: use concise 'dot' and 'html' reporters
+    ? [['dot'], ['html', { outputFolder: 'playwright-report' }]] // for CI: use concise 'dot' and 'html' reporters
     : [['list'], ['html', { outputFolder: 'playwright-report' }]], // fol local run: use default 'list' and 'html' reporters
 };
