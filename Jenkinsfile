@@ -46,6 +46,12 @@ pipeline {
             }
         }
     }
+    post {
+        always {
+        archiveArtifacts 'playwright-report'
+        echo "Playwright report generated and archived: ${env.BUILD_URL}artifact/playwright-report/index.html"
+        }
+    }
 }
 
 void runTests(String browser, String latestBranch) {
