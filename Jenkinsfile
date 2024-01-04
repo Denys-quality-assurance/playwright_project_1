@@ -4,8 +4,8 @@ pipeline {
     agent none // don't allocate an executor for the entire Pipeline
     environment {
         PLAYWRIGHT_BROWSERS_PATH = '0' // to download browsers into the project's local node_modules folder - a directory Jenkins can read
-        CI = 'true' // to tell the script that we're in a CI/CD environment
-        CI_WORKERS = '5' // to controll the amount of workers
+        CI = true // to tell the script that we're in a CI/CD environment
+        CI_WORKERS = 5 // to controll the amount of workers
     }
     stages {
         stage('Get latest branch') {
