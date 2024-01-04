@@ -45,7 +45,7 @@ void runTests(String browser, String latestBranch) {
             //}
         }
         stage("Archive artifacts for ${browser}") {
-            archiveArtifacts "playwright-report"
+            archiveArtifacts 'playwright-report/**'
             echo "Playwright report generated and archived: ${env.BUILD_URL}artifact/playwright-report"
         }
     }
