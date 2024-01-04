@@ -28,12 +28,24 @@ pipeline {
                     steps {
                         runTests('chromium', latestBranch)
                     }
+                    post {
+                        always {
+                            archiveArtifacts 'playwright-report/*'
+                            echo "Playwright report generated and archived: ${env.BUILD_URL}artifact/playwright-report/index.html"
+                        }
+                    }
                 }
                 stage('Firefox') {
                     // agent { label 'firefox' } // specific agent for firefox tests
                     agent any
                     steps {
                         runTests('firefox', latestBranch)
+                    }
+                    post {
+                        always {
+                            archiveArtifacts 'playwright-report/*'
+                            echo "Playwright report generated and archived: ${env.BUILD_URL}artifact/playwright-report/index.html"
+                        }
                     }
                 }
                 stage('Webkit') {
@@ -42,15 +54,14 @@ pipeline {
                     steps {
                         runTests('webkit', latestBranch)
                     }
+                    post {
+                        always {
+                            archiveArtifacts 'playwright-report/*'
+                            echo "Playwright report generated and archived: ${env.BUILD_URL}artifact/playwright-report/index.html"
+                        }
+                    }
                 }
             }
-        }
-    }
-    post {
-        always {
-            agent any
-            archiveArtifacts 'playwright-report/*'
-            echo "Playwright report generated and archived: ${env.BUILD_URL}artifact/playwright-report/index.html"
         }
     }
 }
