@@ -1,6 +1,6 @@
 import { test } from '@playwright/test';
 
-test.afterEach(async ({ context }, testInfo) => {
+test.afterEach({ timeout: 120000 }, async ({ context }, testInfo) => {
   const pages = context.pages(); // get all open pages
   for (let i = 0; i < pages.length; i++) {
     const screenshotViewport = await pages[i].screenshot();

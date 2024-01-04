@@ -1,5 +1,4 @@
 node_modules/
 linkedin/
-credentials.js
 .env
 playwright-report/
