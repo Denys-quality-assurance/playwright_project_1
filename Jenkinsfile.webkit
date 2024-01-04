@@ -24,11 +24,11 @@ pipeline {
                 runTests('webkit', latestBranch)
             }
         }
-        post {
-            always {
-                archiveArtifacts "playwright-report/**"
-                echo "Playwright report generated and archived: ${env.BUILD_URL}artifact/playwright-report"
-            }
+    }
+    post {
+        always {
+            archiveArtifacts "playwright-report/**"
+            echo "Playwright report generated and archived: ${env.BUILD_URL}artifact/playwright-report"
         }
     }
 }
