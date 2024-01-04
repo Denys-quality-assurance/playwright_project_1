@@ -12,9 +12,6 @@ module.exports = {
         headless: false,
         viewport: { width: 1920, height: 1080 },
       },
-      extra: {
-        projectName: 'chromium',
-      },
     },
     {
       name: 'firefox',
@@ -23,9 +20,6 @@ module.exports = {
         browserName: 'firefox',
         headless: false,
         viewport: { width: 1920, height: 1080 },
-      },
-      extra: {
-        projectName: 'firefox',
       },
     },
     {
@@ -36,12 +30,9 @@ module.exports = {
         headless: false,
         viewport: { width: 1920, height: 1080 },
       },
-      extra: {
-        projectName: 'webkit',
-      },
     },
   ],
   reporter: process.env.CI
-    ? [['dot'], ['html', { outputFolder: `playwright-report/${playwright._options.extra.projectName}` }]] // for CI: use concise 'dot' and 'html' reporters
+    ? [['dot'], ['html', { outputFolder: `playwright-report}` }]] // for CI: use concise 'dot' and 'html' reporters
     : [['list'], ['html', { outputFolder: 'playwright-report' }]], // fol local run: use default 'list' and 'html' reporters
 };
