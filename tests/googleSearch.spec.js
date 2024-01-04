@@ -20,7 +20,6 @@ test.describe.only(`Google Home Page: Search results testing for query 'Playwrig
   // Close the 2nd page if it's needed
   test.afterEach(async () => {
     if (page2) {
-      console.log('page2.close');
       await page2.close();
     }
   });
@@ -98,7 +97,6 @@ test.describe.only(`Google Home Page: Search results testing for query 'Playwrig
     // Check if the search request value stored in the session storage
     const sessionStorageData = await googleHomePage.getSessionStorage();
     const searchRequest = '/search?q=' + query;
-    console.log(searchRequest);
     const isSearchRequestStoredInSession = googleHomePage.checkIfValueExists(sessionStorageData, searchRequest);
 
     expect(isSearchRequestStoredInSession).toBe(true, `Search request value is not stored in the session storage`);
