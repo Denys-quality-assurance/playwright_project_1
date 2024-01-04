@@ -1,7 +1,4 @@
 module.exports = {
-  reporter: process.env.CI
-    ? [['dot'], ['html', { outputFolder: 'playwright-report' }]] // for CI: use concise 'dot' and 'html' reporters
-    : [['list'], ['html', { outputFolder: 'playwright-report' }]], // fol local run: use default 'list' and 'html' reporters
   workers: parseInt(process.env.CI_WORKERS, 10) || 2, // for CI: run up to CI_WORKERS tests concurrently; for local run: run up to 2 tests concurrently
   // timeout: 0, // Unlimited Timeout for debugging
   timeout: 60000, // Timeout of 60 seconds
@@ -35,4 +32,7 @@ module.exports = {
       },
     },
   ],
+  reporter: process.env.CI
+    ? [['dot'], ['html', { outputFolder: `playwright-report/${browser.name}` }]] // for CI: use concise 'dot' and 'html' reporters
+    : [['list'], ['html', { outputFolder: 'playwright-report' }]], // fol local run: use default 'list' and 'html' reporters
 };

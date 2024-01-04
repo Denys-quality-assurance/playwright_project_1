@@ -31,7 +31,7 @@ pipeline {
                     post {
                         always {
                             archiveArtifacts 'playwright-report/**'
-                            echo "Playwright report generated and archived: ${env.BUILD_URL}artifact/playwright-report/index.html"
+                            echo "Playwright report generated and archived: ${env.BUILD_URL}artifact/playwright-report"
                         }
                     }
                 }
@@ -44,7 +44,7 @@ pipeline {
                     post {
                         always {
                             archiveArtifacts 'playwright-report/**'
-                            echo "Playwright report generated and archived: ${env.BUILD_URL}artifact/playwright-report/index.html"
+                            echo "Playwright report generated and archived: ${env.BUILD_URL}artifact/playwright-report"
                         }
                     }
                 }
@@ -57,7 +57,7 @@ pipeline {
                     post {
                         always {
                             archiveArtifacts 'playwright-report/**'
-                            echo "Playwright report generated and archived: ${env.BUILD_URL}artifact/playwright-report/index.html"
+                            echo "Playwright report generated and archived: ${env.BUILD_URL}artifact/playwright-report"
                         }
                     }
                 }
