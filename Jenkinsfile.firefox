@@ -24,6 +24,12 @@ pipeline {
                 runTests('firefox', latestBranch)
             }
         }
+        post {
+            always {
+                archiveArtifacts "playwright-report/**"
+                echo "Playwright report generated and archived: ${env.BUILD_URL}artifact/playwright-report"
+            }
+        }
     }
 }
 
@@ -44,9 +50,9 @@ void runTests(String browser, String latestBranch) {
             bat "npx playwright test tests/ --project=${browser}"
             //}
         }
-        stage("Archive artifacts for ${browser}") {
-            archiveArtifacts "playwright-report/**"
-            echo "Playwright report generated and archived: ${env.BUILD_URL}artifact/playwright-report"
-        }
+        // stage("Archive artifacts for ${browser}") {
+        //     archiveArtifacts "playwright-report/**"
+        //     echo "Playwright report generated and archived: ${env.BUILD_URL}artifact/playwright-report"
+        // }
     }
 }
