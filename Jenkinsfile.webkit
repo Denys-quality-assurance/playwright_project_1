@@ -1,7 +1,7 @@
 def latestBranch = ''
 
 pipeline {
-    agent none // don't allocate an executor for the entire Pipeline
+    agent any
     environment {
         PLAYWRIGHT_BROWSERS_PATH = '0' // to download browsers into the project's local node_modules folder - a directory Jenkins can read
         CI = 'true' // to tell the script that we're in a CI/CD environment
@@ -9,7 +9,6 @@ pipeline {
     }
     stages {
         stage('Get latest branch') {
-            agent any
             steps {
                 script {
                     "git clone https://github.com/DenysMatolikov/playwright_project_1" // clone the repository to a local workspace
@@ -21,46 +20,8 @@ pipeline {
             }
         }
         stage('Run tests') {
-            parallel {
-                stage('Chromium') {
-                    // agent { label 'chromium' } // specific agent for chromium tests
-                    agent any
-                    steps {
-                        runTests('chromium', latestBranch)
-                    }
-                    post {
-                        always {
-                            archiveArtifacts 'playwright-report/**'
-                            echo "Playwright report generated and archived: ${env.BUILD_URL}artifact/playwright-report"
-                        }
-                    }
-                }
-                stage('Firefox') {
-                    // agent { label 'firefox' } // specific agent for firefox tests
-                    agent any
-                    steps {
-                        runTests('firefox', latestBranch)
-                    }
-                    post {
-                        always {
-                            archiveArtifacts 'playwright-report/**'
-                            echo "Playwright report generated and archived: ${env.BUILD_URL}artifact/playwright-report"
-                        }
-                    }
-                }
-                stage('Webkit') {
-                    // agent { label 'webkit' } // specific agent for webkit tests
-                    agent any
-                    steps {
-                        runTests('webkit', latestBranch)
-                    }
-                    post {
-                        always {
-                            archiveArtifacts 'playwright-report/**'
-                            echo "Playwright report generated and archived: ${env.BUILD_URL}artifact/playwright-report"
-                        }
-                    }
-                }
+            steps {
+                runTests('webkit', latestBranch)
             }
         }
     }
@@ -82,6 +43,10 @@ void runTests(String browser, String latestBranch) {
             // withCredentials([usernamePassword(credentialsId: 'credentials', passwordVariable: 'PASSWORD', usernameVariable: 'EMAIL')]){    
             bat "npx playwright test tests/ --project=${browser}"
             //}
+        }
+        stage("Archive artifacts for ${browser}") {
+            archiveArtifacts "playwright-report/**"
+            echo "Playwright report generated and archived: ${env.BUILD_URL}artifact/playwright-report"
         }
     }
 }
