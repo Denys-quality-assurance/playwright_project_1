@@ -11,7 +11,7 @@ pipeline {
         stage('Get latest branch') {
             steps {
                 script {
-                    "git clone https://github.com/DenysMatolikov/playwright_project_1" // clone the repository to a local workspace
+                    "git clone https://github.com/Denys-quality-assurance/playwright_project_1" // clone the repository to a local workspace
                     // takes the first line of output; because we've sorted by committerdate, this will be the most recently updated branch
                     def fullBranchName = powershell(returnStdout: true, script: 'git for-each-ref --sort=-committerdate --format="%(refname:short)" refs/remotes/origin | Select-Object -First 1').trim()
                         latestBranch = fullBranchName - 'origin/'
@@ -31,7 +31,7 @@ void runTests(String browser, String latestBranch) {
     script {
         stage("Checkout ${browser}") {
             echo "Checking out branch ${latestBranch}"
-            git url: 'https://github.com/DenysMatolikov/playwright_project_1', branch: "${latestBranch}"
+            git url: 'https://github.com/Denys-quality-assurance/playwright_project_1', branch: "${latestBranch}"
         }
         stage("Install dependencies ${browser}") {
             bat 'npm ci'
