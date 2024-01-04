@@ -6,10 +6,9 @@ const expectedLocalStorageKeys = [`sb_wiz.zpc.gws-wiz-serp.`, `_c;;i`, `ds;;frib
 const expectedSessionStorageKeys = [`_c;;i`]; // Expected session storage's keys
 const expectedCookiesNames = ['__Secure-ENID', 'CONSENT', 'AEC', 'SOCS', 'DV']; // Expected cookies names
 
-test.describe.only(`Google Home Page: Search results testing for query 'Playwright'`, () => {
+test.describe(`Google Home Page: Search results testing for query 'Playwright'`, () => {
   let googleHomePage;
   let page2;
-  let testInfo;
 
   // Navigate to Home page, reject all Cookies and search the query before each test in this block
   test.beforeEach(async ({ page }) => {
