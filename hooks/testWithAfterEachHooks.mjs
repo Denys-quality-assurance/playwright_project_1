@@ -10,6 +10,14 @@ test.afterEach({ timeout: 120000 }, async ({ context }, testInfo) => {
     await testInfo.attach(`viewport_screenshot_of_Page_${i}`, { body: screenshotViewport, contentType: 'image/png' });
     // await testInfo.attach(`fullpage_screenshot_of_Page_${i}`, { body: screenshotFullPage, contentType: 'image/png' }); // Add fullPage screenshots for debugging
   }
+
+  // Close the pages
+  for (let i = 0; i < pages.length; i++) {
+    await pages[i].close();
+  }
+
+  // Close the context
+  await context.close();
 });
 
 export default test;

@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import test from '../hooks/testWithScreenshotsAfterEachHook.mjs';
+import test from '../hooks/testWithAfterEachHooks.mjs';
 const GoogleHomePicturesPage = require('./pages/googleHomePicturesPage');
 const { downloadImageFromUrlToTempDir, checkFileExists, deleteTempFile } = require('../utilities/fileSystemHelpers');
 const query = 'cat jpg';

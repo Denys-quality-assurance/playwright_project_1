@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import test from '../hooks/testWithScreenshotsAfterEachHook.mjs';
+import test from '../hooks/testWithAfterEachHooks.mjs';
 const GoogleHomePage = require('./pages/googleHomePage');
 const query = 'Playwright';
 const expectedLocalStorageKeys = [`sb_wiz.zpc.gws-wiz-serp.`, `_c;;i`, `ds;;frib`, `sb_wiz.qc`]; // Expected Local storage's keys
@@ -14,13 +14,6 @@ test.describe(`Google Home Page: Search results testing for query 'Playwright'`,
   test.beforeEach(async ({ page }) => {
     googleHomePage = new GoogleHomePage(page);
     await googleHomePage.navigateAndSearch(query);
-  });
-
-  // Close the 2nd page if it's needed
-  test.afterEach(async () => {
-    if (page2) {
-      await page2.close();
-    }
   });
 
   test(`Google search results page contains query`, async () => {

@@ -1,9 +1,9 @@
 import { expect } from '@playwright/test';
-import test from '../hooks/testWithScreenshotsAfterEachHook.mjs';
+import test from '../hooks/testWithAfterEachHooks.mjs';
 const GoogleMapsPage = require(`./pages/googleMapsPage`);
 const geoData = { longitude: 12.492507, latitude: 41.889938 }; // Rome, Italy
 
-test.describe('Geolocation Tests @skip-for-firefox', () => {
+test.describe.only('Geolocation Tests @skip-for-firefox', () => {
   let context;
   let page;
   let googleMapsPage;
@@ -19,12 +19,6 @@ test.describe('Geolocation Tests @skip-for-firefox', () => {
     page = await context.newPage();
     googleMapsPage = new GoogleMapsPage(page);
     await googleMapsPage.openGoogleMaps();
-  });
-
-  // Close the 2nd page if it's needed
-  test.afterEach(async () => {
-    // Close the context once done
-    await context.close();
   });
 
   // Check that URL contains geolocation data
