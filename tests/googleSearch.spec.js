@@ -7,7 +7,7 @@ const expectedLocalStorageKeys = [`sb_wiz.zpc.gws-wiz-serp.`, `_c;;i`, `ds;;frib
 const expectedSessionStorageKeys = [`_c;;i`]; // Expected session storage's keys
 const expectedCookiesNames = ['__Secure-ENID', 'CONSENT', 'AEC', 'SOCS', 'DV']; // Expected cookies names
 
-test.describe.only(`Google Home Page: Search results testing for '${query}' query`, () => {
+test.describe(`Google Home Page: Search results testing for '${query}' query`, () => {
   let page; // Page instance
   let googleHomePage; // Page object instance
 
@@ -133,7 +133,7 @@ test.describe.only(`Google Home Page: Search results testing for '${query}' quer
   });
 
   queryData.forEach((data) => {
-    test.only(`Page title contains '${data.query}' query`, async ({}) => {
+    test(`Page title contains '${data.query}' query`, async ({}) => {
       // Search for query
       await googleHomePage.searchFor(data.query);
       const title = await googleHomePage.getPageTitle();
