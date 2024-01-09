@@ -2,7 +2,10 @@ import { test as base } from '@playwright/test';
 
 const test = base.extend({
   sharedContext: async ({ browser }, use) => {
-    const context = await browser.newContext();
+    const context = await browser.newContext({
+      permissions: [`geolocation`], // Allow Google to track the geolocation
+      ignoreHTTPSErrors: true,
+    });
     await use(context);
     await context.close();
   },

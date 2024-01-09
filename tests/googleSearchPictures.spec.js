@@ -5,11 +5,17 @@ const { downloadImageFromUrlToTempDir, checkFileExists, deleteTempFile } = requi
 const query = 'cat jpg';
 
 test.describe(`Google Home Pictures Page: Download picture by query, Search by picture`, () => {
-  test(`User can download picture from test results, User can search by picture @skip-for-webkit`, async ({ page }) => {
-    // Navigate to Home page, reject all Cookies and search the query before each test in this block
-    let googleHomePicturesPage = new GoogleHomePicturesPage(page);
-    await googleHomePicturesPage.navigateAndSearchPictures(query);
+  let page; // Page instance
+  let googleHomePicturesPage; // Page object instance
 
+  // Navigate to Home page, reject all Cookies and search the query before each test in this block
+  test.beforeEach(async ({ sharedContext }) => {
+    page = await sharedContext.newPage();
+    googleHomePicturesPage = new GoogleHomePicturesPage(page);
+    await googleHomePicturesPage.navigateAndSearchPictures(query);
+  });
+
+  test(`User can download picture from test results, User can search by picture @skip-for-webkit`, async ({}) => {
     // Get text from the 1st search result
     const pictureDescription = await page.$eval(
       googleHomePicturesPage.selectors.firstSearchResultText,

@@ -40,6 +40,13 @@ class GoogleMapsPage {
   async goToMyLocation() {
     await this.page.click(this.selectors.myPlaceButton);
     await this.page.waitForNavigation();
+    // Waiting for search result page to appear
+    await this.page.waitForLoadState('networkidle');
+  }
+
+  // Get page url
+  getPageUrl() {
+    return this.page.url();
   }
 }
 

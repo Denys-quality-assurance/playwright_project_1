@@ -5,10 +5,11 @@ const GoogleCustomSearchEnginePage = require('./pages/googleCustomSearchEngineIf
 const query = 'Google';
 
 test.describe(`Google Custom Search Engine: Search results testing for query 'Google'`, () => {
-  let googleCSEPage;
+  let googleCSEPage; // Page object instance
 
   // Navigate to Google Custom Search Engine page and init iFrame
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ sharedContext }) => {
+    const page = await sharedContext.newPage();
     googleCSEPage = new GoogleCustomSearchEnginePage(page);
     await googleCSEPage.init();
   });
