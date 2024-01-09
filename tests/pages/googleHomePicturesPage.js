@@ -1,4 +1,4 @@
-class GoogleHomePicturesPage {
+export default class GoogleHomePicturesPage {
   constructor(page) {
     this.page = page;
     this.selectors = {
@@ -149,5 +149,3 @@ class GoogleHomePicturesPage {
     }
   }
 }
-
-module.exports = GoogleHomePicturesPage;

@@ -1,7 +1,18 @@
-import { test } from '@playwright/test';
+import { test as base } from '@playwright/test';
 
-test.afterEach({ timeout: 120000 }, async ({ context }, testInfo) => {
-  const pages = context.pages(); // get all open pages
+const test = base.extend({
+  sharedContext: async ({ browser }, use) => {
+    const context = await browser.newContext({
+      permissions: [`geolocation`], // Allow Google to track the geolocation
+      ignoreHTTPSErrors: true,
+    });
+    await use(context);
+    await context.close();
+  },
+});
+
+test.afterEach({ timeout: 120000 }, async ({ sharedContext }, testInfo) => {
+  const pages = sharedContext.pages(); // get all open pages
   for (let i = 0; i < pages.length; i++) {
     // Add viewport screenshots as attachments to HTML report
     const screenshotViewport = await pages[i].screenshot();

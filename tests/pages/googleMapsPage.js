@@ -1,4 +1,4 @@
-class GoogleMapsPage {
+export default class GoogleMapsPage {
   constructor(page) {
     this.page = page;
     this.selectors = {
@@ -39,8 +39,12 @@ class GoogleMapsPage {
   // Go to My Place
   async goToMyLocation() {
     await this.page.click(this.selectors.myPlaceButton);
-    await this.page.waitForNavigation();
+    // Waiting for search result page to appear
+    await this.page.waitForLoadState('networkidle');
+  }
+
+  // Get page url
+  getPageUrl() {
+    return this.page.url();
   }
 }
-
-module.exports = GoogleMapsPage;

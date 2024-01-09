@@ -1,26 +1,20 @@
 import { expect } from '@playwright/test';
-import test from '../hooks/testWithScreenshotsAfterEachHook.mjs';
-const GoogleHomePage = require('./pages/googleHomePage');
+import test from '../hooks/testWithAfterEachHooks.mjs';
+import GoogleHomePage from './pages/googleHomePage';
 const query = 'Playwright';
 const expectedLocalStorageKeys = [`sb_wiz.zpc.gws-wiz-serp.`, `_c;;i`, `ds;;frib`, `sb_wiz.qc`]; // Expected Local storage's keys
 const expectedSessionStorageKeys = [`_c;;i`]; // Expected session storage's keys
 const expectedCookiesNames = ['__Secure-ENID', 'CONSENT', 'AEC', 'SOCS', 'DV']; // Expected cookies names
 
 test.describe(`Google Home Page: Search results testing for query 'Playwright'`, () => {
-  let googleHomePage;
-  let page2;
+  let page; // Page instance
+  let googleHomePage; // Page object instance
 
   // Navigate to Home page, reject all Cookies and search the query before each test in this block
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ sharedContext }) => {
+    page = await sharedContext.newPage();
     googleHomePage = new GoogleHomePage(page);
     await googleHomePage.navigateAndSearch(query);
-  });
-
-  // Close the 2nd page if it's needed
-  test.afterEach(async () => {
-    if (page2) {
-      await page2.close();
-    }
   });
 
   test(`Google search results page contains query`, async () => {
@@ -42,9 +36,9 @@ test.describe(`Google Home Page: Search results testing for query 'Playwright'`,
     );
   });
 
-  test(`Compare search results from two pages with the same query`, async ({ context }) => {
+  test(`Compare search results from two pages with the same query`, async ({ sharedContext }) => {
     // Create the 2nd page, navigate to Home page and search the query
-    const page2 = await context.newPage();
+    const page2 = await sharedContext.newPage();
     const googleHomePage2 = new GoogleHomePage(page2);
     await googleHomePage2.navigateAndSearch(query);
 
@@ -63,7 +57,7 @@ test.describe(`Google Home Page: Search results testing for query 'Playwright'`,
     );
   });
 
-  test(`Check local storage content`, async ({ page }) => {
+  test(`Check local storage content`, async ({}) => {
     // Check that all expected keys included to the Local storage
     let localStorageHasKeys = await googleHomePage.checkIfAllKeysExist(
       googleHomePage.getLocalStorageItemsByKeys,
@@ -83,7 +77,7 @@ test.describe(`Google Home Page: Search results testing for query 'Playwright'`,
     expect(localStorageValuesNotEmpty).toBe(true, `At least 1 local storage value is empty`);
   });
 
-  test(`Check session storage content`, async ({ page }) => {
+  test(`Check session storage content`, async ({}) => {
     // Check that all expected keys included to the Session storage
     let sessionStorageHasKeys = await googleHomePage.checkIfAllKeysExist(
       googleHomePage.getSessionStorageItemsByKeys,

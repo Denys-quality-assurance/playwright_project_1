@@ -1,4 +1,4 @@
-class GoogleCustomSearchEnginePage {
+export default class GoogleCustomSearchEnginePage {
   constructor(page) {
     this.page = page;
     this.frame = null;
@@ -85,5 +85,3 @@ class GoogleCustomSearchEnginePage {
     }
   }
 }
-
-module.exports = GoogleCustomSearchEnginePage;
