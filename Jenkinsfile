@@ -30,10 +30,8 @@ pipeline {
     }
     post {
         always {
-            stage("Archive artifacts for ${params.BROWSER}") {
-                archiveArtifacts 'playwright-report/**'
-                echo "Playwright report generated and archived: ${env.BUILD_URL}artifact/playwright-report"
-            }
+            archiveArtifacts 'playwright-report/**'
+            echo "Playwright report generated and archived: ${env.BUILD_URL}artifact/playwright-report"
         }
     }
 }
