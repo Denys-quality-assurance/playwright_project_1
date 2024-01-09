@@ -3,7 +3,7 @@ def latestBranch = ''
 pipeline {
     agent any
     parameters {
-        choice(name: 'BROWSER', choices: ['chromium', 'firefox', 'webkit'], description: 'Select browser to test')
+        choice(name: 'BROWSER')
     }
     environment {
         PLAYWRIGHT_BROWSERS_PATH = '0' // to download browsers into the project's local node_modules folder - a directory Jenkins can read
