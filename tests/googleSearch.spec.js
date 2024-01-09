@@ -36,7 +36,7 @@ test.describe(`Google Home Page: Search results testing for query 'Playwright'`,
     );
   });
 
-  test.only(
+  test(
     `Compare search results from two pages with the same query`,
     async ({ sharedContext }) => {
       // Create the 2nd page, navigate to Home page and search the query
