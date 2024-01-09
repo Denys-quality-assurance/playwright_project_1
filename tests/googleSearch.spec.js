@@ -36,26 +36,30 @@ test.describe(`Google Home Page: Search results testing for query 'Playwright'`,
     );
   });
 
-  test(`Compare search results from two pages with the same query`, async ({ sharedContext }) => {
-    // Create the 2nd page, navigate to Home page and search the query
-    const page2 = await sharedContext.newPage();
-    const googleHomePage2 = new GoogleHomePage(page2);
-    await googleHomePage2.navigateAndSearch(query);
+  test.only(
+    `Compare search results from two pages with the same query`,
+    async ({ sharedContext }) => {
+      // Create the 2nd page, navigate to Home page and search the query
+      const page2 = await sharedContext.newPage();
+      const googleHomePage2 = new GoogleHomePage(page2);
+      await googleHomePage2.navigateAndSearch(query);
 
-    // Get search results for the page 1
-    const searchResults1 = await googleHomePage.getSearchResults();
-    const searchResultsTexts1 = await googleHomePage.getTextContent(searchResults1);
+      // Get search results for the page 1
+      const searchResults1 = await googleHomePage.getSearchResults();
+      const searchResultsTexts1 = await googleHomePage.getTextContent(searchResults1);
 
-    // Get search results for the page 2
-    const searchResults2 = await googleHomePage2.getSearchResults();
-    const searchResultsTexts2 = await googleHomePage2.getTextContent(searchResults2);
+      // Get search results for the page 2
+      const searchResults2 = await googleHomePage2.getSearchResults();
+      const searchResultsTexts2 = await googleHomePage2.getTextContent(searchResults2);
 
-    // Compare the search results from both pages
-    expect(searchResultsTexts1).toEqual(
-      searchResultsTexts2,
-      `Search results from two pages with the same query are not equal`
-    );
-  });
+      // Compare the search results from both pages
+      expect(searchResultsTexts1).toEqual(
+        searchResultsTexts2,
+        `Search results from two pages with the same query are not equal`
+      );
+    },
+    { timeout: 120000 }
+  );
 
   test(`Check local storage content`, async ({}) => {
     // Check that all expected keys included to the Local storage

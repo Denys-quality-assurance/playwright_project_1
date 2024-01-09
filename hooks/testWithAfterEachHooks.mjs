@@ -8,7 +8,7 @@ const test = base.extend({
   },
 });
 
-test.afterEach({ timeout: 120000 }, async ({ sharedContext }, testInfo) => {
+test.afterEach(async ({ sharedContext }, testInfo) => {
   const pages = sharedContext.pages(); // get all open pages
   for (let i = 0; i < pages.length; i++) {
     // Add viewport screenshots as attachments to HTML report
