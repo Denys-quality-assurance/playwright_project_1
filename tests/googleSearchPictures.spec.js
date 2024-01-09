@@ -2,9 +2,10 @@ import { expect } from '@playwright/test';
 import test from '../hooks/testWithAfterEachHooks.mjs';
 import GoogleHomePicturesPage from './pages/googleHomePicturesPage';
 import { downloadImageFromUrlToTempDir, checkFileExists, deleteTempFile } from '../utilities/fileSystemHelpers';
-const query = 'cat jpg';
+import queryData from './test-data/queryData.json';
+const query = queryData[2].query;
 
-test.describe(`Google Home Pictures Page: Download picture by query, Search by picture`, () => {
+test.describe(`Google Home Pictures Page: Download picture by '${query}' query, Search by picture`, () => {
   let page; // Page instance
   let googleHomePicturesPage; // Page object instance
 

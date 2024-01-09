@@ -1,12 +1,13 @@
 import { expect } from '@playwright/test';
 import test from '../hooks/testWithAfterEachHooks.mjs';
 import GoogleHomePage from './pages/googleHomePage';
-const query = 'Playwright';
+import queryData from './test-data/queryData.json';
+const query = queryData[1].query;
 const expectedLocalStorageKeys = [`sb_wiz.zpc.gws-wiz-serp.`, `_c;;i`, `ds;;frib`, `sb_wiz.qc`]; // Expected Local storage's keys
 const expectedSessionStorageKeys = [`_c;;i`]; // Expected session storage's keys
 const expectedCookiesNames = ['__Secure-ENID', 'CONSENT', 'AEC', 'SOCS', 'DV']; // Expected cookies names
 
-test.describe(`Google Home Page: Search results testing for query 'Playwright'`, () => {
+test.describe(`Google Home Page: Search results testing for '${query}' query`, () => {
   let page; // Page instance
   let googleHomePage; // Page object instance
 
@@ -17,26 +18,26 @@ test.describe(`Google Home Page: Search results testing for query 'Playwright'`,
     await googleHomePage.navigateAndSearch(query);
   });
 
-  test(`Google search results page contains query`, async () => {
+  test(`Google search results page contains '${query}' query`, async () => {
     // Check if each search result actually contains query in its text
     const searchResults = await googleHomePage.getSearchResults();
     const doesEachSearchResultContainQuery = await googleHomePage.checkIfSearchResultsContainQuery(
       searchResults,
       query
     );
-    expect(doesEachSearchResultContainQuery).toBe(true, 'At least one search result does not contain the query');
+    expect(doesEachSearchResultContainQuery).toBe(true, `At least one search result does not contain '${query}' query`);
   });
 
-  test(`Google search results page contains more than 10 results for 'Playwright' query`, async () => {
-    // Checking if the search results page contains more than 10 results for 'Playwright' query
+  test(`Google search results page contains more than 10 results for '${query}' query`, async () => {
+    // Checking if the search results page contains more than 10 results for the query
     const searchResults = await googleHomePage.getSearchResults();
     expect(searchResults.length).toBeGreaterThan(
       10,
-      `Search results page doesn't contain more than 10 results for 'Playwright' query`
+      `Search results page doesn't contain more than 10 results for '${query}' query`
     );
   });
 
-  test(`Compare search results from two pages with the same query`, async ({ sharedContext }) => {
+  test(`Compare search results from two pages with the same '${query}' query`, async ({ sharedContext }) => {
     test.setTimeout(30000);
     // Create the 2nd page, navigate to Home page and search the query
     const page2 = await sharedContext.newPage();
@@ -54,7 +55,7 @@ test.describe(`Google Home Page: Search results testing for query 'Playwright'`,
     // Compare the search results from both pages
     expect(searchResultsTexts1).toEqual(
       searchResultsTexts2,
-      `Search results from two pages with the same query are not equal`
+      `Search results from two pages with the same '${query}' query are not equal`
     );
   });
 
