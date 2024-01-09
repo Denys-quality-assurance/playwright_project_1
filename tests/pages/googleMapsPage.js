@@ -39,6 +39,7 @@ export default class GoogleMapsPage {
   // Go to My Place
   async goToMyLocation() {
     await this.page.click(this.selectors.myPlaceButton);
+    await this.page.waitForNavigation();
     // Waiting for search result page to appear
     await this.page.waitForLoadState('networkidle');
   }
