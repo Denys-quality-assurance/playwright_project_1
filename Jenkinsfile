@@ -2,6 +2,9 @@ def latestBranch = ''
 
 pipeline {
     agent any
+    parameters { 
+        string(name: 'BROWSER', defaultValue: 'chromium', description: 'Browser to run the tests') 
+    }
     environment {
         PLAYWRIGHT_BROWSERS_PATH = '0' // to download browsers into the project's local node_modules folder - a directory Jenkins can read
         CI = 'true' // to tell the script that we're in a CI/CD environment
