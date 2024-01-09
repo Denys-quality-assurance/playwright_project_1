@@ -26,6 +26,14 @@ pipeline {
             steps {
                 runTests("${params.BROWSER}", latestBranch)
             }
+            post {
+                always {
+                    stage("Archive artifacts for ${params.BROWSER}") {
+                        archiveArtifacts 'playwright-report/**'
+                        echo "Playwright report generated and archived: ${env.BUILD_URL}artifact/playwright-report"
+                    }
+                }
+            }
         }
     }
 }
@@ -46,10 +54,6 @@ void runTests(String browser, String latestBranch) {
             // withCredentials([usernamePassword(credentialsId: 'credentials', passwordVariable: 'PASSWORD', usernameVariable: 'EMAIL')]){    
             bat "npx playwright test tests/ --project=${browser}"
             //}
-        }
-        stage("Archive artifacts for ${browser}") {
-            archiveArtifacts 'playwright-report/**'
-            echo "Playwright report generated and archived: ${env.BUILD_URL}artifact/playwright-report"
         }
     }
 }
