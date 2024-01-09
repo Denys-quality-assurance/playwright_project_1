@@ -1,12 +1,13 @@
 import { expect } from '@playwright/test';
 import test from '../hooks/testWithAfterEachHooks.mjs';
 import GoogleHomePage from './pages/googleHomePage';
-const query = 'Playwright';
+import queryData from './test-data/queryData.json';
+const query = queryData[1].query;
 const expectedLocalStorageKeys = [`sb_wiz.zpc.gws-wiz-serp.`, `_c;;i`, `ds;;frib`, `sb_wiz.qc`]; // Expected Local storage's keys
 const expectedSessionStorageKeys = [`_c;;i`]; // Expected session storage's keys
 const expectedCookiesNames = ['__Secure-ENID', 'CONSENT', 'AEC', 'SOCS', 'DV']; // Expected cookies names
 
-test.describe(`Google Home Page: Search results testing for query 'Playwright'`, () => {
+test.describe(`Google Home Page: Search results testing for '${query}' query`, () => {
   let page; // Page instance
   let googleHomePage; // Page object instance
 
@@ -14,30 +15,37 @@ test.describe(`Google Home Page: Search results testing for query 'Playwright'`,
   test.beforeEach(async ({ sharedContext }) => {
     page = await sharedContext.newPage();
     googleHomePage = new GoogleHomePage(page);
-    await googleHomePage.navigateAndSearch(query);
+    await googleHomePage.navigateAndRejectCookies();
   });
 
-  test(`Google search results page contains query`, async () => {
+  test(`Google search results page contains '${query}' query`, async () => {
+    // Search for query
+    await googleHomePage.searchFor(query);
     // Check if each search result actually contains query in its text
     const searchResults = await googleHomePage.getSearchResults();
     const doesEachSearchResultContainQuery = await googleHomePage.checkIfSearchResultsContainQuery(
       searchResults,
       query
     );
-    expect(doesEachSearchResultContainQuery).toBe(true, 'At least one search result does not contain the query');
+    expect(doesEachSearchResultContainQuery).toBe(true, `At least one search result does not contain '${query}' query`);
   });
 
-  test(`Google search results page contains more than 10 results for 'Playwright' query`, async () => {
-    // Checking if the search results page contains more than 10 results for 'Playwright' query
+  test(`Google search results page contains more than 10 results for '${query}' query`, async () => {
+    // Search for query
+    await googleHomePage.searchFor(query);
+    // Checking if the search results page contains more than 10 results for the query
     const searchResults = await googleHomePage.getSearchResults();
     expect(searchResults.length).toBeGreaterThan(
       10,
-      `Search results page doesn't contain more than 10 results for 'Playwright' query`
+      `Search results page doesn't contain more than 10 results for '${query}' query`
     );
   });
 
-  test(`Compare search results from two pages with the same query`, async ({ sharedContext }) => {
-    test.setTimeout(120000);
+  test(`Compare search results from two pages with the same '${query}' query`, async ({ sharedContext }) => {
+    test.setTimeout(30000);
+    // Search for query
+    await googleHomePage.searchFor(query);
+
     // Create the 2nd page, navigate to Home page and search the query
     const page2 = await sharedContext.newPage();
     const googleHomePage2 = new GoogleHomePage(page2);
@@ -54,11 +62,13 @@ test.describe(`Google Home Page: Search results testing for query 'Playwright'`,
     // Compare the search results from both pages
     expect(searchResultsTexts1).toEqual(
       searchResultsTexts2,
-      `Search results from two pages with the same query are not equal`
+      `Search results from two pages with the same '${query}' query are not equal`
     );
   });
 
   test(`Check local storage content`, async ({}) => {
+    // Search for query
+    await googleHomePage.searchFor(query);
     // Check that all expected keys included to the Local storage
     let localStorageHasKeys = await googleHomePage.checkIfAllKeysExist(
       googleHomePage.getLocalStorageItemsByKeys,
@@ -79,6 +89,8 @@ test.describe(`Google Home Page: Search results testing for query 'Playwright'`,
   });
 
   test(`Check session storage content`, async ({}) => {
+    // Search for query
+    await googleHomePage.searchFor(query);
     // Check that all expected keys included to the Session storage
     let sessionStorageHasKeys = await googleHomePage.checkIfAllKeysExist(
       googleHomePage.getSessionStorageItemsByKeys,
@@ -106,6 +118,8 @@ test.describe(`Google Home Page: Search results testing for query 'Playwright'`,
   });
 
   test(`Check cookies content`, async ({}) => {
+    // Search for query
+    await googleHomePage.searchFor(query);
     // Check that all expected names included to the cookies
     const cookies = await googleHomePage.getCookies();
     const cookieNames = cookies.map((cookie) => cookie.name);
@@ -116,5 +130,14 @@ test.describe(`Google Home Page: Search results testing for query 'Playwright'`,
     // Check that all cookies have non-empty values
     const cookiesValuesNotEmpty = cookies.every((cookie) => cookie.value !== '');
     expect(cookiesValuesNotEmpty).toBe(true, `At least 1 cookie value is empty`);
+  });
+
+  queryData.forEach((data) => {
+    test(`Page title contains '${data.query}' query`, async ({}) => {
+      // Search for query
+      await googleHomePage.searchFor(data.query);
+      const title = await googleHomePage.getPageTitle();
+      expect(title).toContain(data.query, `Page title doesn't contain '${data.query}' query`);
+    });
   });
 });

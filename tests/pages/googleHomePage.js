@@ -230,4 +230,13 @@ export default class GoogleHomePage {
       console.error(`Failed to check if all expected items included to the array: ${error.message}`);
     }
   }
+
+  // Get page title
+  async getPageTitle() {
+    try {
+      return await this.page.title();
+    } catch (error) {
+      console.error(`Failed to get page title: ${error.message}`);
+    }
+  }
 }
