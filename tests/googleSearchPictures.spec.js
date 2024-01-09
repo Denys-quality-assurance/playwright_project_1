@@ -4,7 +4,7 @@ import GoogleHomePicturesPage from './pages/googleHomePicturesPage';
 import { downloadImageFromUrlToTempDir, checkFileExists, deleteTempFile } from '../utilities/fileSystemHelpers';
 const query = 'cat jpg';
 
-test.describe(`Google Home Pictures Page: Download picture by query, Search by picture`, () => {
+test.describe.only(`Google Home Pictures Page: Download picture by query, Search by picture`, () => {
   let page; // Page instance
   let googleHomePicturesPage; // Page object instance
 
