@@ -1,7 +1,6 @@
 import { expect } from '@playwright/test';
 import test from '../hooks/testWithAfterEachHooks.mjs';
-
-const GoogleCustomSearchEnginePage = require('./pages/googleCustomSearchEngineIframe');
+import GoogleCustomSearchEnginePage from './pages/googleCustomSearchEngineIframe';
 const query = 'Google';
 
 test.describe(`Google Custom Search Engine: Search results testing for query 'Google'`, () => {

@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test';
 import test from '../hooks/testWithAfterEachHooks.mjs';
-const GoogleHomePicturesPage = require('./pages/googleHomePicturesPage');
-const { downloadImageFromUrlToTempDir, checkFileExists, deleteTempFile } = require('../utilities/fileSystemHelpers');
+import GoogleHomePicturesPage from './pages/googleHomePicturesPage';
+import { downloadImageFromUrlToTempDir, checkFileExists, deleteTempFile } from '../utilities/fileSystemHelpers';
 const query = 'cat jpg';
 
 test.describe(`Google Home Pictures Page: Download picture by query, Search by picture`, () => {

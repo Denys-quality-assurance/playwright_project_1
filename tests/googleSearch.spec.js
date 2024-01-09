@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
 import test from '../hooks/testWithAfterEachHooks.mjs';
-const GoogleHomePage = require('./pages/googleHomePage');
+import GoogleHomePage from './pages/googleHomePage';
 const query = 'Playwright';
 const expectedLocalStorageKeys = [`sb_wiz.zpc.gws-wiz-serp.`, `_c;;i`, `ds;;frib`, `sb_wiz.qc`]; // Expected Local storage's keys
 const expectedSessionStorageKeys = [`_c;;i`]; // Expected session storage's keys
