@@ -3,7 +3,7 @@ def latestBranch = ''
 pipeline {
     agent any
     parameters { 
-        string(name: 'BROWSER', defaultValue: params.BROWSER ?: 'chromium', description: 'Browser to run the tests') 
+        string(name: 'BROWSER', defaultValue: params.BROWSER ?: 'chromium', description: 'Browser to run the tests') // If the job already has a default value defined, it will be retained rather than overwritten
     }
     environment {
         PLAYWRIGHT_BROWSERS_PATH = '0' // to download browsers into the project's local node_modules folder - a directory Jenkins can read

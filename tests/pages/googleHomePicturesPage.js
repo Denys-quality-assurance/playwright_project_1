@@ -4,7 +4,7 @@ export default class GoogleHomePicturesPage {
     this.selectors = {
       cookiesModal: `#CXQnmb`, // Cookies consent modal
       rejectAllCookiesButton: `button#W0wltc`, // Reject all cookies button
-      picturesSearchButton: `.gb_B[href*="https://www.google.com/imghp"]`, // Pictures Search button
+      picturesSearchButton: `[href*="https://www.google.com/imghp"]`, // Pictures Search button
       searchInputTextArea: `textarea[name=q]`, // Search query imput area
       firstSearchResult: `#islrg >> [data-ri="0"]`, // 1st result in the list of results
       firstSearchResultText: `#islrg >> [data-ri="0"] >> .bytUYc`, // Text of the 1st result in the list of results
