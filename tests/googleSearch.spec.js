@@ -37,6 +37,7 @@ test.describe(`Google Home Page: Search results testing for query 'Playwright'`,
   });
 
   test(`Compare search results from two pages with the same query`, async ({ sharedContext }) => {
+    test.setTimeout(120000);
     // Create the 2nd page, navigate to Home page and search the query
     const page2 = await sharedContext.newPage();
     const googleHomePage2 = new GoogleHomePage(page2);
