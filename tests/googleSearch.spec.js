@@ -3,7 +3,11 @@ import test from '../hooks/testWithAfterEachHooks.mjs';
 import GoogleHomePage from './pages/googleHomePage';
 import queryData from './test-data/queryData.json';
 const query = queryData[1].query;
-const expectedLocalStorageKeys = [`sb_wiz.zpc.gws-wiz-serp.`, `_c;;i`, `ds;;frib`, `sb_wiz.qc`]; // Expected Local storage's keys
+const expectedLocalStorageKeysData = {
+  desktop: [`sb_wiz.zpc.gws-wiz-serp.`, `_c;;i`, `ds;;frib`, `sb_wiz.qc`], // Expected Local storage's keys for desktop
+  mobile: [`sb_wiz.zpc.`], // Expected Local storage's keys for mobile
+};
+let expectedLocalStorageKeys;
 const expectedSessionStorageKeys = [`_c;;i`]; // Expected session storage's keys
 const expectedCookiesNames = ['__Secure-ENID', 'CONSENT', 'AEC', 'SOCS', 'DV']; // Expected cookies names
 
@@ -15,6 +19,7 @@ test.describe(`Google Home Page: Search results testing for '${query}' query`, (
   test.beforeEach(async ({ sharedContext }) => {
     page = await sharedContext.newPage();
     const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
+    expectedLocalStorageKeys = isMobile ? expectedLocalStorageKeysData.mobile : expectedLocalStorageKeysData.desktop; // expectedLocalStorageKeys for mobile and for desktop
     googleHomePage = new GoogleHomePage(page, isMobile);
     await googleHomePage.navigateAndRejectCookies();
   });
