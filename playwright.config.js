@@ -1,34 +1,129 @@
+import { devices } from '@playwright/test';
+
 module.exports = {
   workers: parseInt(process.env.CI_WORKERS, 10) || 3, // for CI: run up to CI_WORKERS tests concurrently; for local run: run up to 3 tests concurrently
   // timeout: 0, // Unlimited Timeout for debugging
   timeout: 60000, // Timeout of 60 seconds
-  retries: 2, // Defines the maximum attempts to retry a test after a failure
+  retries: 0, // Defines the maximum attempts to retry a test after a failure
   projects: [
+    /* Test against desktop browsers */
     {
-      name: 'chromium',
+      name: 'Desktop Google Chrome',
       grep: /^(?!.*@skip-for-chromium).*$/, // skip tests with @skip-for-chromium
       use: {
-        browserName: 'chromium',
+        ...devices['Desktop Chrome'],
+        channel: 'chrome', // or 'chrome-beta'
         headless: false,
-        viewport: { width: 1920, height: 1080 },
       },
     },
     {
-      name: 'firefox',
-      grep: /^(?!.*@skip-for-firefox).*$/, // skip tests with @skip-for-firefox
-      use: {
-        browserName: 'firefox',
-        headless: false,
-        viewport: { width: 1920, height: 1080 },
-      },
-    },
-    {
-      name: 'webkit',
+      name: 'Desktop Webkit',
       grep: /^(?!.*@skip-for-webkit).*$/, // skip tests with @skip-for-webkit
       use: {
-        browserName: 'webkit',
+        ...devices['Desktop Safari'],
         headless: false,
-        viewport: { width: 1920, height: 1080 },
+      },
+    },
+    {
+      name: 'Desktop Microsoft Edge',
+      grep: /^(?!.*@skip-for-edge).*$/, // skip tests with @skip-for-edge
+      use: {
+        ...devices['Desktop Edge'],
+        channel: 'msedge', // or "msedge-beta" or 'msedge-dev'
+        headless: false,
+      },
+    },
+    {
+      name: 'Desktop Firefox',
+      grep: /^(?!.*@skip-for-firefox).*$/, // skip tests with @skip-for-firefox
+      use: {
+        ...devices['Desktop Firefox'],
+        headless: false,
+      },
+    },
+    /* Test against mobile viewports. */
+    {
+      name: 'iPhone 14 Safari',
+      grep: /^(?!.*@skip-for-webkit).*$/, // skip tests with @skip-for-webkit
+      use: {
+        ...devices['iPhone 14'],
+        headless: false,
+      },
+    },
+    {
+      name: 'iPhone 14 Safari landscape',
+      grep: /^(?!.*@skip-for-webkit).*$/, // skip tests with @skip-for-webkit
+      use: {
+        ...devices['iPhone 14 landscape'],
+        headless: false,
+      },
+    },
+    {
+      name: 'iPad Pro 11 Safari',
+      grep: /^(?!.*@skip-for-webkit).*$/, // skip tests with @skip-for-webkit
+      use: {
+        ...devices['iPad Pro 11'],
+        headless: false,
+      },
+    },
+    {
+      name: 'iPad Pro 11 Safari landscape',
+      grep: /^(?!.*@skip-for-webkit).*$/, // skip tests with @skip-for-webkit
+      use: {
+        ...devices['iPad Pro 11 landscape'],
+        headless: false,
+      },
+    },
+    {
+      name: 'iPad Mini Safari',
+      grep: /^(?!.*@skip-for-webkit).*$/, // skip tests with @skip-for-webkit
+      use: {
+        ...devices['iPad Mini'],
+        headless: false,
+      },
+    },
+    {
+      name: 'iPad Mini Safari landscape',
+      grep: /^(?!.*@skip-for-webkit).*$/, // skip tests with @skip-for-webkit
+      use: {
+        ...devices['iPad Mini landscape'],
+        headless: false,
+      },
+    },
+    {
+      name: 'Galaxy S9+ Chrome',
+      grep: /^(?!.*@skip-for-chromium).*$/, // skip tests with @skip-for-chromium
+      use: {
+        ...devices['Galaxy S9+'],
+        channel: 'chrome', // or 'chrome-beta'
+        headless: false,
+      },
+    },
+    {
+      name: 'Galaxy S9+ Chrome landscape',
+      grep: /^(?!.*@skip-for-chromium).*$/, // skip tests with @skip-for-chromium
+      use: {
+        ...devices['Galaxy S9+ landscape'],
+        channel: 'chrome', // or 'chrome-beta'
+        headless: false,
+      },
+    },
+    {
+      name: 'Galaxy Tab S4 Chrome',
+      grep: /^(?!.*@skip-for-chromium).*$/, // skip tests with @skip-for-chromium
+      use: {
+        ...devices['Galaxy Tab S4'],
+        channel: 'chrome', // or 'chrome-beta'
+        headless: false,
+      },
+    },
+    {
+      name: 'Galaxy Tab S4 Chrome landscape',
+      grep: /^(?!.*@skip-for-chromium).*$/, // skip tests with @skip-for-chromium
+      use: {
+        ...devices['Galaxy Tab S4 landscape'],
+        channel: 'chrome', // or 'chrome-beta'
+        headless: false,
       },
     },
   ],
