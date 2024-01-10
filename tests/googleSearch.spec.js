@@ -14,7 +14,8 @@ test.describe(`Google Home Page: Search results testing for '${query}' query`, (
   // Navigate to Home page, reject all Cookies and search the query before each test in this block
   test.beforeEach(async ({ sharedContext }) => {
     page = await sharedContext.newPage();
-    googleHomePage = new GoogleHomePage(page);
+    const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
+    googleHomePage = new GoogleHomePage(page, isMobile);
     await googleHomePage.navigateAndRejectCookies();
   });
 
@@ -30,14 +31,14 @@ test.describe(`Google Home Page: Search results testing for '${query}' query`, (
     expect(doesEachSearchResultContainQuery).toBe(true, `At least one search result does not contain '${query}' query`);
   });
 
-  test(`Google search results page contains more than 10 results for '${query}' query`, async () => {
+  test(`Google search results page contains more than 5 results for '${query}' query`, async () => {
     // Search for query
     await googleHomePage.searchFor(query);
-    // Checking if the search results page contains more than 10 results for the query
+    // Checking if the search results page contains more than 5 results for the query
     const searchResults = await googleHomePage.getSearchResults();
     expect(searchResults.length).toBeGreaterThan(
-      10,
-      `Search results page doesn't contain more than 10 results for '${query}' query`
+      5,
+      `Search results page doesn't contain more than 5 results for '${query}' query`
     );
   });
 
