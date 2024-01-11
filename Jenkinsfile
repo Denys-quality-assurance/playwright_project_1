@@ -51,7 +51,7 @@ void runTests(String project, String browser, String latestBranch) {
         }
         stage("Run tests ${project}") {
             // withCredentials([usernamePassword(credentialsId: 'credentials', passwordVariable: 'PASSWORD', usernameVariable: 'EMAIL')]){    
-            bat "npx playwright test tests/ --project='${project}'"
+            bat 'npx playwright test tests/ --project="${project}"'
             //}
         }
     }
