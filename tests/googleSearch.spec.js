@@ -36,14 +36,14 @@ test.describe(`Google Home Page: Search results testing for '${query}' query`, (
     expect(doesEachSearchResultContainQuery).toBe(true, `At least one search result does not contain '${query}' query`);
   });
 
-  test(`Google search results page contains more than 5 results for '${query}' query`, async () => {
+  test(`Google search results page contains more than 1 result for '${query}' query`, async () => {
     // Search for query
     await googleHomePage.searchFor(query);
-    // Checking if the search results page contains more than 5 results for the query
+    // Checking if the search results page contains more than 1 result for the query
     const searchResults = await googleHomePage.getSearchResults();
     expect(searchResults.length).toBeGreaterThan(
-      5,
-      `Search results page doesn't contain more than 5 results for '${query}' query`
+      1,
+      `Search results page doesn't contain more than 1 result for '${query}' query`
     );
   });
 

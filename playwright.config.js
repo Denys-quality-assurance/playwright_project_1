@@ -2,8 +2,8 @@ import { devices } from '@playwright/test';
 
 module.exports = {
   workers: parseInt(process.env.CI_WORKERS, 10) || 3, // for CI: run up to CI_WORKERS tests concurrently; for local run: run up to 3 tests concurrently
-  timeout: 0, // Unlimited Timeout for debugging
-  // timeout: 60000, // Timeout of 60 seconds
+  // timeout: 0, // Unlimited Timeout for debugging
+  timeout: 60000, // Timeout of 60 seconds
   retries: 0, // Defines the maximum attempts to retry a test after a failure
   projects: [
     /* Test against desktop browsers */
@@ -59,22 +59,6 @@ module.exports = {
       },
     },
     {
-      name: 'iPad Pro 11 Safari',
-      grep: /^(?!.*@(skip-for-webkit|skip-for-mobile)).*$/, // skip tests with @skip-for-webkit
-      use: {
-        ...devices['iPad Pro 11'],
-        headless: false,
-      },
-    },
-    {
-      name: 'iPad Pro 11 Safari landscape',
-      grep: /^(?!.*@(skip-for-webkit|skip-for-mobile)).*$/, // skip tests with @skip-for-webkit
-      use: {
-        ...devices['iPad Pro 11 landscape'],
-        headless: false,
-      },
-    },
-    {
       name: 'iPad Mini Safari',
       grep: /^(?!.*@(skip-for-webkit|skip-for-mobile)).*$/, // skip tests with @skip-for-webkit
       use: {
@@ -87,6 +71,22 @@ module.exports = {
       grep: /^(?!.*@(skip-for-webkit|skip-for-mobile)).*$/, // skip tests with @skip-for-webkit
       use: {
         ...devices['iPad Mini landscape'],
+        headless: false,
+      },
+    },
+    {
+      name: 'iPad Pro 11 Safari',
+      grep: /^(?!.*@(skip-for-webkit|skip-for-mobile)).*$/, // skip tests with @skip-for-webkit
+      use: {
+        ...devices['iPad Pro 11'],
+        headless: false,
+      },
+    },
+    {
+      name: 'iPad Pro 11 Safari landscape',
+      grep: /^(?!.*@(skip-for-webkit|skip-for-mobile)).*$/, // skip tests with @skip-for-webkit
+      use: {
+        ...devices['iPad Pro 11 landscape'],
         headless: false,
       },
     },
