@@ -15,6 +15,7 @@ export default class GoogleMapsPage {
   async navigateHome(URL) {
     try {
       await this.page.goto(URL);
+      await this.page.waitForLoadState('networkidle');
     } catch (error) {
       console.error(`Failed to navigate to URL: ${error.message}`);
     }
@@ -54,9 +55,10 @@ export default class GoogleMapsPage {
 
   // Go to My Place
   async goToMyLocation() {
+    await this.page.waitForSelector(this.selectors.myPlaceButton);
     await this.page.click(this.selectors.myPlaceButton);
     await this.page.waitForNavigation();
-    // Waiting for search result page to appear
+    // Waiting for result page to appear
     await this.page.waitForLoadState('networkidle');
   }
 

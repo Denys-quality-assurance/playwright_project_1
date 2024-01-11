@@ -47,8 +47,10 @@ test.describe(`Google Home Page: Search results testing for '${query}' query`, (
     );
   });
 
-  test(`Compare search results from two pages with the same '${query}' query`, async ({ sharedContext }) => {
-    test.setTimeout(30000);
+  test(`Compare search results from two pages with the same '${query}' query @only-desktop`, async ({
+    sharedContext,
+  }) => {
+    test.setTimeout(20000);
     // Search for query
     await googleHomePage.searchFor(query);
 
