@@ -20,7 +20,7 @@ export default class GoogleHomePage {
   }
 
   // Reject all Cookies if it's needed
-  async rejectCookiesIfExist() {
+  async rejectCookiesIfAsked() {
     if (await this.page.isVisible(this.selectors.cookiesModal)) {
       try {
         await this.page.click(this.selectors.rejectAllCookiesButton);
@@ -35,7 +35,7 @@ export default class GoogleHomePage {
   async navigateAndRejectCookies() {
     try {
       await this.navigateHome();
-      await this.rejectCookiesIfExist();
+      await this.rejectCookiesIfAsked();
     } catch (error) {
       console.error(`Failed to navigate to page and reject all Cookies: ${error.message}`);
     }
