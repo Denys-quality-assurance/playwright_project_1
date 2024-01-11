@@ -8,7 +8,7 @@ module.exports = {
   projects: [
     /* Test against desktop browsers */
     {
-      name: 'Desktop Google Chrome',
+      name: 'Desktop_Google_Chrome',
       grep: /^(?!.*@(skip-for-chromium|@only-mobile)).*$/, // skip tests with @skip-for-chromium
       use: {
         ...devices['Desktop Chrome'],
@@ -17,7 +17,7 @@ module.exports = {
       },
     },
     {
-      name: 'Desktop Webkit',
+      name: 'Desktop_Webkit',
       grep: /^(?!.*(@skip-for-webkit|@only-mobile)).*$/, // skip tests with @skip-for-webkit
       use: {
         ...devices['Desktop Safari'],
@@ -25,7 +25,7 @@ module.exports = {
       },
     },
     {
-      name: 'Desktop Microsoft Edge',
+      name: 'Desktop_Microsoft_Edge',
       grep: /^(?!.*(@skip-for-edge|@only-mobile)).*$/, // skip tests with @skip-for-edge
       use: {
         ...devices['Desktop Edge'],
@@ -34,7 +34,7 @@ module.exports = {
       },
     },
     {
-      name: 'Desktop Firefox',
+      name: 'Desktop_Firefox',
       grep: /^(?!.*(@skip-for-firefox|@only-mobile)).*$/, // skip tests with @skip-for-firefox
       use: {
         ...devices['Desktop Firefox'],
@@ -43,7 +43,7 @@ module.exports = {
     },
     /* Test against mobile viewports. */
     {
-      name: 'iPhone 14 Safari',
+      name: 'iPhone_14_Safari',
       grep: /^(?!.*@(skip-for-webkit|skip-for-mobile)).*$/, // skip tests with @skip-for-webkit
       use: {
         ...devices['iPhone 14'],
@@ -51,7 +51,7 @@ module.exports = {
       },
     },
     {
-      name: 'iPhone 14 Safari landscape',
+      name: 'iPhone_14_Safari_landscape',
       grep: /^(?!.*@(skip-for-webkit|skip-for-mobile)).*$/, // skip tests with @skip-for-webkit
       use: {
         ...devices['iPhone 14 landscape'],
@@ -59,23 +59,7 @@ module.exports = {
       },
     },
     {
-      name: 'iPad Mini Safari',
-      grep: /^(?!.*@(skip-for-webkit|skip-for-mobile)).*$/, // skip tests with @skip-for-webkit
-      use: {
-        ...devices['iPad Mini'],
-        headless: false,
-      },
-    },
-    {
-      name: 'iPad Mini Safari landscape',
-      grep: /^(?!.*@(skip-for-webkit|skip-for-mobile)).*$/, // skip tests with @skip-for-webkit
-      use: {
-        ...devices['iPad Mini landscape'],
-        headless: false,
-      },
-    },
-    {
-      name: 'iPad Pro 11 Safari',
+      name: 'iPad_Pro_11_Safari',
       grep: /^(?!.*@(skip-for-webkit|skip-for-mobile)).*$/, // skip tests with @skip-for-webkit
       use: {
         ...devices['iPad Pro 11'],
@@ -83,7 +67,7 @@ module.exports = {
       },
     },
     {
-      name: 'iPad Pro 11 Safari landscape',
+      name: 'iPad_Pro_11_Safari_landscape',
       grep: /^(?!.*@(skip-for-webkit|skip-for-mobile)).*$/, // skip tests with @skip-for-webkit
       use: {
         ...devices['iPad Pro 11 landscape'],
@@ -91,7 +75,7 @@ module.exports = {
       },
     },
     {
-      name: 'Galaxy S9+ Chrome',
+      name: 'Galaxy_S9+_Chrome',
       grep: /^(?!.*@(skip-for-chromium|skip-for-mobile)).*$/, // skip tests with @skip-for-chromium
       use: {
         ...devices['Galaxy S9+'],
@@ -100,7 +84,7 @@ module.exports = {
       },
     },
     {
-      name: 'Galaxy S9+ Chrome landscape',
+      name: 'Galaxy_S9+_Chrome_landscape',
       grep: /^(?!.*@(skip-for-chromium|skip-for-mobile)).*$/, // skip tests with @skip-for-chromium
       use: {
         ...devices['Galaxy S9+ landscape'],
@@ -109,7 +93,7 @@ module.exports = {
       },
     },
     {
-      name: 'Galaxy Tab S4 Chrome',
+      name: 'Galaxy_Tab_S4_Chrome',
       grep: /^(?!.*@(skip-for-chromium|skip-for-mobile)).*$/, // skip tests with @skip-for-chromium
       use: {
         ...devices['Galaxy Tab S4'],
@@ -118,7 +102,7 @@ module.exports = {
       },
     },
     {
-      name: 'Galaxy Tab S4 Chrome landscape',
+      name: 'Galaxy_Tab_S4_Chrome_landscape',
       grep: /^(?!.*@(skip-for-chromium|skip-for-mobile)).*$/, // skip tests with @skip-for-chromium
       use: {
         ...devices['Galaxy Tab S4 landscape'],
