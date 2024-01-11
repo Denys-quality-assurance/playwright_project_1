@@ -19,7 +19,7 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
 
   test(`User can download picture from test results, User can search by picture @skip-for-webkit @only-desktop`, async ({}) => {
     // Get description and picture link of the the 1st picture search result
-    const { pictureDescription, imageUrl } = await googleHomePicturesPage.get1stPictureDescriptionAndDownloadPocture();
+    const { pictureDescription, imageUrl } = await googleHomePicturesPage.get1stPictureDescriptionAndDownload();
     // Download picture from url to the system's directory for temporary files
     const imagePath = await downloadImageFromUrlToTempDir(imageUrl);
 
@@ -48,7 +48,7 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
   });
   test(`User can download picture from test results, User can search by picture @only-mobile`, async ({}) => {
     // Get description and picture link of the the 1st picture search result
-    const { imageUrl } = await googleHomePicturesPage.get1stPictureDescriptionAndDownloadPocture();
+    const { imageUrl } = await googleHomePicturesPage.get1stPictureDescriptionAndDownload();
     // Download picture from url to the system's directory for temporary files
     const imagePath = await downloadImageFromUrlToTempDir(imageUrl);
 

@@ -174,8 +174,8 @@ export default class GoogleHomePage {
         });
         if (storageHasKeys) break;
 
-        // Sleep for 0.5 second between retries
-        await new Promise((r) => setTimeout(r, 1000));
+        // Sleep for 1 second between retries
+        await page.waitForTimeout(1000);
       }
       return storageHasKeys;
     } catch (error) {

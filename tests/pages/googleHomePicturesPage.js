@@ -88,7 +88,7 @@ export default class GoogleHomePicturesPage {
   }
 
   // Get description and picture link of the the 1st picture search result
-  async get1stPictureDescriptionAndDownloadPocture() {
+  async get1stPictureDescriptionAndDownload() {
     // Get text from the 1st search result
     const pictureDescription = await this.page.$eval(this.selectors.firstSearchResultText, (el) => el.innerText);
 
