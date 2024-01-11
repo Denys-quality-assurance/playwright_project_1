@@ -39,11 +39,11 @@ pipeline {
 
 void runTests(String project, String browser, String latestBranch) {
     script {
-        stage("Checkout ${project}") {
+        stage("Checkout") {
             echo "Checking out branch ${latestBranch}"
             git url: "https://github.com/Denys-quality-assurance/playwright_project_1", branch: "${latestBranch}"
         }
-        stage("Install dependencies ${project}") {
+        stage("Install dependencies") {
             bat 'npm ci'
         }
         stage("Install browser ${browser}") {
