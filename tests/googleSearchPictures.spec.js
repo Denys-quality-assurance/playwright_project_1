@@ -2,7 +2,7 @@ import { expect } from '@playwright/test';
 import test from '../hooks/testWithAfterEachHooks.mjs';
 import GoogleHomePicturesPage from './pages/googleHomePicturesPage';
 import { downloadImageFromUrlToTempDir, checkFileExists, deleteTempFile } from '../utilities/fileSystemHelpers';
-import queryData from './test-data/queryData.json';
+import queryData from './test-data/queryData';
 const query = queryData[2].query;
 
 test.describe(`Google Home Pictures Page: Download picture by '${query}' query, Search by picture`, () => {

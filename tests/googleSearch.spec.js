@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test';
 import test from '../hooks/testWithAfterEachHooks.mjs';
 import GoogleHomePage from './pages/googleHomePage';
-import queryData from './test-data/queryData.json';
+import queryData from './test-data/queryData';
 const query = queryData[1].query;
 const expectedLocalStorageKeysData = {
   desktop: [`sb_wiz.zpc.gws-wiz-serp.`, `_c;;i`, `ds;;frib`, `sb_wiz.qc`], // Expected Local storage's keys for desktop
