@@ -1,10 +1,11 @@
 export default class GoogleMapsPage {
-  constructor(page) {
+  constructor(page, isMobile) {
     this.page = page;
+    this.isMobile = isMobile; // type of device is mobile
     this.selectors = {
       cookiesModal: `#CXQnmb`, // Cookies consent modal
       rejectAllCookiesButton: `button#W0wltc`, // Reject all cookies button
-      myPlaceButton: `button#sVuEFc`, // My place button
+      myPlaceButton: this.isMobile ? `button.uWaeI` : `button#sVuEFc`, // My place button for mobile and for desktop
     };
   }
 

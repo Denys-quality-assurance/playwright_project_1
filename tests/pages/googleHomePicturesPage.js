@@ -1,15 +1,18 @@
 export default class GoogleHomePicturesPage {
-  constructor(page) {
+  constructor(page, isMobile) {
     this.page = page;
+    this.isMobile = isMobile; // type of device is mobile
     this.selectors = {
       cookiesModal: `#CXQnmb`, // Cookies consent modal
       rejectAllCookiesButton: `button#W0wltc`, // Reject all cookies button
-      picturesSearchButton: `[href*="https://www.google.com/imghp"]`, // Pictures Search button
+      picturesSearchButton: this.isMobile
+        ? `[href*="https://www.google.com/webhp"]` // Pictures Search button for mobile
+        : `[href*="https://www.google.com/imghp"]`, // Pictures Search button for desktop
       searchInputTextArea: `textarea[name=q]`, // Search query imput area
-      firstSearchResult: `#islrg >> [data-ri="0"]`, // 1st result in the list of results
-      firstSearchResultText: `#islrg >> [data-ri="0"] >> .bytUYc`, // Text of the 1st result in the list of results
+      firstSearchResult: `[data-ri="0"]`, // 1st result in the list of results
+      firstSearchResultText: `[data-ri="0"] >> .bytUYc`, // Text of the 1st result in the list of results
       picturePriview: `[role="link"] img[src*="https"]`, // Preview of the picture in the result list
-      searchByPictureButton: `.NGBa0b[role="button"]`, // Search by uploaded picture button
+      searchByPictureButton: this.isMobile ? `.r5jQRd[role="link"]` : `.NGBa0b[role="button"]`, // Search by uploaded picture button for mobile and for desktop
       pictureUploadButton: `.DV7the[role="button"]`, // Picture upload button of search by picture modal
       searchByPictureResults: `.UAiK1e[dir="ltr"]`, // List of results of search by picture
     };
@@ -84,10 +87,24 @@ export default class GoogleHomePicturesPage {
     }
   }
 
+  // Get description and picture link of the the 1st picture search result
+  async get1stPictureDescriptionAndDownloadPocture() {
+    // Get text from the 1st search result
+    const pictureDescription = await this.page.$eval(this.selectors.firstSearchResultText, (el) => el.innerText);
+
+    // Click on the 1st search result to open picture preview
+    const picturePriview = await this.openPicturePreview(this.selectors.firstSearchResult);
+
+    // Get picture link of the preview
+    const imageUrl = await picturePriview.getAttribute('src');
+    return { pictureDescription, imageUrl };
+  }
+
   // Upload the picture to search by picture
   async uploadPictureToSearch(imagePath) {
     try {
       // Click on the Search by picture button to open picture upload area
+      await this.page.waitForSelector(this.selectors.searchByPictureButton);
       await this.page.click(this.selectors.searchByPictureButton);
       await this.page.waitForSelector(this.selectors.pictureUploadButton);
 

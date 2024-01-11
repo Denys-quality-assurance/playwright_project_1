@@ -12,7 +12,8 @@ test.describe('Geolocation Tests @skip-for-firefox', () => {
 
     // Navigate to page and reject all Cookies if it's needed
     let page = await sharedContext.newPage();
-    googleMapsPage = new GoogleMapsPage(page);
+    const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
+    googleMapsPage = new GoogleMapsPage(page, isMobile);
     await googleMapsPage.openGoogleMaps();
   });
 

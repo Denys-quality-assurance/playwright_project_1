@@ -1,11 +1,12 @@
 export default class GoogleHomePage {
-  constructor(page) {
+  constructor(page, isMobile) {
     this.page = page;
+    this.isMobile = isMobile; // type of device is mobile
     this.selectors = {
       cookiesModal: `#CXQnmb`, // Cookies consent modal
       rejectAllCookiesButton: `button#W0wltc`, // Reject all cookies button
       searchInputTextArea: `textarea[name=q]`, // Search query imput area
-      searchResult: `.MjjYud >> .g`, // One search result
+      searchResult: this.isMobile ? `.y0NFKc` : `.MjjYud >> .g`, // One search result for mobile and for desktop
     };
   }
 
