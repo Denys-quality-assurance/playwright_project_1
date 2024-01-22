@@ -2,6 +2,7 @@ import { expect } from '@playwright/test';
 import test from '../hooks/testWithAfterEachHooks.mjs';
 import GoogleHomePage from './pages/googleHomePage';
 import queryData from './test-data/queryData';
+import { checkFileExists, deleteTempFile } from '../utilities/fileSystemHelpers';
 const query = queryData[1].query;
 const expectedLocalStorageKeysData = {
   desktop: [`sb_wiz.zpc.gws-wiz-serp.`, `_c;;i`, `ds;;frib`, `sb_wiz.qc`], // Expected Local storage's keys for desktop
@@ -33,7 +34,7 @@ test.describe(`Google Home Page: Search results testing for '${query}' query`, (
       searchResults,
       query
     );
-    expect(doesEachSearchResultContainQuery).toBe(true, `At least one search result does not contain '${query}' query`);
+    expect(doesEachSearchResultContainQuery).toBe(true, `At least one search result does not contain the query`);
   });
 
   test(`Google search results page contains more than 1 result for '${query}' query`, async () => {
@@ -43,7 +44,7 @@ test.describe(`Google Home Page: Search results testing for '${query}' query`, (
     const searchResults = await googleHomePage.getSearchResults();
     expect(searchResults.length).toBeGreaterThan(
       1,
-      `Search results page doesn't contain more than 1 result for '${query}' query`
+      `Search results page doesn't contain more than 1 result for the query`
     );
   });
 
@@ -70,7 +71,7 @@ test.describe(`Google Home Page: Search results testing for '${query}' query`, (
     // Compare the search results from both pages
     expect(searchResultsTexts1).toEqual(
       searchResultsTexts2,
-      `Search results from two pages with the same '${query}' query are not equal`
+      `Search results from two pages with the same query are not equal`
     );
   });
 
@@ -140,12 +141,48 @@ test.describe(`Google Home Page: Search results testing for '${query}' query`, (
     expect(cookiesValuesNotEmpty).toBe(true, `At least 1 cookie value is empty`);
   });
 
-  queryData.forEach((data) => {
-    test(`Page title contains '${data.query}' query`, async ({}) => {
+  queryData.forEach((queryData) => {
+    test(`Page title contains '${queryData.query}' query`, async ({}) => {
       // Search for query
-      await googleHomePage.searchFor(data.query);
+      await googleHomePage.searchFor(queryData.query);
       const title = await googleHomePage.getPageTitle();
-      expect(title).toContain(data.query, `Page title doesn't contain '${data.query}' query`);
+      expect(title).toContain(queryData.query, `Page title doesn't contain the query`);
+    });
+  });
+
+  queryData.forEach((queryData) => {
+    test.only(`Performance metrics for Search results for '${queryData.query}' query`, async ({}, testInfo) => {
+      // Get performance metrics for Search results
+      const metrics = await googleHomePage.getPerformanceMetricsForSearchResults(queryData.query, testInfo);
+      // Performance API: Check if the traices collected
+      const isTraiceFileCreated = checkFileExists(metrics.tracesPath);
+      expect(isTraiceFileCreated).toBe(
+        true,
+        `The Performance API traces for the query are not saved in the file system`
+      );
+      // Performance.mark API: Check if marksInfoData collected
+      const isMarksInfoFileCreated = checkFileExists(metrics.marksInfoDataPath);
+      expect(isMarksInfoFileCreated).toBe(
+        true,
+        `The trmarksInfoDataaces for the query are not saved in the file system`
+      );
+      // Performance.mark API: Check if measuresInfoData collected
+      const isMeasuresInfoFileCreated = checkFileExists(metrics.measuresInfoDataPath);
+      expect(isMeasuresInfoFileCreated).toBe(
+        true,
+        `The measuresInfoData for the query are not saved in the file system`
+      );
+      // Chrome DevTool Protocol API: Check if Chrome DevTool Protocol metrics collected
+      const isCDPDataFileCreated = checkFileExists(metrics.metricsDiffDataPath);
+      expect(isCDPDataFileCreated).toBe(
+        true,
+        `The Chrome DevTool Protocol metrics for the query are not saved in the file system`
+      );
+
+      // Delete the temporaty files
+      for (let key in metrics) {
+        deleteTempFile(metrics[key]);
+      }
     });
   });
 });

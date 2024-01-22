@@ -1,3 +1,5 @@
+import { getTempFilePath, readFile, writeFile } from '../../utilities/fileSystemHelpers';
+
 export default class GoogleHomePage {
   constructor(page, isMobile) {
     this.page = page;
@@ -109,14 +111,14 @@ export default class GoogleHomePage {
   }
 
   // Get local storage - isn't used
-  // async getLocalStorage(page) {
-  //   try {
-  //     const localStorageData = await page.evaluate(() => window.localStorage);
-  //     return localStorageData;
-  //   } catch (error) {
-  //     console.error(`Failed to get local storage: ${error.message}`);
-  //   }
-  // }
+  async getLocalStorage(page) {
+    try {
+      const localStorageData = await page.evaluate(() => window.localStorage);
+      return localStorageData;
+    } catch (error) {
+      console.error(`Failed to get local storage: ${error.message}`);
+    }
+  }
 
   // Get local storage items by keys
   async getLocalStorageItemsByKeys(page, keys) {
@@ -238,6 +240,129 @@ export default class GoogleHomePage {
       return await this.page.title();
     } catch (error) {
       console.error(`Failed to get page title: ${error.message}`);
+    }
+  }
+
+  // Get performance metrics for Search results
+  async getPerformanceMetricsForSearchResults(query, testInfo) {
+    try {
+      // Performance API: Start performance tracing
+      const currentBrowser = this.page.context().browser();
+      let timestamp = Date.now();
+      const tracesName = 'perfTraces_' + query + `_${timestamp}`;
+      const tracesPath = getTempFilePath(tracesName + '.json');
+      await currentBrowser.startTracing(this.page, { path: tracesPath, screenshots: true });
+
+      // Make Search action
+      await this.page.waitForSelector(this.selectors.searchInputTextArea);
+      await this.page.fill(this.selectors.searchInputTextArea, query);
+      await this.page.press(this.selectors.searchInputTextArea, 'Enter');
+
+      //Performance.mark API: Start performance tracking
+      await this.page.evaluate(() => window.performance.mark('Perf:Started'));
+
+      // Chrome DevTool Protocol API: Create a new connection to an existing CDP session to enable performance Metrics
+      const session = await this.page.context().newCDPSession(this.page);
+      await session.send('Performance.enable');
+      // Chrome DevTool Protocol API: Record the performance metrics before actions
+      const metricsBefore = await session.send('Performance.getMetrics');
+
+      // Wait for search Results are visible
+      await this.page.waitForSelector(this.selectors.searchResult, { state: 'visible' });
+
+      //Performance.mark API: Stop performance tracking
+      await this.page.evaluate(() => window.performance.mark('Perf:Ended'));
+
+      // Chrome DevTool Protocol API: Record the performance metrics after the actions
+      const metricsAfter = await session.send('Performance.getMetrics');
+
+      // Performance API: Stop performance tracing
+      await currentBrowser.stopTracing();
+
+      // Performance API: Attach traces to the test report
+      const traceBuffer = await readFile(tracesPath);
+      await testInfo.attach(tracesName, {
+        body: traceBuffer,
+        contentType: 'application/json',
+      });
+
+      // Metrics calculation
+      // Performance.mark API: Performance measure
+      await this.page.evaluate(() => window.performance.measure('action', 'Perf:Started', 'Perf:Ended'));
+      // To get all performance marks
+      const allMarksInfo = await this.page.evaluate(() => JSON.stringify(window.performance.getEntriesByType('mark')));
+
+      // Performance.mark API: Attach allMarksInfo to the test report
+      const marksInfoDataName = 'marksInfoDataName' + `_${timestamp}`;
+      const marksInfoDataPath = getTempFilePath(marksInfoDataName + '.txt');
+      await writeFile(marksInfoDataPath, allMarksInfo);
+
+      const marksInfoDataBuffer = await readFile(marksInfoDataPath);
+      await testInfo.attach(marksInfoDataName, {
+        body: marksInfoDataBuffer,
+        contentType: 'text/plain',
+      });
+
+      // Performance.mark API: To get all performance measures
+      const allMeasuresInfo = await this.page.evaluate(() =>
+        JSON.stringify(window.performance.getEntriesByName('action'))
+      );
+
+      // Performance.mark API: Attach allMeasuresInfo to the test report
+      const measuresInfoDataName = 'measuresInfoDataName' + `_${timestamp}`;
+      const measuresInfoDataPath = getTempFilePath(measuresInfoDataName + '.txt');
+      await writeFile(measuresInfoDataPath, allMeasuresInfo);
+
+      const measuresInfoDataBuffer = await readFile(measuresInfoDataPath);
+      await testInfo.attach(measuresInfoDataName, {
+        body: measuresInfoDataBuffer,
+        contentType: 'text/plain',
+      });
+
+      // Chrome DevTool Protocol API: Subtract the metrics before the action from the metrics after the action
+      let metricsDiff = [];
+
+      for (let metricBefore of metricsBefore.metrics) {
+        // find corresponding metricAfter
+        const metricAfter = metricsAfter.metrics.find((metric) => metric.name === metricBefore.name);
+
+        // prepare a new object
+        if (metricAfter) {
+          const diff = metricAfter.value - metricBefore.value;
+          const metricDiffObj = {
+            name: metricBefore.name,
+            value_before: metricBefore.value,
+            value_after: metricAfter.value,
+            value_diff: diff,
+          };
+
+          // push the new object to metricsDiff array
+          metricsDiff.push(metricDiffObj);
+        } else {
+          const metricDiffObj = {
+            name: metricBefore.name,
+            value_before: metricBefore.value,
+            value_after: null,
+            value_diff: null,
+          };
+          metricsDiff.push(metricDiffObj);
+        }
+      }
+      // Chrome DevTool Protocol API: Attach metricsDiff to the test report
+      const metricsDiffData = JSON.stringify(metricsDiff);
+      const metricsDiffDataName = 'metricsDiffDataName' + `_${timestamp}`;
+      const metricsDiffDataPath = getTempFilePath(metricsDiffDataName + '.txt');
+      await writeFile(metricsDiffDataPath, metricsDiffData);
+
+      const metricsDiffDataBuffer = await readFile(metricsDiffDataPath);
+      await testInfo.attach(metricsDiffDataName, {
+        body: metricsDiffDataBuffer,
+        contentType: 'text/plain',
+      });
+
+      return { tracesPath, marksInfoDataPath, measuresInfoDataPath, metricsDiffDataPath };
+    } catch (error) {
+      console.error(`Failed to get performance metrics for Search results: ${error.message}`);
     }
   }
 }
