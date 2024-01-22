@@ -1,8 +1,22 @@
 import fs from 'fs';
+import util from 'util';
 import https from 'https';
 import os from 'os';
 import path from 'path';
 import { pipeline } from 'stream';
+
+// Get path to the system's temp directory with the temporaty file
+export function getTempFilePath(fileName) {
+  try {
+    // Get the system's temp directory
+    const tmpDir = os.tmpdir();
+    // Path to a new temp file
+    const filePath = path.join(tmpDir, fileName);
+    return filePath;
+  } catch (err) {
+    console.error('Error while getting the path to the temporaty file: ', err);
+  }
+}
 
 // Download image from url to the system's directory for temporary files
 export async function downloadImageFromUrlToTempDir(url) {
@@ -17,10 +31,8 @@ export async function downloadImageFromUrlToTempDir(url) {
           reject(new Error(`Failed to download image from ${url}, status code: ${response.statusCode}`));
           return;
         }
-        // Get the system's temp directory
-        const tmpDir = os.tmpdir();
         // Path to a new temp file
-        const filePath = path.join(tmpDir, 'test_picture.jpg');
+        const filePath = getTempFilePath('test_picture.jpg');
 
         const fileStream = fs.createWriteStream(filePath);
 
@@ -55,17 +67,38 @@ export function checkFileExists(filePath) {
       return true;
     }
   } catch (err) {
-    console.error(err);
+    console.error('Error while checking the file existance: ', err);
     return false;
   }
   return false;
 }
 
-// Delete the file temporaty file
+// Delete the temporaty file
 export function deleteTempFile(filePath) {
   try {
     fs.unlinkSync(filePath);
   } catch (err) {
     console.error('Error while deleting the file: ', err);
+  }
+}
+
+// Read the file data into a buffer
+export async function readFile(filePath) {
+  try {
+    const readFilePromise = util.promisify(fs.readFile); // Create a promisified version of fs.readFile
+    const fileBuffer = await readFilePromise(filePath);
+    return fileBuffer;
+  } catch (err) {
+    console.error('Error while reading the file: ', err);
+  }
+}
+
+// Write data to file
+export async function writeFile(filePath, data) {
+  try {
+    const writeFilePromise = util.promisify(fs.writeFile); // Create a promisified version of fs.writeFile
+    writeFilePromise(filePath, data);
+  } catch (err) {
+    console.error('Error writing file: ', err);
   }
 }
