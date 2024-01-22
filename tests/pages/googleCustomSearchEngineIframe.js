@@ -6,15 +6,15 @@ export default class GoogleCustomSearchEnginePage {
       frameSelectors: [
         `[src*='https://www.gstatic.com/atari/embeds/']:first-of-type`, // Google Custom Search Engine outer iFrame
         `#innerFrame`, // Google Custom Search Engine inner iFrame
-        `#userHtmlFrame`,
-      ], // Google Custom Search Engine user iFrame
+        `#userHtmlFrame`, // Google Custom Search Engine user iFrame
+      ],
       searchInputTextArea: `.gsc-input-box >> [name="search"]`, // Search query imput area
       searchResult: `.gsc-results >> .gsc-result`, // One search result
     };
   }
 
   // Navigate to Home page
-  async init() {
+  async selectFrame() {
     try {
       await this.page.goto(
         `https://www.steegle.com/google-sites/how-to/insert-custom-code/google-custom-search-engine`
