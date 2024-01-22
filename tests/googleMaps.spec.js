@@ -26,9 +26,6 @@ test.describe('Geolocation Tests @skip-for-firefox', () => {
     const expectedGeolocationData = `${geoData.latitude},${geoData.longitude}`;
 
     // Check if the URL contains the geolocation data
-    expect(url).toContain(
-      expectedGeolocationData,
-      `URL does not contain the expected geolocation data: ${expectedGeolocationData}`
-    );
+    expect(url).toContain(expectedGeolocationData, `URL does not contain the expected geolocation data`);
   });
 });

@@ -5,6 +5,8 @@ export default class GoogleMapsPage {
     this.selectors = {
       cookiesModal: `#CXQnmb`, // Cookies consent modal
       rejectAllCookiesButton: `button#W0wltc`, // Reject all cookies button
+      navigationModal: `.OuM1Vb[role="dialog"]`, // navigation tracking modal
+      rejectNavigationButton: `button.vrdm1c`, // Reject navigation tracking button
       myPlaceButton: this.isMobile ? `button.uWaeI` : `button#sVuEFc`, // My place button for mobile and for desktop
     };
   }
@@ -13,13 +15,14 @@ export default class GoogleMapsPage {
   async navigateHome(URL) {
     try {
       await this.page.goto(URL);
+      await this.page.waitForLoadState('networkidle');
     } catch (error) {
       console.error(`Failed to navigate to URL: ${error.message}`);
     }
   }
 
   // Reject all Cookies if it's needed
-  async rejectCookiesIfExist() {
+  async rejectCookiesIfAsked() {
     if (await this.page.isVisible(this.selectors.cookiesModal)) {
       try {
         await this.page.click(this.selectors.rejectAllCookiesButton);
@@ -30,18 +33,32 @@ export default class GoogleMapsPage {
     }
   }
 
+  // Reject navigation tracking if it's needed
+  async rejectNavigationIfAsked() {
+    if (await this.page.isVisible(this.selectors.navigationModal)) {
+      try {
+        await this.page.click(this.selectors.rejectNavigationButton);
+        await this.page.waitForSelector(this.selectors.navigationModal, { state: 'hidden' });
+      } catch (error) {
+        console.error(`Failed to reject location tracking: ${error.message}`);
+      }
+    }
+  }
+
   // Navigate to Google Maps
   async openGoogleMaps() {
     await this.navigateHome(`https://www.google.com`);
-    await this.rejectCookiesIfExist();
+    await this.rejectCookiesIfAsked();
     await this.navigateHome(`https://www.google.com/maps`);
+    await this.rejectNavigationIfAsked();
   }
 
   // Go to My Place
   async goToMyLocation() {
+    await this.page.waitForSelector(this.selectors.myPlaceButton);
     await this.page.click(this.selectors.myPlaceButton);
     await this.page.waitForNavigation();
-    // Waiting for search result page to appear
+    // Waiting for result page to appear
     await this.page.waitForLoadState('networkidle');
   }
 

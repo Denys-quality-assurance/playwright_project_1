@@ -28,7 +28,7 @@ export default class GoogleHomePicturesPage {
   }
 
   // Reject all Cookies if it's needed
-  async rejectCookiesIfExist() {
+  async rejectCookiesIfAsked() {
     if (await this.page.isVisible(this.selectors.cookiesModal)) {
       try {
         await this.page.click(this.selectors.rejectAllCookiesButton);
@@ -43,7 +43,7 @@ export default class GoogleHomePicturesPage {
   async navigateAndRejectCookies() {
     try {
       await this.navigateHome();
-      await this.rejectCookiesIfExist();
+      await this.rejectCookiesIfAsked();
     } catch (error) {
       console.error(`Failed to navigate to page and reject all Cookies: ${error.message}`);
     }
@@ -88,7 +88,7 @@ export default class GoogleHomePicturesPage {
   }
 
   // Get description and picture link of the the 1st picture search result
-  async get1stPictureDescriptionAndDownloadPocture() {
+  async get1stPictureDescriptionAndDownload() {
     // Get text from the 1st search result
     const pictureDescription = await this.page.$eval(this.selectors.firstSearchResultText, (el) => el.innerText);
 

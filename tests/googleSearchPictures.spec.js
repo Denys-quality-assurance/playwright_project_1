@@ -2,7 +2,7 @@ import { expect } from '@playwright/test';
 import test from '../hooks/testWithAfterEachHooks.mjs';
 import GoogleHomePicturesPage from './pages/googleHomePicturesPage';
 import { downloadImageFromUrlToTempDir, checkFileExists, deleteTempFile } from '../utilities/fileSystemHelpers';
-import queryData from './test-data/queryData.json';
+import queryData from './test-data/queryData';
 const query = queryData[2].query;
 
 test.describe(`Google Home Pictures Page: Download picture by '${query}' query, Search by picture`, () => {
@@ -17,9 +17,9 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
     await googleHomePicturesPage.navigateAndSearchPictures(query);
   });
 
-  test(`User can download picture from test results, User can search by picture @skip-for-webkit @skip-for-mobile`, async ({}) => {
+  test(`User can download picture from test results, User can search by picture @skip-for-webkit @only-desktop`, async ({}) => {
     // Get description and picture link of the the 1st picture search result
-    const { pictureDescription, imageUrl } = await googleHomePicturesPage.get1stPictureDescriptionAndDownloadPocture();
+    const { pictureDescription, imageUrl } = await googleHomePicturesPage.get1stPictureDescriptionAndDownload();
     // Download picture from url to the system's directory for temporary files
     const imagePath = await downloadImageFromUrlToTempDir(imageUrl);
 
@@ -48,7 +48,7 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
   });
   test(`User can download picture from test results, User can search by picture @only-mobile`, async ({}) => {
     // Get description and picture link of the the 1st picture search result
-    const { imageUrl } = await googleHomePicturesPage.get1stPictureDescriptionAndDownloadPocture();
+    const { imageUrl } = await googleHomePicturesPage.get1stPictureDescriptionAndDownload();
     // Download picture from url to the system's directory for temporary files
     const imagePath = await downloadImageFromUrlToTempDir(imageUrl);
 
