@@ -6,6 +6,7 @@ const query = queryData[0].query;
 
 test.describe(`Google Custom Search Engine: Search results testing for '${query}' query`, () => {
   let googleCSEPage; // Page object instance
+  test.use({ baseURL: 'https://www.steegle.com/' }); // Set a specific base URL for this test
 
   // Navigate to Google Custom Search Engine page and init iFrame
   test.beforeEach(async ({ sharedContext }) => {

@@ -7,72 +7,80 @@ module.exports = {
   projects: [
     /* Test against desktop browsers */
     {
-      name: 'Desktop_Google_Chrome',
+      name: 'Desktop_Google_Chrome_PROD',
       grep: /^(?!.*@(skip-for-chromium|only-mobile)).*$/, // skip tests with @skip-for-chromium or @only-mobile
       use: {
         ...devices['Desktop Chrome'],
         channel: 'chrome', // or 'chrome-beta'
         headless: false,
+        baseURL: process.env.BASE_URL || 'https://www.google.com', //default PROD URL
       },
     },
     {
-      name: 'Desktop_Webkit',
+      name: 'Desktop_Webkit_PROD',
       grep: /^(?!.*@(skip-for-webkit|only-mobile)).*$/, // skip tests with @skip-for-webkit or @only-mobile
       use: {
         ...devices['Desktop Safari'],
         headless: false,
+        baseURL: process.env.BASE_URL || 'https://www.google.com', //default PROD URL
       },
     },
     {
-      name: 'Desktop_Microsoft_Edge',
+      name: 'Desktop_Microsoft_Edge_PROD',
       grep: /^(?!.*@(skip-for-edge|only-mobile)).*$/, // skip tests with @skip-for-edge or @only-mobile
       use: {
         ...devices['Desktop Edge'],
         channel: 'msedge', // or "msedge-beta" or 'msedge-dev'
         headless: false,
+        baseURL: process.env.BASE_URL || 'https://www.google.com', //default PROD URL
       },
     },
     {
-      name: 'Desktop_Firefox',
+      name: 'Desktop_Firefox_PROD',
       grep: /^(?!.*@(skip-for-firefox|only-mobile)).*$/, // skip tests with @skip-for-firefox or @only-mobile
       use: {
         ...devices['Desktop Firefox'],
         headless: false,
+        baseURL: process.env.BASE_URL || 'https://www.google.com', //default PROD URL
       },
     },
     /* Test against mobile viewports. */
     {
-      name: 'iPhone_14_Safari',
+      name: 'iPhone_14_Safari_PROD',
       grep: /^(?!.*@(skip-for-webkit|only-desktop)).*$/, // skip tests with @skip-for-webkit or @only-desktop
       use: {
         ...devices['iPhone 14'],
         headless: false,
+        baseURL: process.env.BASE_URL || 'https://www.google.com', //default PROD URL
       },
     },
     {
-      name: 'iPhone_14_Safari_landscape',
+      name: 'iPhone_14_Safari_landscape_PROD',
       grep: /^(?!.*@(skip-for-webkit|only-desktop)).*$/, // skip tests with @skip-for-webkit or @only-desktop
       use: {
         ...devices['iPhone 14 landscape'],
         headless: false,
+        baseURL: process.env.BASE_URL || 'https://www.google.com', //default PROD URL
       },
     },
     {
-      name: 'Galaxy_Tab_S4_Chrome',
+      name: 'Galaxy_Tab_S4_Chrome_PROD',
       grep: /^(?!.*@(skip-for-chromium|only-desktop)).*$/, // skip tests with @skip-for-chromium or @only-desktop
       use: {
         ...devices['Galaxy Tab S4'],
         channel: 'chrome', // or 'chrome-beta'
         headless: false,
+        baseURL: process.env.BASE_URL || 'https://www.google.com', //default PROD URL
       },
     },
     {
-      name: 'Galaxy_Tab_S4_Chrome_landscape',
+      name: 'Galaxy_Tab_S4_Chrome_landscape_PROD',
       grep: /^(?!.*@(skip-for-chromium|only-desktop)).*$/, // skip tests with @skip-for-chromium or @only-desktop
       use: {
         ...devices['Galaxy Tab S4 landscape'],
         channel: 'chrome', // or 'chrome-beta'
         headless: false,
+        baseURL: process.env.BASE_URL || 'https://www.google.com', //default PROD URL
       },
     },
   ],
