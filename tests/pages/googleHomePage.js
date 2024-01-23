@@ -1,4 +1,4 @@
-import { getTempFilePath, readFile, writeFile } from '../../utilities/fileSystemHelpers';
+import { getTempFilePath, writeFile } from '../../utilities/fileSystemHelpers';
 
 export default class GoogleHomePage {
   constructor(page, isMobile) {
@@ -249,8 +249,8 @@ export default class GoogleHomePage {
       // Performance API: Start performance tracing
       const currentBrowser = this.page.context().browser();
       let timestamp = Date.now();
-      const tracesName = 'perfTraces_' + query + `_${timestamp}`;
-      const tracesPath = getTempFilePath(tracesName + '.json');
+      const tracesName = 'perfTraces_' + query + `_${timestamp}` + '.json';
+      const tracesPath = getTempFilePath(tracesName);
       await currentBrowser.startTracing(this.page, { path: tracesPath, screenshots: true });
 
       // Make Search action
@@ -280,43 +280,45 @@ export default class GoogleHomePage {
       await currentBrowser.stopTracing();
 
       // Performance API: Attach traces to the test report
-      const traceBuffer = await readFile(tracesPath);
       await testInfo.attach(tracesName, {
-        body: traceBuffer,
+        path: tracesPath,
         contentType: 'application/json',
       });
 
       // Metrics calculation
       // Performance.mark API: Performance measure
       await this.page.evaluate(() => window.performance.measure('action', 'Perf:Started', 'Perf:Ended'));
+
       // To get all performance marks
-      const allMarksInfo = await this.page.evaluate(() => JSON.stringify(window.performance.getEntriesByType('mark')));
+      const allMarksInfo = await this.page.evaluate(() =>
+        JSON.stringify(window.performance.getEntriesByType('mark'), null, 2)
+      );
 
       // Performance.mark API: Attach allMarksInfo to the test report
-      const marksInfoDataName = 'marksInfoDataName' + `_${timestamp}`;
-      const marksInfoDataPath = getTempFilePath(marksInfoDataName + '.txt');
+      const marksInfoDataName = 'marksInfoDataName' + `_${timestamp}` + '.json';
+      const marksInfoDataPath = getTempFilePath(marksInfoDataName);
       await writeFile(marksInfoDataPath, allMarksInfo);
-
-      const marksInfoDataBuffer = await readFile(marksInfoDataPath);
       await testInfo.attach(marksInfoDataName, {
-        body: marksInfoDataBuffer,
-        contentType: 'text/plain',
+        path: marksInfoDataPath,
+        contentType: 'application/json',
       });
 
       // Performance.mark API: To get all performance measures
       const allMeasuresInfo = await this.page.evaluate(() =>
-        JSON.stringify(window.performance.getEntriesByName('action'))
+        JSON.stringify(window.performance.getEntriesByName('action'), null, 2)
       );
 
-      // Performance.mark API: Attach allMeasuresInfo to the test report
-      const measuresInfoDataName = 'measuresInfoDataName' + `_${timestamp}`;
-      const measuresInfoDataPath = getTempFilePath(measuresInfoDataName + '.txt');
-      await writeFile(measuresInfoDataPath, allMeasuresInfo);
+      // Performance.mark API: Duration of the action
+      const allMeasuresJSONArray = JSON.parse(allMeasuresInfo);
+      const actionDutation = allMeasuresJSONArray[0]['duration'];
 
-      const measuresInfoDataBuffer = await readFile(measuresInfoDataPath);
+      // Performance.mark API: Attach allMeasuresInfo to the test report
+      const measuresInfoDataName = 'measuresInfoDataName' + `_${timestamp}` + '.json';
+      const measuresInfoDataPath = getTempFilePath(measuresInfoDataName);
+      await writeFile(measuresInfoDataPath, allMeasuresInfo);
       await testInfo.attach(measuresInfoDataName, {
-        body: measuresInfoDataBuffer,
-        contentType: 'text/plain',
+        path: measuresInfoDataPath,
+        contentType: 'application/json',
       });
 
       // Chrome DevTool Protocol API: Subtract the metrics before the action from the metrics after the action
@@ -349,18 +351,17 @@ export default class GoogleHomePage {
         }
       }
       // Chrome DevTool Protocol API: Attach metricsDiff to the test report
-      const metricsDiffData = JSON.stringify(metricsDiff);
-      const metricsDiffDataName = 'metricsDiffDataName' + `_${timestamp}`;
-      const metricsDiffDataPath = getTempFilePath(metricsDiffDataName + '.txt');
+      const metricsDiffData = JSON.stringify(metricsDiff, null, 2);
+      const metricsDiffDataName = 'metricsDiffDataName' + `_${timestamp}` + '.json';
+      const metricsDiffDataPath = getTempFilePath(metricsDiffDataName);
       await writeFile(metricsDiffDataPath, metricsDiffData);
-
-      const metricsDiffDataBuffer = await readFile(metricsDiffDataPath);
       await testInfo.attach(metricsDiffDataName, {
-        body: metricsDiffDataBuffer,
-        contentType: 'text/plain',
+        path: metricsDiffDataPath,
+        contentType: 'application/json',
       });
+      const metrics = { tracesPath, marksInfoDataPath, measuresInfoDataPath, metricsDiffDataPath };
 
-      return { tracesPath, marksInfoDataPath, measuresInfoDataPath, metricsDiffDataPath };
+      return { metrics, actionDutation };
     } catch (error) {
       console.error(`Failed to get performance metrics for Search results: ${error.message}`);
     }

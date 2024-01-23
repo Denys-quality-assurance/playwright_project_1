@@ -2,6 +2,7 @@ import { expect } from '@playwright/test';
 import test from '../hooks/testWithAfterEachHooks.mjs';
 import GoogleHomePage from './pages/googleHomePage';
 import queryData from './test-data/queryData';
+import acceptablePerformanceData from './test-data/acceptablePerformanceData';
 import { checkFileExists, deleteTempFile } from '../utilities/fileSystemHelpers';
 const query = queryData[1].query;
 const expectedLocalStorageKeysData = {
@@ -11,6 +12,7 @@ const expectedLocalStorageKeysData = {
 let expectedLocalStorageKeys;
 const expectedSessionStorageKeys = [`_c;;i`]; // Expected session storage's keys
 const expectedCookiesNames = ['__Secure-ENID', 'CONSENT', 'AEC', 'SOCS', 'DV']; // Expected cookies names
+const acceptableActionDutation = acceptablePerformanceData.acceptableSearchDutation; // The duration of the action should not exide the limit (ms)
 
 test.describe(`Google Home Page: Search results testing for '${query}' query`, () => {
   let page; // Page instance
@@ -153,7 +155,13 @@ test.describe(`Google Home Page: Search results testing for '${query}' query`, (
   queryData.forEach((queryData) => {
     test.only(`Performance metrics for Search results for '${queryData.query}' query`, async ({}, testInfo) => {
       // Get performance metrics for Search results
-      const metrics = await googleHomePage.getPerformanceMetricsForSearchResults(queryData.query, testInfo);
+      const { metrics, actionDutation } = await googleHomePage.getPerformanceMetricsForSearchResults(
+        queryData.query,
+        testInfo
+      );
+      // API Performance.mark: Check if the duration of the action does not exceed 1000 ms
+      expect(actionDutation).toBeLessThanOrEqual(acceptableActionDutation, `The duration of the action exceeds limits`);
+
       // Performance API: Check if the traices collected
       const isTraiceFileCreated = checkFileExists(metrics.tracesPath);
       expect(isTraiceFileCreated).toBe(
