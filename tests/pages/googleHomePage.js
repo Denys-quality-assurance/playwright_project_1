@@ -1,4 +1,4 @@
-import { getTempFilePath, readFile, writeFile } from '../../utilities/fileSystemHelpers';
+import { getTempFilePath, writeFile } from '../../utilities/fileSystemHelpers';
 
 export default class GoogleHomePage {
   constructor(page, isMobile) {
@@ -246,12 +246,17 @@ export default class GoogleHomePage {
   // Get performance metrics for Search results
   async getPerformanceMetricsForSearchResults(query, testInfo) {
     try {
-      // Performance API: Start performance tracing
-      const currentBrowser = this.page.context().browser();
-      let timestamp = Date.now();
-      const tracesName = 'perfTraces_' + query + `_${timestamp}`;
-      const tracesPath = getTempFilePath(tracesName + '.json');
-      await currentBrowser.startTracing(this.page, { path: tracesPath, screenshots: true });
+      const timestamp = Date.now();
+      const projectName = testInfo.project.name;
+      const defaultBrowserType = testInfo.project.use.defaultBrowserType;
+
+      if (defaultBrowserType == 'chromium') {
+        // Performance API: Start performance tracing
+        var currentBrowser = this.page.context().browser();
+        var tracesName = projectName + '_perfTraces_' + query + `_${timestamp}` + '.json';
+        var tracesPath = getTempFilePath(tracesName);
+        await currentBrowser.startTracing(this.page, { path: tracesPath, screenshots: true });
+      }
 
       // Make Search action
       await this.page.waitForSelector(this.selectors.searchInputTextArea);
@@ -261,11 +266,13 @@ export default class GoogleHomePage {
       //Performance.mark API: Start performance tracking
       await this.page.evaluate(() => window.performance.mark('Perf:Started'));
 
-      // Chrome DevTool Protocol API: Create a new connection to an existing CDP session to enable performance Metrics
-      const session = await this.page.context().newCDPSession(this.page);
-      await session.send('Performance.enable');
-      // Chrome DevTool Protocol API: Record the performance metrics before actions
-      const metricsBefore = await session.send('Performance.getMetrics');
+      if (defaultBrowserType == 'chromium') {
+        // Chrome DevTool Protocol API: Create a new connection to an existing CDP session to enable performance Metrics
+        var session = await this.page.context().newCDPSession(this.page);
+        await session.send('Performance.enable');
+        // Chrome DevTool Protocol API: Record the performance metrics before actions
+        var metricsBefore = await session.send('Performance.getMetrics');
+      }
 
       // Wait for search Results are visible
       await this.page.waitForSelector(this.selectors.searchResult, { state: 'visible' });
@@ -273,94 +280,112 @@ export default class GoogleHomePage {
       //Performance.mark API: Stop performance tracking
       await this.page.evaluate(() => window.performance.mark('Perf:Ended'));
 
-      // Chrome DevTool Protocol API: Record the performance metrics after the actions
-      const metricsAfter = await session.send('Performance.getMetrics');
+      if (defaultBrowserType == 'chromium') {
+        // Chrome DevTool Protocol API: Record the performance metrics after the actions
+        var metricsAfter = await session.send('Performance.getMetrics');
 
-      // Performance API: Stop performance tracing
-      await currentBrowser.stopTracing();
+        // Performance API: Stop performance tracing
+        await currentBrowser.stopTracing();
 
-      // Performance API: Attach traces to the test report
-      const traceBuffer = await readFile(tracesPath);
-      await testInfo.attach(tracesName, {
-        body: traceBuffer,
-        contentType: 'application/json',
-      });
+        // Performance API: Attach traces to the test report
+        await testInfo.attach(tracesName, {
+          path: tracesPath,
+          contentType: 'application/json',
+        });
+
+        // Metrics calculation
+        // Chrome DevTool Protocol API: Subtract the metrics before the action from the metrics after the action
+        var metricsDiff = [];
+
+        for (let metricBefore of metricsBefore.metrics) {
+          // find corresponding metricAfter
+          const metricAfter = metricsAfter.metrics.find((metric) => metric.name === metricBefore.name);
+
+          // prepare a new object
+          if (metricAfter) {
+            const diff = metricAfter.value - metricBefore.value;
+            const metricDiffObj = {
+              name: metricBefore.name,
+              value_before: metricBefore.value,
+              value_after: metricAfter.value,
+              value_diff: diff,
+            };
+
+            // push the new object to metricsDiff array
+            metricsDiff.push(metricDiffObj);
+          } else {
+            const metricDiffObj = {
+              name: metricBefore.name,
+              value_before: metricBefore.value,
+              value_after: null,
+              value_diff: null,
+            };
+            metricsDiff.push(metricDiffObj);
+          }
+        }
+
+        // Chrome DevTool Protocol API: Attach metricsDiff to the test report
+        var metricsDiffData = JSON.stringify(metricsDiff, null, 2);
+        var metricsDiffDataName = projectName + '_metricsDiffDataName' + `_${timestamp}` + '.json';
+        var metricsDiffDataPath = getTempFilePath(metricsDiffDataName);
+        await writeFile(metricsDiffDataPath, metricsDiffData);
+        await testInfo.attach(metricsDiffDataName, {
+          path: metricsDiffDataPath,
+          contentType: 'application/json',
+        });
+      }
 
       // Metrics calculation
       // Performance.mark API: Performance measure
       await this.page.evaluate(() => window.performance.measure('action', 'Perf:Started', 'Perf:Ended'));
+
       // To get all performance marks
-      const allMarksInfo = await this.page.evaluate(() => JSON.stringify(window.performance.getEntriesByType('mark')));
+      const allMarksInfo = await this.page.evaluate(() =>
+        JSON.stringify(window.performance.getEntriesByType('mark'), null, 2)
+      );
 
       // Performance.mark API: Attach allMarksInfo to the test report
-      const marksInfoDataName = 'marksInfoDataName' + `_${timestamp}`;
-      const marksInfoDataPath = getTempFilePath(marksInfoDataName + '.txt');
+      const marksInfoDataName = projectName + '_marksInfoDataName' + `_${timestamp}` + '.json';
+      const marksInfoDataPath = getTempFilePath(marksInfoDataName);
       await writeFile(marksInfoDataPath, allMarksInfo);
-
-      const marksInfoDataBuffer = await readFile(marksInfoDataPath);
       await testInfo.attach(marksInfoDataName, {
-        body: marksInfoDataBuffer,
-        contentType: 'text/plain',
+        path: marksInfoDataPath,
+        contentType: 'application/json',
       });
 
       // Performance.mark API: To get all performance measures
       const allMeasuresInfo = await this.page.evaluate(() =>
-        JSON.stringify(window.performance.getEntriesByName('action'))
+        JSON.stringify(window.performance.getEntriesByName('action'), null, 2)
       );
 
+      // Performance.mark API: Duration of the action
+      const allMeasuresJSONArray = JSON.parse(allMeasuresInfo);
+      const actionDutation = allMeasuresJSONArray[0]['duration'];
+
       // Performance.mark API: Attach allMeasuresInfo to the test report
-      const measuresInfoDataName = 'measuresInfoDataName' + `_${timestamp}`;
-      const measuresInfoDataPath = getTempFilePath(measuresInfoDataName + '.txt');
+      const measuresInfoDataName = projectName + '_measuresInfoDataName' + `_${timestamp}` + '.json';
+      const measuresInfoDataPath = getTempFilePath(measuresInfoDataName);
       await writeFile(measuresInfoDataPath, allMeasuresInfo);
-
-      const measuresInfoDataBuffer = await readFile(measuresInfoDataPath);
       await testInfo.attach(measuresInfoDataName, {
-        body: measuresInfoDataBuffer,
-        contentType: 'text/plain',
+        path: measuresInfoDataPath,
+        contentType: 'application/json',
       });
 
-      // Chrome DevTool Protocol API: Subtract the metrics before the action from the metrics after the action
-      let metricsDiff = [];
-
-      for (let metricBefore of metricsBefore.metrics) {
-        // find corresponding metricAfter
-        const metricAfter = metricsAfter.metrics.find((metric) => metric.name === metricBefore.name);
-
-        // prepare a new object
-        if (metricAfter) {
-          const diff = metricAfter.value - metricBefore.value;
-          const metricDiffObj = {
-            name: metricBefore.name,
-            value_before: metricBefore.value,
-            value_after: metricAfter.value,
-            value_diff: diff,
-          };
-
-          // push the new object to metricsDiff array
-          metricsDiff.push(metricDiffObj);
-        } else {
-          const metricDiffObj = {
-            name: metricBefore.name,
-            value_before: metricBefore.value,
-            value_after: null,
-            value_diff: null,
-          };
-          metricsDiff.push(metricDiffObj);
-        }
+      if (defaultBrowserType == 'chromium') {
+        var metrics = {
+          tracesPath,
+          marksInfoDataPath,
+          measuresInfoDataPath,
+          metricsDiffDataPath,
+        };
+      } else {
+        var metrics = {
+          marksInfoDataPath,
+          measuresInfoDataPath,
+        };
       }
-      // Chrome DevTool Protocol API: Attach metricsDiff to the test report
-      const metricsDiffData = JSON.stringify(metricsDiff);
-      const metricsDiffDataName = 'metricsDiffDataName' + `_${timestamp}`;
-      const metricsDiffDataPath = getTempFilePath(metricsDiffDataName + '.txt');
-      await writeFile(metricsDiffDataPath, metricsDiffData);
 
-      const metricsDiffDataBuffer = await readFile(metricsDiffDataPath);
-      await testInfo.attach(metricsDiffDataName, {
-        body: metricsDiffDataBuffer,
-        contentType: 'text/plain',
-      });
-
-      return { tracesPath, marksInfoDataPath, measuresInfoDataPath, metricsDiffDataPath };
+      return { metrics, actionDutation };
     } catch (error) {
       console.error(`Failed to get performance metrics for Search results: ${error.message}`);
     }

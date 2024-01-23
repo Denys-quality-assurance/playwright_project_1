@@ -2,13 +2,13 @@ import { devices } from '@playwright/test';
 
 module.exports = {
   workers: parseInt(process.env.CI_WORKERS, 5) || 3, // for CI: run up to CI_WORKERS tests concurrently; for local run: run up to 3 tests concurrently
-  timeout: 30000, // Timeout of 60 seconds. Unlimited Timeout for debugging - timeout: 0
-  retries: 3, // Defines the maximum attempts to retry a test after a failure
+  timeout: 30000, // Timeout of 30 seconds: 30000. Unlimited Timeout for debugging - timeout: 0
+  retries: 2, // Defines the maximum attempts to retry a test after a failure
   projects: [
     /* Test against desktop browsers */
     {
       name: 'Desktop_Google_Chrome',
-      grep: /^(?!.*@(skip-for-chromium|only-mobile)).*$/, // skip tests with @skip-for-chromium or @sonly-mobile
+      grep: /^(?!.*@(skip-for-chromium|only-mobile)).*$/, // skip tests with @skip-for-chromium or @only-mobile
       use: {
         ...devices['Desktop Chrome'],
         channel: 'chrome', // or 'chrome-beta'
@@ -17,7 +17,7 @@ module.exports = {
     },
     {
       name: 'Desktop_Webkit',
-      grep: /^(?!.*@(skip-for-webkit|only-mobile)).*$/, // skip tests with @skip-for-webkit or @sonly-mobile
+      grep: /^(?!.*@(skip-for-webkit|only-mobile)).*$/, // skip tests with @skip-for-webkit or @only-mobile
       use: {
         ...devices['Desktop Safari'],
         headless: false,
@@ -25,7 +25,7 @@ module.exports = {
     },
     {
       name: 'Desktop_Microsoft_Edge',
-      grep: /^(?!.*@(skip-for-edge|only-mobile)).*$/, // skip tests with @skip-for-edge or @sonly-mobile
+      grep: /^(?!.*@(skip-for-edge|only-mobile)).*$/, // skip tests with @skip-for-edge or @only-mobile
       use: {
         ...devices['Desktop Edge'],
         channel: 'msedge', // or "msedge-beta" or 'msedge-dev'
@@ -34,7 +34,7 @@ module.exports = {
     },
     {
       name: 'Desktop_Firefox',
-      grep: /^(?!.*@(skip-for-firefox|only-mobile)).*$/, // skip tests with @skip-for-firefox or @sonly-mobile
+      grep: /^(?!.*@(skip-for-firefox|only-mobile)).*$/, // skip tests with @skip-for-firefox or @only-mobile
       use: {
         ...devices['Desktop Firefox'],
         headless: false,
