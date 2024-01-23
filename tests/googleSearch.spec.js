@@ -153,7 +153,7 @@ test.describe(`Google Home Page: Search results testing for '${query}' query`, (
   });
 
   queryData.forEach((queryData) => {
-    test.only(`Performance metrics for Search results for '${queryData.query}' query`, async ({}, testInfo) => {
+    test(`Performance metrics for Search results for '${queryData.query}' query`, async ({}, testInfo) => {
       // Get browser type
       const defaultBrowserType = testInfo.project.use.defaultBrowserType;
       // Get performance metrics for Search results
