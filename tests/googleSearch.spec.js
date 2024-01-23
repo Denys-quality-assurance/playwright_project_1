@@ -155,7 +155,7 @@ test.describe(`Google Home Page: Search results testing for '${query}' query`, (
   queryData.forEach((queryData) => {
     test.only(`Performance metrics for Search results for '${queryData.query}' query`, async ({}, testInfo) => {
       // Get browser type
-      const defaultBrowserType = testInfo.project.use.defaultBrowserType;
+      const defaultBrowserChanel = testInfo.project.use.defaultBrowserChanel;
       // Get performance metrics for Search results
       const { metrics, actionDutation } = await googleHomePage.getPerformanceMetricsForSearchResults(
         queryData.query,
@@ -178,7 +178,7 @@ test.describe(`Google Home Page: Search results testing for '${query}' query`, (
       );
 
       // Additional metrics only for cromium browsers
-      if (defaultBrowserType == 'chromium') {
+      if (defaultBrowserChanel == 'chrome') {
         // Performance API: Check if the traices collected
         const isTraiceFileCreated = checkFileExists(metrics.tracesPath);
         expect(isTraiceFileCreated).toBe(

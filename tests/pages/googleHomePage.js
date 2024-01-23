@@ -248,9 +248,9 @@ export default class GoogleHomePage {
     try {
       const timestamp = Date.now();
       const projectName = testInfo.project.name;
-      const defaultBrowserType = testInfo.project.use.defaultBrowserType;
+      const defaultBrowserChanel = testInfo.project.use.channel;
 
-      if (defaultBrowserType == 'chromium') {
+      if (defaultBrowserChanel == 'chrome') {
         // Performance API: Start performance tracing
         var currentBrowser = this.page.context().browser();
         var tracesName = projectName + '_perfTraces_' + query + `_${timestamp}` + '.json';
@@ -266,7 +266,7 @@ export default class GoogleHomePage {
       //Performance.mark API: Start performance tracking
       await this.page.evaluate(() => window.performance.mark('Perf:Started'));
 
-      if (defaultBrowserType == 'chromium') {
+      if (defaultBrowserChanel == 'chrome') {
         // Chrome DevTool Protocol API: Create a new connection to an existing CDP session to enable performance Metrics
         var session = await this.page.context().newCDPSession(this.page);
         await session.send('Performance.enable');
@@ -280,7 +280,7 @@ export default class GoogleHomePage {
       //Performance.mark API: Stop performance tracking
       await this.page.evaluate(() => window.performance.mark('Perf:Ended'));
 
-      if (defaultBrowserType == 'chromium') {
+      if (defaultBrowserChanel == 'chrome') {
         // Chrome DevTool Protocol API: Record the performance metrics after the actions
         var metricsAfter = await session.send('Performance.getMetrics');
 
@@ -371,7 +371,7 @@ export default class GoogleHomePage {
         contentType: 'application/json',
       });
 
-      if (defaultBrowserType == 'chromium') {
+      if (defaultBrowserChanel == 'chrome') {
         var metrics = {
           tracesPath,
           marksInfoDataPath,
