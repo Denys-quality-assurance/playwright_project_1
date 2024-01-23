@@ -16,9 +16,7 @@ export default class GoogleCustomSearchEnginePage {
   // Navigate to Home page
   async selectFrame() {
     try {
-      await this.page.goto(
-        `https://www.steegle.com/google-sites/how-to/insert-custom-code/google-custom-search-engine`
-      );
+      await this.page.goto('/google-sites/how-to/insert-custom-code/google-custom-search-engine/');
       // Get nested iFrame
       this.frame = await this.getNestedFrame(this.page, this.selectors.frameSelectors);
     } catch (error) {

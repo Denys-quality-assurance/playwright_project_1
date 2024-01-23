@@ -15,7 +15,7 @@ export default class GoogleHomePage {
   // Navigate to Home page
   async navigateHome() {
     try {
-      await this.page.goto(`https://www.google.com`);
+      await this.page.goto('/');
     } catch (error) {
       console.error(`Failed to navigate to Home page: ${error.message}`);
     }

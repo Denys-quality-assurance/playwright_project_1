@@ -47,9 +47,9 @@ export default class GoogleMapsPage {
 
   // Navigate to Google Maps
   async openGoogleMaps() {
-    await this.navigateHome(`https://www.google.com`);
+    await this.navigateHome('/');
     await this.rejectCookiesIfAsked();
-    await this.navigateHome(`https://www.google.com/maps`);
+    await this.navigateHome('/maps');
     await this.rejectNavigationIfAsked();
   }
 

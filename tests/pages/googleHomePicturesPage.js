@@ -6,8 +6,8 @@ export default class GoogleHomePicturesPage {
       cookiesModal: `#CXQnmb`, // Cookies consent modal
       rejectAllCookiesButton: `button#W0wltc`, // Reject all cookies button
       picturesSearchButton: this.isMobile
-        ? `[href*="https://www.google.com/webhp"]` // Pictures Search button for mobile
-        : `[href*="https://www.google.com/imghp"]`, // Pictures Search button for desktop
+        ? `[href*="/webhp"]` // Pictures Search button for mobile
+        : `[href*="/imghp"]`, // Pictures Search button for desktop
       searchInputTextArea: `textarea[name=q]`, // Search query imput area
       firstSearchResult: `[data-ri="0"]`, // 1st result in the list of results
       firstSearchResultText: `[data-ri="0"] >> .bytUYc`, // Text of the 1st result in the list of results
@@ -21,7 +21,7 @@ export default class GoogleHomePicturesPage {
   // Navigate to Home page
   async navigateHome() {
     try {
-      await this.page.goto(`https://www.google.com`);
+      await this.page.goto('/');
     } catch (error) {
       console.error(`Failed to navigate to Home page: ${error.message}`);
     }
