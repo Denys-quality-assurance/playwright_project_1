@@ -154,20 +154,16 @@ test.describe(`Google Home Page: Search results testing for '${query}' query`, (
 
   queryData.forEach((queryData) => {
     test.only(`Performance metrics for Search results for '${queryData.query}' query`, async ({}, testInfo) => {
+      // Get browser type
+      const defaultBrowserType = testInfo.project.use.defaultBrowserType;
       // Get performance metrics for Search results
       const { metrics, actionDutation } = await googleHomePage.getPerformanceMetricsForSearchResults(
         queryData.query,
         testInfo
       );
-      // API Performance.mark: Check if the duration of the action does not exceed 1000 ms
+      // API Performance.mark: Check if the duration of the action does not exceed limits
       expect(actionDutation).toBeLessThanOrEqual(acceptableActionDutation, `The duration of the action exceeds limits`);
 
-      // Performance API: Check if the traices collected
-      const isTraiceFileCreated = checkFileExists(metrics.tracesPath);
-      expect(isTraiceFileCreated).toBe(
-        true,
-        `The Performance API traces for the query are not saved in the file system`
-      );
       // Performance.mark API: Check if marksInfoData collected
       const isMarksInfoFileCreated = checkFileExists(metrics.marksInfoDataPath);
       expect(isMarksInfoFileCreated).toBe(
@@ -180,12 +176,22 @@ test.describe(`Google Home Page: Search results testing for '${query}' query`, (
         true,
         `The measuresInfoData for the query are not saved in the file system`
       );
-      // Chrome DevTool Protocol API: Check if Chrome DevTool Protocol metrics collected
-      const isCDPDataFileCreated = checkFileExists(metrics.metricsDiffDataPath);
-      expect(isCDPDataFileCreated).toBe(
-        true,
-        `The Chrome DevTool Protocol metrics for the query are not saved in the file system`
-      );
+
+      // Additional metrics only for cromium browsers
+      if (defaultBrowserType == 'chromium') {
+        // Performance API: Check if the traices collected
+        const isTraiceFileCreated = checkFileExists(metrics.tracesPath);
+        expect(isTraiceFileCreated).toBe(
+          true,
+          `The Performance API traces for the query are not saved in the file system`
+        );
+        // Chrome DevTool Protocol API: Check if Chrome DevTool Protocol metrics collected
+        const isCDPDataFileCreated = checkFileExists(metrics.metricsDiffDataPath);
+        expect(isCDPDataFileCreated).toBe(
+          true,
+          `The Chrome DevTool Protocol metrics for the query are not saved in the file system`
+        );
+      }
 
       // Delete the temporaty files
       for (let key in metrics) {
