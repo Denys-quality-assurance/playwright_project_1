@@ -222,13 +222,7 @@ export default class GoogleHomePage {
   // Check if all expected items included to the array
   checkIfAllItemsInArray(array, expectedItems) {
     try {
-      let allItemsIncluded = true;
-      expectedItems.forEach((item) => {
-        if (!array.includes(item)) {
-          allItemsIncluded = false;
-        }
-      });
-      return allItemsIncluded;
+      return expectedItems.every((item) => array.includes(item));
     } catch (error) {
       console.error(`Failed to check if all expected items included to the array: ${error.message}`);
     }
