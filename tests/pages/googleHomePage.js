@@ -253,7 +253,7 @@ export default class GoogleHomePage {
       if (defaultBrowserType == 'chromium') {
         // Performance API: Start performance tracing
         var currentBrowser = this.page.context().browser();
-        var tracesName = projectName + '_perfTraces_' + query + `_${timestamp}` + '.json';
+        var tracesName = `${projectName}_perfTraces_${query}_${timestamp}.json`;
         var tracesPath = getTempFilePath(tracesName);
         await currentBrowser.startTracing(this.page, { path: tracesPath, screenshots: true });
       }
@@ -326,7 +326,7 @@ export default class GoogleHomePage {
 
         // Chrome DevTool Protocol API: Attach metricsDiff to the test report
         var metricsDiffData = JSON.stringify(metricsDiff, null, 2);
-        var metricsDiffDataName = projectName + '_metricsDiffDataName' + `_${timestamp}` + '.json';
+        var metricsDiffDataName = `${projectName}_metricsDiffDataName_${query}_${timestamp}.json`;
         var metricsDiffDataPath = getTempFilePath(metricsDiffDataName);
         await writeFile(metricsDiffDataPath, metricsDiffData);
         await testInfo.attach(metricsDiffDataName, {
@@ -345,7 +345,7 @@ export default class GoogleHomePage {
       );
 
       // Performance.mark API: Attach allMarksInfo to the test report
-      const marksInfoDataName = projectName + '_marksInfoDataName' + `_${timestamp}` + '.json';
+      const marksInfoDataName = `${projectName}_marksInfoDataName_${query}_${timestamp}.json`;
       const marksInfoDataPath = getTempFilePath(marksInfoDataName);
       await writeFile(marksInfoDataPath, allMarksInfo);
       await testInfo.attach(marksInfoDataName, {
@@ -363,7 +363,7 @@ export default class GoogleHomePage {
       const actionDutation = allMeasuresJSONArray[0]['duration'];
 
       // Performance.mark API: Attach allMeasuresInfo to the test report
-      const measuresInfoDataName = projectName + '_measuresInfoDataName' + `_${timestamp}` + '.json';
+      const measuresInfoDataName = `${projectName}_measuresInfoDataName_${query}_${timestamp}.json`;
       const measuresInfoDataPath = getTempFilePath(measuresInfoDataName);
       await writeFile(measuresInfoDataPath, allMeasuresInfo);
       await testInfo.attach(measuresInfoDataName, {
