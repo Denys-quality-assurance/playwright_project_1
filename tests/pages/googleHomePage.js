@@ -237,6 +237,22 @@ export default class GoogleHomePage {
     }
   }
 
+  // Attach data to test
+  async attachDataToTest(testInfo, timestamp, projectName, data, filename) {
+    try {
+      const dataName = `${projectName}_${filename}_${timestamp}.json`;
+      const dataPath = getTempFilePath(dataName);
+      await writeFile(dataPath, JSON.stringify(data, null, 2));
+      await testInfo.attach(dataName, {
+        path: dataPath,
+        contentType: 'application/json',
+      });
+      return dataPath;
+    } catch (error) {
+      console.error(`Failed to attach data to test: ${error.message}`);
+    }
+  }
+
   // Get performance metrics for Search results
   async getPerformanceMetricsForSearchResults(query, testInfo) {
     try {
@@ -319,14 +335,13 @@ export default class GoogleHomePage {
         }
 
         // Chrome DevTool Protocol API: Attach metricsDiff to the test report
-        var metricsDiffData = JSON.stringify(metricsDiff, null, 2);
-        var metricsDiffDataName = `${projectName}_metricsDiffDataName_${query}_${timestamp}.json`;
-        var metricsDiffDataPath = getTempFilePath(metricsDiffDataName);
-        await writeFile(metricsDiffDataPath, metricsDiffData);
-        await testInfo.attach(metricsDiffDataName, {
-          path: metricsDiffDataPath,
-          contentType: 'application/json',
-        });
+        var metricsDiffDataPath = await this.attachDataToTest(
+          testInfo,
+          timestamp,
+          projectName,
+          metricsDiff,
+          `metricsDiffDataName_${query}`
+        );
       }
 
       // Metrics calculation
@@ -334,36 +349,31 @@ export default class GoogleHomePage {
       await this.page.evaluate(() => window.performance.measure('action', 'Perf:Started', 'Perf:Ended'));
 
       // To get all performance marks
-      const allMarksInfo = await this.page.evaluate(() =>
-        JSON.stringify(window.performance.getEntriesByType('mark'), null, 2)
-      );
+      const allMarksInfo = await this.page.evaluate(() => window.performance.getEntriesByType('mark'));
 
       // Performance.mark API: Attach allMarksInfo to the test report
-      const marksInfoDataName = `${projectName}_marksInfoDataName_${query}_${timestamp}.json`;
-      const marksInfoDataPath = getTempFilePath(marksInfoDataName);
-      await writeFile(marksInfoDataPath, allMarksInfo);
-      await testInfo.attach(marksInfoDataName, {
-        path: marksInfoDataPath,
-        contentType: 'application/json',
-      });
-
-      // Performance.mark API: To get all performance measures
-      const allMeasuresInfo = await this.page.evaluate(() =>
-        JSON.stringify(window.performance.getEntriesByName('action'), null, 2)
+      const marksInfoDataPath = await this.attachDataToTest(
+        testInfo,
+        timestamp,
+        projectName,
+        allMarksInfo,
+        `marksInfoDataName_${query}`
       );
 
+      // Performance.mark API: To get all performance measures
+      const allMeasuresInfo = await this.page.evaluate(() => window.performance.getEntriesByName('action'));
+
       // Performance.mark API: Duration of the action
-      const allMeasuresJSONArray = JSON.parse(allMeasuresInfo);
-      const actionDutation = allMeasuresJSONArray[0]['duration'];
+      const actionDutation = allMeasuresInfo[0]['duration'];
 
       // Performance.mark API: Attach allMeasuresInfo to the test report
-      const measuresInfoDataName = `${projectName}_measuresInfoDataName_${query}_${timestamp}.json`;
-      const measuresInfoDataPath = getTempFilePath(measuresInfoDataName);
-      await writeFile(measuresInfoDataPath, allMeasuresInfo);
-      await testInfo.attach(measuresInfoDataName, {
-        path: measuresInfoDataPath,
-        contentType: 'application/json',
-      });
+      const measuresInfoDataPath = await this.attachDataToTest(
+        testInfo,
+        timestamp,
+        projectName,
+        allMeasuresInfo,
+        `measuresInfoDataName_${query}`
+      );
 
       if (defaultBrowserType == 'chromium') {
         var metrics = {
