@@ -254,11 +254,10 @@ export default class GoogleHomePage {
   }
 
   // Get performance metrics for Search results
-  async getPerformanceMetricsForSearchResults(query, testInfo) {
+  async getPerformanceMetricsForSearchResults(query, testInfo, defaultBrowserType) {
     try {
       const timestamp = Date.now();
       const projectName = testInfo.project.name;
-      const defaultBrowserType = testInfo.project.use.defaultBrowserType;
 
       if (defaultBrowserType == 'chromium') {
         // Performance API: Start performance tracing
@@ -364,7 +363,7 @@ export default class GoogleHomePage {
       const allMeasuresInfo = await this.page.evaluate(() => window.performance.getEntriesByName('action'));
 
       // Performance.mark API: Duration of the action
-      const actionDutation = allMeasuresInfo[0]['duration'];
+      const actionDuration = allMeasuresInfo[0]['duration'];
 
       // Performance.mark API: Attach allMeasuresInfo to the test report
       const measuresInfoDataPath = await this.attachDataToTest(
@@ -389,7 +388,7 @@ export default class GoogleHomePage {
         };
       }
 
-      return { metrics, actionDutation };
+      return { metrics, actionDuration };
     } catch (error) {
       console.error(`Failed to get performance metrics for Search results: ${error.message}`);
     }

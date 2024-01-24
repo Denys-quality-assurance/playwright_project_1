@@ -157,12 +157,13 @@ test.describe(`Google Home Page: Search results testing for '${query}' query`, (
       // Get browser type
       const defaultBrowserType = testInfo.project.use.defaultBrowserType;
       // Get performance metrics for Search results
-      const { metrics, actionDutation } = await googleHomePage.getPerformanceMetricsForSearchResults(
+      const { metrics, actionDuration } = await googleHomePage.getPerformanceMetricsForSearchResults(
         queryData.query,
-        testInfo
+        testInfo,
+        defaultBrowserType
       );
       // API Performance.mark: Check if the duration of the action does not exceed limits
-      expect(actionDutation).toBeLessThanOrEqual(acceptableActionDutation, `The duration of the action exceeds limits`);
+      expect(actionDuration).toBeLessThanOrEqual(acceptableActionDutation, `The duration of the action exceeds limits`);
 
       // Performance.mark API: Check if marksInfoData collected
       const isMarksInfoFileCreated = checkFileExists(metrics.marksInfoDataPath);
