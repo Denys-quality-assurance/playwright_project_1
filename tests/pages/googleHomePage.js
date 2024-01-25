@@ -1,14 +1,15 @@
-import { getTempFilePath, writeFile } from '../../utilities/fileSystemHelpers';
+import { createUniqueFileName, getTempFilePath, writeFile } from '../../utilities/fileSystemHelpers';
 
 export default class GoogleHomePage {
   constructor(page, isMobile) {
     this.page = page;
-    this.isMobile = isMobile; // type of device is mobile
+    this.isMobile = isMobile; // Type of device is mobile
     this.selectors = {
       cookiesModal: `#CXQnmb`, // Cookies consent modal
       rejectAllCookiesButton: `button#W0wltc`, // Reject all cookies button
       searchInputTextArea: `textarea[name=q]`, // Search query imput area
       searchResult: this.isMobile ? `.y0NFKc` : `.MjjYud >> .g`, // One search result for mobile and for desktop
+      googleLogo: `.lnXdpd[alt="Google"]`, // Google Logo
     };
   }
 
@@ -237,10 +238,10 @@ export default class GoogleHomePage {
     }
   }
 
-  // Attach data to test
-  async attachDataToTest(testInfo, timestamp, projectName, data, filename) {
+  // Attach JSON to test
+  async attachJSONToTest(testInfo, data, filename) {
     try {
-      const dataName = `${projectName}_${filename}_${timestamp}.json`;
+      const dataName = createUniqueFileName(testInfo, `${filename}.json`);
       const dataPath = getTempFilePath(dataName);
       await writeFile(dataPath, JSON.stringify(data, null, 2));
       await testInfo.attach(dataName, {
@@ -249,20 +250,31 @@ export default class GoogleHomePage {
       });
       return dataPath;
     } catch (error) {
-      console.error(`Failed to attach data to test: ${error.message}`);
+      console.error(`Failed to attach JSON to test: ${error.message}`);
+    }
+  }
+
+  // Make and save a screenshot of the Google Logo
+  async saveGoogleLogoScreenshot(testInfo) {
+    try {
+      await this.page.waitForSelector(this.selectors.googleLogo);
+      const elementHandle = await this.page.$(this.selectors.googleLogo);
+      const screenshotBuffer = await elementHandle.screenshot();
+      const screenshotPath = getTempFilePath(createUniqueFileName(testInfo, `logo_screenshot.png`));
+      await writeFile(screenshotPath, screenshotBuffer);
+      return screenshotPath;
+    } catch (error) {
+      console.error(`Failed to make and save a screenshot of the Google Logo: ${error.message}`);
     }
   }
 
   // Get performance metrics for Search results
   async getPerformanceMetricsForSearchResults(query, testInfo, defaultBrowserType) {
     try {
-      const timestamp = Date.now();
-      const projectName = testInfo.project.name;
-
       if (defaultBrowserType == 'chromium') {
         // Performance API: Start performance tracing
         var currentBrowser = this.page.context().browser();
-        var tracesName = `${projectName}_perfTraces_${query}_${timestamp}.json`;
+        var tracesName = createUniqueFileName(testInfo, `${query}_perfTraces.json`);
         var tracesPath = getTempFilePath(tracesName);
         await currentBrowser.startTracing(this.page, { path: tracesPath, screenshots: true });
       }
@@ -334,13 +346,7 @@ export default class GoogleHomePage {
         }
 
         // Chrome DevTool Protocol API: Attach metricsDiff to the test report
-        var metricsDiffDataPath = await this.attachDataToTest(
-          testInfo,
-          timestamp,
-          projectName,
-          metricsDiff,
-          `metricsDiffDataName_${query}`
-        );
+        var metricsDiffDataPath = await this.attachJSONToTest(testInfo, metricsDiff, `${query}_metricsDiffDataName`);
       }
 
       // Metrics calculation
@@ -351,13 +357,7 @@ export default class GoogleHomePage {
       const allMarksInfo = await this.page.evaluate(() => window.performance.getEntriesByType('mark'));
 
       // Performance.mark API: Attach allMarksInfo to the test report
-      const marksInfoDataPath = await this.attachDataToTest(
-        testInfo,
-        timestamp,
-        projectName,
-        allMarksInfo,
-        `marksInfoDataName_${query}`
-      );
+      const marksInfoDataPath = await this.attachJSONToTest(testInfo, allMarksInfo, `${query}_marksInfoDataName`);
 
       // Performance.mark API: To get all performance measures
       const allMeasuresInfo = await this.page.evaluate(() => window.performance.getEntriesByName('action'));
@@ -366,12 +366,10 @@ export default class GoogleHomePage {
       const actionDuration = allMeasuresInfo[0]['duration'];
 
       // Performance.mark API: Attach allMeasuresInfo to the test report
-      const measuresInfoDataPath = await this.attachDataToTest(
+      const measuresInfoDataPath = await this.attachJSONToTest(
         testInfo,
-        timestamp,
-        projectName,
         allMeasuresInfo,
-        `measuresInfoDataName_${query}`
+        `${query}_measuresInfoDataName`
       );
 
       if (defaultBrowserType == 'chromium') {

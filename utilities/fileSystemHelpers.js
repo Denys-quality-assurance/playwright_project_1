@@ -4,6 +4,19 @@ import https from 'https';
 import os from 'os';
 import path from 'path';
 import { pipeline } from 'stream';
+import pixelmatch from 'pixelmatch';
+import { PNG } from 'pngjs';
+
+// Create unique file name
+export function createUniqueFileName(testInfo, filename) {
+  try {
+    const timestamp = Date.now();
+    const projectName = testInfo.project.name;
+    return `${projectName}_${timestamp}_${filename}`;
+  } catch (error) {
+    console.error(`Error while creating unique file name: ${error.message}`);
+  }
+}
 
 // Get path to the system's temp directory with the temporaty file
 export function getTempFilePath(fileName) {
@@ -13,8 +26,8 @@ export function getTempFilePath(fileName) {
     // Path to a new temp file
     const filePath = path.join(tmpDir, fileName);
     return filePath;
-  } catch (err) {
-    console.error('Error while getting the path to the temporaty file: ', err);
+  } catch (error) {
+    console.error(`Error while getting the path to the temporaty file: ${error.message}`);
   }
 }
 
@@ -39,21 +52,25 @@ export async function downloadImageFromUrlToTempDir(url) {
         // Cleanup function to delete file and reject promise
         function cleanupAndReject(error) {
           fs.unlink(filePath, () => {}); // deletes the file if any error occurs
+          console.error(`Error while deleting file after a previous error: ${error.message}`);
           reject(error); // Promise is rejected
         }
 
         response.on('error', cleanupAndReject); // attaching error event on response
         fileStream.on('error', cleanupAndReject); // attaching error event on fileStream
 
-        pipeline(response, fileStream, (err) => {
-          if (err) {
-            cleanupAndReject(err);
+        pipeline(response, fileStream, (error) => {
+          if (error) {
+            cleanupAndReject(error);
           } else {
             resolve(filePath);
           }
         });
       })
       .on('error', (error) => {
+        console.error(
+          `Error while downloading image from url to the system's directory for temporary files: ${error.message}`
+        );
         reject(error);
       });
   });
@@ -66,8 +83,8 @@ export function checkFileExists(filePath) {
       //file exists
       return true;
     }
-  } catch (err) {
-    console.error('Error while checking the file existance: ', err);
+  } catch (error) {
+    console.error(`Error while checking the file existance: ${error.message}`);
     return false;
   }
   return false;
@@ -77,8 +94,8 @@ export function checkFileExists(filePath) {
 export function deleteTempFile(filePath) {
   try {
     fs.unlinkSync(filePath);
-  } catch (err) {
-    console.error('Error while deleting the file: ', err);
+  } catch (error) {
+    console.error(`Error while deleting the file: ${error.message}`);
   }
 }
 
@@ -88,8 +105,8 @@ export async function readFile(filePath) {
     const readFilePromise = util.promisify(fs.readFile); // Create a promisified version of fs.readFile
     const fileBuffer = await readFilePromise(filePath);
     return fileBuffer;
-  } catch (err) {
-    console.error('Error while reading the file: ', err);
+  } catch (error) {
+    console.error(`Error while reading the file: ${error.message}`);
   }
 }
 
@@ -97,8 +114,66 @@ export async function readFile(filePath) {
 export async function writeFile(filePath, data) {
   try {
     const writeFilePromise = util.promisify(fs.writeFile); // Create a promisified version of fs.writeFile
-    writeFilePromise(filePath, data);
-  } catch (err) {
-    console.error('Error writing file: ', err);
+    await writeFilePromise(filePath, data);
+  } catch (error) {
+    console.error(`Error while writing file: ${error.message}`);
   }
+}
+
+// Compare actual screenshot against a baseline screenshot
+export async function getMismatchedPixelsCount(expectedBaselinePath, actualScreenshotPath, testInfo) {
+  try {
+    // convert binaris into Buffers, transform Buffers into pixel data for direct comparison
+    const expectedBaseline = PNG.sync.read(fs.readFileSync(expectedBaselinePath));
+    const actualScreenshot = PNG.sync.read(fs.readFileSync(actualScreenshotPath));
+
+    // create mismatchedPixelsDiff PNG object
+    const { width, height } = expectedBaseline;
+    const mismatchedPixelsDiff = new PNG({ width, height });
+    // compare images
+    const mismatchedPixelsCount = pixelmatch(
+      expectedBaseline.data,
+      actualScreenshot.data,
+      mismatchedPixelsDiff.data,
+      width,
+      height,
+      {
+        threshold: 0.1,
+      }
+    );
+    if (mismatchedPixelsCount > 0) {
+      const diffImageName = createUniqueFileName(testInfo, 'difference_between_basaline_and_actual_screenshot.png');
+      const diffImagePath = writeDataToFile(mismatchedPixelsDiff, diffImageName);
+
+      // Attach images to test report
+      Promise.all([
+        await attachImage(testInfo, expectedBaselinePath),
+        await attachImage(testInfo, actualScreenshotPath),
+        await attachImage(testInfo, diffImagePath),
+      ]);
+
+      // Delete the temporaty files
+      deleteTempFile(diffImagePath);
+    }
+    // Delete the temporaty files
+    deleteTempFile(actualScreenshotPath);
+    return mismatchedPixelsCount;
+  } catch (error) {
+    console.error(`Error while comparing actual screenshot against a baseline screenshot: ${error.message}`);
+  }
+}
+
+// Write the data into new file via stream
+export function writeDataToFile(data, fileName) {
+  const filePath = getTempFilePath(fileName);
+  data.pack().pipe(fs.createWriteStream(filePath));
+  return filePath;
+}
+
+// Attach image to test report
+export async function attachImage(testInfo, imagePath) {
+  return testInfo.attach(path.basename(imagePath), {
+    path: imagePath,
+    contentType: 'image/png',
+  });
 }

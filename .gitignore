@@ -3,3 +3,4 @@ linkedin/
 .env
 playwright-report/
 test-results
+baseline-images
