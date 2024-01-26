@@ -3,7 +3,7 @@ import test from '../hooks/testWithAfterEachHooks.mjs';
 import GoogleHomePage from './pages/googleHomePage';
 import queryData from './test-data/queryData';
 import acceptablePerformanceData from './test-data/acceptablePerformanceData';
-import { checkFileExists, deleteTempFile } from '../utilities/fileSystemHelpers';
+import { checkFileExists, deleteTempFile, getMismatchedPixelsCount } from '../utilities/fileSystemHelpers';
 const query = queryData[1].query;
 const expectedLocalStorageKeysData = {
   desktop: [`sb_wiz.zpc.gws-wiz-serp.`, `_c;;i`, `ds;;frib`, `sb_wiz.qc`], // Expected Local storage's keys for desktop
@@ -25,6 +25,14 @@ test.describe(`Google Home Page: Search results testing for '${query}' query`, (
     expectedLocalStorageKeys = isMobile ? expectedLocalStorageKeysData.mobile : expectedLocalStorageKeysData.desktop; // expectedLocalStorageKeys for mobile and for desktop
     googleHomePage = new GoogleHomePage(page, isMobile);
     await googleHomePage.navigateAndRejectCookies();
+  });
+
+  test(`Google logo is visiable on the Home page`, async ({ sharedContext }, testInfo) => {
+    // Make and save a screenshot of the Google Logo
+    const actualScreenshotPath = await googleHomePage.saveGoogleLogoScreenshot(testInfo);
+    // Compare the actual Logo against the expected baseline Logo and attach results to the report
+    const mismatchedPixelsCount = await getMismatchedPixelsCount(actualScreenshotPath, testInfo, sharedContext);
+    expect(mismatchedPixelsCount).toBe(0, `At least one pixel of the logo differs from the baseline`);
   });
 
   test(`Google search results page contains '${query}' query`, async () => {
@@ -157,12 +165,13 @@ test.describe(`Google Home Page: Search results testing for '${query}' query`, (
       // Get browser type
       const defaultBrowserType = testInfo.project.use.defaultBrowserType;
       // Get performance metrics for Search results
-      const { metrics, actionDutation } = await googleHomePage.getPerformanceMetricsForSearchResults(
+      const { metrics, actionDuration } = await googleHomePage.getPerformanceMetricsForSearchResults(
         queryData.query,
-        testInfo
+        testInfo,
+        defaultBrowserType
       );
       // API Performance.mark: Check if the duration of the action does not exceed limits
-      expect(actionDutation).toBeLessThanOrEqual(acceptableActionDutation, `The duration of the action exceeds limits`);
+      expect(actionDuration).toBeLessThanOrEqual(acceptableActionDutation, `The duration of the action exceeds limits`);
 
       // Performance.mark API: Check if marksInfoData collected
       const isMarksInfoFileCreated = checkFileExists(metrics.marksInfoDataPath);
