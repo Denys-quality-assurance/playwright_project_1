@@ -1,6 +1,5 @@
 import { expect } from '@playwright/test';
 import test from '../hooks/testWithAfterEachHooks.mjs';
-import path from 'path';
 import GoogleHomePage from './pages/googleHomePage';
 import queryData from './test-data/queryData';
 import acceptablePerformanceData from './test-data/acceptablePerformanceData';
@@ -28,12 +27,11 @@ test.describe(`Google Home Page: Search results testing for '${query}' query`, (
     await googleHomePage.navigateAndRejectCookies();
   });
 
-  test.only(`Google logo is visiable on the Home page`, async ({}, testInfo) => {
+  test(`Google logo is visiable on the Home page`, async ({ sharedContext }, testInfo) => {
     // Make and save a screenshot of the Google Logo
     const actualScreenshotPath = await googleHomePage.saveGoogleLogoScreenshot(testInfo);
     // Compare the actual Logo against the expected baseline Logo and attach results to the report
-    const expectedBaselinePath = './tests/test-data/baseline-images/baseline_homepage_logo.png';
-    const mismatchedPixelsCount = await getMismatchedPixelsCount(expectedBaselinePath, actualScreenshotPath, testInfo);
+    const mismatchedPixelsCount = await getMismatchedPixelsCount(actualScreenshotPath, testInfo, sharedContext);
     expect(mismatchedPixelsCount).toBe(0, `At least one pixel of the logo differs from the baseline`);
   });
 

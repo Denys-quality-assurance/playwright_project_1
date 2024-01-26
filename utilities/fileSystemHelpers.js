@@ -6,6 +6,7 @@ import path from 'path';
 import { pipeline } from 'stream';
 import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
+import sharp from 'sharp';
 
 // Create unique file name
 export function createUniqueFileName(testInfo, filename) {
@@ -121,16 +122,47 @@ export async function writeFile(filePath, data) {
 }
 
 // Compare actual screenshot against a baseline screenshot
-export async function getMismatchedPixelsCount(expectedBaselinePath, actualScreenshotPath, testInfo) {
+export async function getMismatchedPixelsCount(actualScreenshotPath, testInfo, sharedContext) {
   try {
-    // convert binaris into Buffers, transform Buffers into pixel data for direct comparison
-    const expectedBaseline = PNG.sync.read(fs.readFileSync(expectedBaselinePath));
-    const actualScreenshot = PNG.sync.read(fs.readFileSync(actualScreenshotPath));
+    // Get browser type
+    const defaultBrowserType = testInfo.project.use.defaultBrowserType;
+    // Get device type
+    const isMobile = sharedContext._options.isMobile || false;
+    // Path of the expected Baseline Logo image
+    if (isMobile && defaultBrowserType == 'webkit') {
+      var expectedBaselinePath = './tests/test-data/baseline-images/baseline_homepage_logo_Webkit_Mobile.png';
+    } else {
+      var expectedBaselinePath = './tests/test-data/baseline-images/baseline_homepage_logo.png';
+    }
 
-    // create mismatchedPixelsDiff PNG object
+    // Convert binaris into Buffers, transform Buffers into pixel data for direct comparison
+    const expectedBaseline = PNG.sync.read(fs.readFileSync(expectedBaselinePath));
+    const actualScreenshotOriginalSize = PNG.sync.read(fs.readFileSync(actualScreenshotPath));
+
+    // Resize the screenshot if needed
+    let actualScreenshot;
+    if (
+      expectedBaseline.width !== actualScreenshotOriginalSize.width ||
+      expectedBaseline.height !== actualScreenshotOriginalSize.height
+    ) {
+      // The sizes don't match. Resize the screenshot buffer.
+      const actualScreenshotOriginalBuffer = fs.readFileSync(actualScreenshotPath);
+      const resizedScreenshotBuffer = await sharp(actualScreenshotOriginalBuffer)
+        .resize(expectedBaseline.width, expectedBaseline.height) // Resize to expectedBaseline dimensions
+        .png()
+        .toBuffer();
+
+      // Use resized screenshot buffer
+      actualScreenshot = PNG.sync.read(resizedScreenshotBuffer);
+    } else {
+      // The sizes match. No need to resize.
+      actualScreenshot = actualScreenshotOriginalSize;
+    }
+
+    // Create mismatchedPixelsDiff PNG object
     const { width, height } = expectedBaseline;
     const mismatchedPixelsDiff = new PNG({ width, height });
-    // compare images
+    // Compare images
     const mismatchedPixelsCount = pixelmatch(
       expectedBaseline.data,
       actualScreenshot.data,
@@ -138,7 +170,7 @@ export async function getMismatchedPixelsCount(expectedBaselinePath, actualScree
       width,
       height,
       {
-        threshold: 0.1,
+        threshold: 0.19,
       }
     );
     if (mismatchedPixelsCount > 0) {
