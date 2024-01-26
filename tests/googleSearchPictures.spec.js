@@ -5,7 +5,7 @@ import { downloadImageFromUrlToTempDir, checkFileExists, deleteTempFile } from '
 import queryData from './test-data/queryData';
 const query = queryData[2].query;
 
-test.describe(`Google Home Pictures Page: Download picture by '${query}' query, Search by picture`, () => {
+test.describe.only(`Google Home Pictures Page: Download picture by '${query}' query, Search by picture`, () => {
   let page; // Page instance
   let googleHomePicturesPage; // Page object instance
 
@@ -17,11 +17,11 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
     await googleHomePicturesPage.navigateAndSearchPictures(query);
   });
 
-  test(`User can download picture from test results, User can search by picture @skip-for-webkit @only-desktop`, async ({}) => {
+  test(`User can download picture from test results, User can search by picture @skip-for-webkit @only-desktop`, async ({}, testInfo) => {
     // Get description and picture link of the the 1st picture search result
     const { pictureDescription, imageUrl } = await googleHomePicturesPage.get1stPictureDescriptionAndDownload();
     // Download picture from url to the system's directory for temporary files
-    const imagePath = await downloadImageFromUrlToTempDir(imageUrl);
+    const imagePath = await downloadImageFromUrlToTempDir(imageUrl, testInfo);
 
     // Check if the picture downloaded
     const isPictureDownloaded = checkFileExists(imagePath);
@@ -46,11 +46,11 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
       'There is no search result with description of the downloaded picture'
     );
   });
-  test(`User can download picture from test results, User can search by picture @only-mobile`, async ({}) => {
+  test(`User can download picture from test results, User can search by picture @only-mobile`, async ({}, testInfo) => {
     // Get description and picture link of the the 1st picture search result
     const { imageUrl } = await googleHomePicturesPage.get1stPictureDescriptionAndDownload();
     // Download picture from url to the system's directory for temporary files
-    const imagePath = await downloadImageFromUrlToTempDir(imageUrl);
+    const imagePath = await downloadImageFromUrlToTempDir(imageUrl, testInfo);
 
     // Check if the picture downloaded
     const isPictureDownloaded = checkFileExists(imagePath);
