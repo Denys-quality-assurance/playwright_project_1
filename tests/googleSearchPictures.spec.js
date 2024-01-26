@@ -5,7 +5,7 @@ import { downloadImageFromUrlToTempDir, checkFileExists, deleteTempFile } from '
 import queryData from './test-data/queryData';
 const query = queryData[2].query;
 
-test.describe.only(`Google Home Pictures Page: Download picture by '${query}' query, Search by picture`, () => {
+test.describe(`Google Home Pictures Page: Download picture by '${query}' query, Search by picture`, () => {
   let page; // Page instance
   let googleHomePicturesPage; // Page object instance
 

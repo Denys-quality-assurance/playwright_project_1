@@ -101,14 +101,23 @@ export function deleteTempFile(filePath) {
   }
 }
 
-// Read the file data into a buffer
+// Read the file data into a buffer asynchronously
 export async function readFile(filePath) {
   try {
     const readFilePromise = util.promisify(fs.readFile); // Create a promisified version of fs.readFile
     const fileBuffer = await readFilePromise(filePath);
     return fileBuffer;
   } catch (error) {
-    console.error(`Error while reading the file: ${error.message}`);
+    console.error(`Error while reading the file asynchronously: ${error.message}`);
+  }
+}
+
+// Read the file data into a buffer synchronously
+export function readFileSync(filePath) {
+  try {
+    return fs.readFileSync(filePath);
+  } catch (error) {
+    console.error(`Error while reading the file synchronously: ${error.message}`);
   }
 }
 

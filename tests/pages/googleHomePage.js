@@ -10,6 +10,7 @@ export default class GoogleHomePage {
       searchInputTextArea: `textarea[name=q]`, // Search query imput area
       searchResult: this.isMobile ? `.y0NFKc` : `.MjjYud >> .g`, // One search result for mobile and for desktop
       googleLogo: this.isMobile ? `#hplogo` : `.lnXdpd[alt="Google"]`, // Google Logo for mobile and for desktop
+      videoFilterButton: `.LatpMc[href*="tbm=vid"]`, // Video filter button under the main search query imput area
     };
   }
 
@@ -389,6 +390,16 @@ export default class GoogleHomePage {
       return { metrics, actionDuration };
     } catch (error) {
       console.error(`Failed to get performance metrics for Search results: ${error.message}`);
+    }
+  }
+
+  // Switch to video searh
+  async applyVideFilter() {
+    try {
+      await this.page.waitForSelector(this.selectors.videoFilterButton);
+      await this.page.click(this.selectors.videoFilterButton);
+    } catch (error) {
+      console.error(`Failed to apply video filter: ${error.message}`);
     }
   }
 }

@@ -3,18 +3,24 @@ import test from '../hooks/testWithAfterEachHooks.mjs';
 import GoogleHomePage from './pages/googleHomePage';
 import queryData from './test-data/queryData';
 import acceptablePerformanceData from './test-data/acceptablePerformanceData';
-import { checkFileExists, deleteTempFile, getMismatchedPixelsCount } from '../utilities/fileSystemHelpers';
+import {
+  readFileSync,
+  checkFileExists,
+  deleteTempFile,
+  getMismatchedPixelsCount,
+} from '../utilities/fileSystemHelpers';
 const query = queryData[1].query;
 const expectedLocalStorageKeysData = {
   desktop: [`sb_wiz.zpc.gws-wiz-serp.`, `_c;;i`, `ds;;frib`, `sb_wiz.qc`], // Expected Local storage's keys for desktop
   mobile: [`sb_wiz.zpc.`], // Expected Local storage's keys for mobile
 };
+const responseBodyForEmptyResultsMockPath = './tests/test-data/mocks/responseBodyForEmptyResults.html';
 let expectedLocalStorageKeys;
 const expectedSessionStorageKeys = [`_c;;i`]; // Expected session storage's keys
 const expectedCookiesNames = ['__Secure-ENID', 'CONSENT', 'AEC', 'SOCS', 'DV']; // Expected cookies names
 const acceptableActionDutation = acceptablePerformanceData.acceptableSearchDutation; // The duration of the action should not exide the limit (ms)
 
-test.describe(`Google Home Page: Search results testing for '${query}' query`, () => {
+test.describe(`Google Home Page: Search results`, () => {
   let page; // Page instance
   let googleHomePage; // Page object instance
 
@@ -33,6 +39,30 @@ test.describe(`Google Home Page: Search results testing for '${query}' query`, (
     // Compare the actual Logo against the expected baseline Logo and attach results to the report
     const mismatchedPixelsCount = await getMismatchedPixelsCount(actualScreenshotPath, testInfo, sharedContext);
     expect(mismatchedPixelsCount).toBe(0, `At least one pixel of the logo differs from the baseline`);
+  });
+
+  test(`User can apply video filter on the Empty results page (mocked) and get search results`, async ({
+    sharedContext,
+  }) => {
+    const responseBodyForEmptyResults = readFileSync(responseBodyForEmptyResultsMockPath);
+    await sharedContext.route('**/search?q=**', (route, request) => {
+      route.fulfill({
+        status: 200,
+        contentType: 'text/html; charset=UTF-8',
+        body: responseBodyForEmptyResults,
+      });
+    });
+    // Search for query
+    await googleHomePage.searchFor(query);
+    // Apply video filter
+    await googleHomePage.applyVideFilter();
+    // Check if each search result actually contains query in its text
+    const searchResults = await googleHomePage.getSearchResults();
+    const doesEachSearchResultContainQuery = await googleHomePage.checkIfSearchResultsContainQuery(
+      searchResults,
+      query
+    );
+    expect(doesEachSearchResultContainQuery).toBe(true, `At least one search result does not contain the query`);
   });
 
   test(`Google search results page contains '${query}' query`, async () => {
