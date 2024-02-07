@@ -79,6 +79,7 @@ export default class GoogleHomePicturesPage {
   async navigateAndSearchPictures(query) {
     try {
       await this.navigateAndRejectCookies();
+      await this.page.waitForSelector(this.selectors.picturesSearchButton);
       await this.clickOrTap(this.selectors.picturesSearchButton);
       await this.page.waitForNavigation();
       await this.searchFor(query);
@@ -103,8 +104,8 @@ export default class GoogleHomePicturesPage {
   // Get description and picture link of the the 1st picture search result
   async get1stPictureDescriptionAndDownload() {
     try {
-      await this.page.waitForSelector(this.selectors.firstSearchResultText);
       // Get text from the 1st search result
+      await this.page.waitForSelector(this.selectors.firstSearchResultText);
       const pictureDescription = await this.page.$eval(this.selectors.firstSearchResultText, (el) => el.innerText);
 
       // Click on the 1st search result to open picture preview
