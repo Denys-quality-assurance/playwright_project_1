@@ -15,6 +15,15 @@ export default class GoogleHomePage {
     };
   }
 
+  // Click or Tap
+  async clickOrTap(selector) {
+    if (this.isMobile) {
+      await this.page.tap(selector);
+    } else {
+      await this.page.click(selector);
+    }
+  }
+
   // Navigate to Home page
   async navigateHome() {
     try {
@@ -28,7 +37,7 @@ export default class GoogleHomePage {
   async rejectCookiesIfAsked() {
     if (await this.page.isVisible(this.selectors.cookiesModal)) {
       try {
-        await this.page.click(this.selectors.rejectAllCookiesButton);
+        await this.clickOrTap(this.selectors.rejectAllCookiesButton);
         await this.page.waitForSelector(this.selectors.cookiesModal, { state: 'hidden' });
       } catch (error) {
         console.error(`Failed to reject all Cookies: ${error.message}`);
@@ -423,7 +432,7 @@ export default class GoogleHomePage {
   async applyVideFilter() {
     try {
       await this.page.waitForSelector(this.selectors.videoFilterButton);
-      await this.page.click(this.selectors.videoFilterButton);
+      await this.clickOrTap(this.selectors.videoFilterButton);
     } catch (error) {
       console.error(`Failed to apply video filter: ${error.message}`);
     }
