@@ -18,7 +18,7 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
     await googleHomePicturesPage.navigateAndSearchPictures(queryWithExtension);
   });
 
-  test.only(`User can download picture from test results, User can search by picture @skip-for-webkit @only-desktop`, async ({}, testInfo) => {
+  test(`User can download picture from test results, User can search by picture @skip-for-webkit @only-desktop`, async ({}, testInfo) => {
     // Get description and picture link of the the 1st picture search result
     const { pictureDescription, imageUrl } = await googleHomePicturesPage.get1stPictureDescriptionAndDownload();
 
