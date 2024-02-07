@@ -3,18 +3,12 @@ import test from '../hooks/testWithAfterEachHooks.mjs';
 import GoogleHomePage from './pages/googleHomePage';
 import queryData from './test-data/queryData';
 import acceptablePerformanceData from './test-data/acceptablePerformanceData';
-import {
-  readFileSync,
-  checkFileExists,
-  deleteTempFile,
-  getMismatchedPixelsCount,
-} from '../utilities/fileSystemHelpers';
+import { checkFileExists, deleteTempFile, getMismatchedPixelsCount } from '../utilities/fileSystemHelpers';
 const query = queryData[1].query;
 const expectedLocalStorageKeysData = {
   desktop: [`sb_wiz.zpc.gws-wiz-serp.`, `_c;;i`, `ds;;frib`, `sb_wiz.qc`], // Expected Local storage's keys for desktop
   mobile: [`sb_wiz.zpc.`], // Expected Local storage's keys for mobile
 };
-const responseBodyForEmptyResultsMockPath = './tests/test-data/mocks/responseBodyForEmptyResults.html';
 let expectedLocalStorageKeys;
 const expectedSessionStorageKeys = [`_c;;i`]; // Expected session storage's keys
 const expectedCookiesNames = ['__Secure-ENID', 'CONSENT', 'AEC', 'SOCS', 'DV']; // Expected cookies names
@@ -44,14 +38,8 @@ test.describe(`Google Home Page: Search results`, () => {
   test(`User can apply video filter on the Empty results page (mocked) and get search results`, async ({
     sharedContext,
   }) => {
-    const responseBodyForEmptyResults = readFileSync(responseBodyForEmptyResultsMockPath);
-    await sharedContext.route('**/search?q=**', (route, request) => {
-      route.fulfill({
-        status: 200,
-        contentType: 'text/html; charset=UTF-8',
-        body: responseBodyForEmptyResults,
-      });
-    });
+    // Mock the search response with Empty Results
+    await googleHomePage.mockResponseWithEmptyResults(sharedContext);
     // Search for query
     await googleHomePage.searchFor(query);
     // Apply video filter
@@ -63,6 +51,25 @@ test.describe(`Google Home Page: Search results`, () => {
       query
     );
     expect(doesEachSearchResultContainQuery).toBe(true, `At least one search result does not contain the query`);
+  });
+
+  test(`Response body contains '${query}' query`, async () => {
+    // Start waiting for response
+    const responsePromise = googleHomePage.waitForSearchResponse();
+    // Search for query
+    await googleHomePage.searchFor(query);
+    const response = await responsePromise;
+
+    // Check if status is 200
+    expect(response.status()).toEqual(200);
+
+    // Check if response body starts with <!doctype html>
+    const responseBody = await response.text();
+    expect(responseBody.startsWith('<!doctype html>')).toBeTruthy();
+
+    // Check if the body contains at least 1 instance of query
+    const count = await googleHomePage.countQueryInBody(query);
+    expect(count).toBeGreaterThanOrEqual(1, `The html body doesn't contains the query`);
   });
 
   test(`Google search results page contains '${query}' query`, async () => {

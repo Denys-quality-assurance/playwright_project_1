@@ -1,4 +1,5 @@
-import { createUniqueFileName, getTempFilePath, writeFile } from '../../utilities/fileSystemHelpers';
+import { readFileSync, createUniqueFileName, getTempFilePath, writeFile } from '../../utilities/fileSystemHelpers';
+const responseBodyForEmptyResultsMockPath = './tests/test-data/mocks/responseBodyForEmptyResults.html';
 
 export default class GoogleHomePage {
   constructor(page, isMobile) {
@@ -66,6 +67,33 @@ export default class GoogleHomePage {
     } catch (error) {
       console.error(`Failed to navigate to page, reject all Cookies and search for query: ${error.message}`);
     }
+  }
+
+  // Wait for the search response
+  async waitForSearchResponse() {
+    return this.page.waitForResponse('/search?q=**');
+  }
+
+  // Get number of query instances in the page body
+  async countQueryInBody(query) {
+    try {
+      const bodyText = await this.page.textContent('body');
+      return (bodyText.match(new RegExp(query, 'g')) || []).length;
+    } catch (error) {
+      console.error(`Failed to get the number of query instances in the page body: ${error.message}`);
+    }
+  }
+
+  // Mock the search response with Empty Results
+  async mockResponseWithEmptyResults(sharedContext) {
+    const responseBodyForEmptyResults = readFileSync(responseBodyForEmptyResultsMockPath);
+    await sharedContext.route('/search?q=**', (route, request) => {
+      route.fulfill({
+        status: 200,
+        contentType: 'text/html; charset=UTF-8',
+        body: responseBodyForEmptyResults,
+      });
+    });
   }
 
   // Get Search results
