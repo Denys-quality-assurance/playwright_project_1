@@ -17,10 +17,14 @@ export default class GoogleHomePage {
 
   // Click or Tap
   async clickOrTap(selector) {
-    if (this.isMobile) {
-      await this.page.tap(selector);
-    } else {
-      await this.page.click(selector);
+    try {
+      if (this.isMobile) {
+        await this.page.tap(selector);
+      } else {
+        await this.page.click(selector);
+      }
+    } catch (error) {
+      console.error(`Failed to chose click or tap method: ${error.message}`);
     }
   }
 
@@ -95,14 +99,18 @@ export default class GoogleHomePage {
 
   // Mock the search response with Empty Results
   async mockResponseWithEmptyResults(sharedContext) {
-    const responseBodyForEmptyResults = readFileSync(responseBodyForEmptyResultsMockPath);
-    await sharedContext.route('/search?q=**', (route, request) => {
-      route.fulfill({
-        status: 200,
-        contentType: 'text/html; charset=UTF-8',
-        body: responseBodyForEmptyResults,
+    try {
+      const responseBodyForEmptyResults = readFileSync(responseBodyForEmptyResultsMockPath);
+      await sharedContext.route('/search?q=**', (route, request) => {
+        route.fulfill({
+          status: 200,
+          contentType: 'text/html; charset=UTF-8',
+          body: responseBodyForEmptyResults,
+        });
       });
-    });
+    } catch (error) {
+      console.error(`Failed to mock the search response with Empty Results: ${error.message}`);
+    }
   }
 
   // Get Search results

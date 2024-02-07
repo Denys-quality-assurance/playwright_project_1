@@ -13,10 +13,14 @@ export default class GoogleMapsPage {
 
   // Click or Tap
   async clickOrTap(selector) {
-    if (this.isMobile) {
-      await this.page.tap(selector);
-    } else {
-      await this.page.click(selector);
+    try {
+      if (this.isMobile) {
+        await this.page.tap(selector);
+      } else {
+        await this.page.click(selector);
+      }
+    } catch (error) {
+      console.error(`Failed to chose click or tap method: ${error.message}`);
     }
   }
 

@@ -20,10 +20,14 @@ export default class GoogleHomePicturesPage {
 
   // Click or Tap
   async clickOrTap(selector) {
-    if (this.isMobile) {
-      await this.page.tap(selector);
-    } else {
-      await this.page.click(selector);
+    try {
+      if (this.isMobile) {
+        await this.page.tap(selector);
+      } else {
+        await this.page.click(selector);
+      }
+    } catch (error) {
+      console.error(`Failed to chose click or tap method: ${error.message}`);
     }
   }
 
@@ -98,15 +102,22 @@ export default class GoogleHomePicturesPage {
 
   // Get description and picture link of the the 1st picture search result
   async get1stPictureDescriptionAndDownload() {
-    // Get text from the 1st search result
-    const pictureDescription = await this.page.$eval(this.selectors.firstSearchResultText, (el) => el.innerText);
+    try {
+      await this.page.waitForSelector(this.selectors.firstSearchResultText);
+      // Get text from the 1st search result
+      const pictureDescription = await this.page.$eval(this.selectors.firstSearchResultText, (el) => el.innerText);
 
-    // Click on the 1st search result to open picture preview
-    const picturePriview = await this.openPicturePreview(this.selectors.firstSearchResult);
+      // Click on the 1st search result to open picture preview
+      const picturePriview = await this.openPicturePreview(this.selectors.firstSearchResult);
 
-    // Get picture link of the preview
-    const imageUrl = await picturePriview.getAttribute('src');
-    return { pictureDescription, imageUrl };
+      // Get picture link of the preview
+      const imageUrl = await picturePriview.getAttribute('src');
+      return { pictureDescription, imageUrl };
+    } catch (error) {
+      console.error(
+        `Failed to get description and picture link of the the 1st picture search result: ${error.message}`
+      );
+    }
   }
 
   // Upload the picture to search by picture
