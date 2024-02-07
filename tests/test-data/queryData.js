@@ -6,7 +6,7 @@ const queryData = [
     query: 'Playwright', // for Search testing
   },
   {
-    query: 'cat jpg', // for Search by picture testing
+    query: 'cat', // for Search by picture testing
   },
 ];
 

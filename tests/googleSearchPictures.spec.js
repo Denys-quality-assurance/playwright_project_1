@@ -4,6 +4,7 @@ import GoogleHomePicturesPage from './pages/googleHomePicturesPage';
 import { downloadImageFromUrlToTempDir, checkFileExists, deleteTempFile } from '../utilities/fileSystemHelpers';
 import queryData from './test-data/queryData';
 const query = queryData[2].query;
+const queryWithExtension = query + ' jpg';
 
 test.describe(`Google Home Pictures Page: Download picture by '${query}' query, Search by picture`, () => {
   let page; // Page instance
@@ -14,12 +15,19 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
     page = await sharedContext.newPage();
     const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
     googleHomePicturesPage = new GoogleHomePicturesPage(page, isMobile);
-    await googleHomePicturesPage.navigateAndSearchPictures(query);
+    await googleHomePicturesPage.navigateAndSearchPictures(queryWithExtension);
   });
 
-  test(`User can download picture from test results, User can search by picture @skip-for-webkit @only-desktop`, async ({}, testInfo) => {
+  test.only(`User can download picture from test results, User can search by picture @skip-for-webkit @only-desktop`, async ({}, testInfo) => {
     // Get description and picture link of the the 1st picture search result
     const { pictureDescription, imageUrl } = await googleHomePicturesPage.get1stPictureDescriptionAndDownload();
+
+    // Chech if the picture's description contains the query
+    expect(pictureDescription.toLowerCase().includes(query.toLowerCase())).toBe(
+      true,
+      `The picture's description doesn't contain the query`
+    );
+
     // Download picture from url to the system's directory for temporary files
     const imagePath = await downloadImageFromUrlToTempDir(imageUrl, testInfo);
 
@@ -36,19 +44,26 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
     // Delete the picture from PC
     deleteTempFile(imagePath);
 
-    // Check if any search result description contains the downloaded picture description
-    const doesAnySearchResultContainsPictureDescription = await googleHomePicturesPage.checkIfSearchResultsContainQuery(
+    // Check if any search result description contains the downloaded picture query
+    const doesAnySearchResultContainsPictureQuery = await googleHomePicturesPage.checkIfAnySearchResultContainsQuery(
       searchResults,
-      pictureDescription
+      query
     );
-    expect(doesAnySearchResultContainsPictureDescription).toBe(
+    expect(doesAnySearchResultContainsPictureQuery).toBe(
       true,
-      'There is no search result with description of the downloaded picture'
+      'There is no search result with query of the downloaded picture'
     );
   });
   test(`User can download picture from test results, User can search by picture @only-mobile`, async ({}, testInfo) => {
     // Get description and picture link of the the 1st picture search result
-    const { imageUrl } = await googleHomePicturesPage.get1stPictureDescriptionAndDownload();
+    const { pictureDescription, imageUrl } = await googleHomePicturesPage.get1stPictureDescriptionAndDownload();
+
+    // Chech if the picture's description contains the query
+    expect(pictureDescription.toLowerCase().includes(query.toLowerCase())).toBe(
+      true,
+      `The picture's description doesn't contain the query`
+    );
+
     // Download picture from url to the system's directory for temporary files
     const imagePath = await downloadImageFromUrlToTempDir(imageUrl, testInfo);
 

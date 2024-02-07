@@ -46,7 +46,7 @@ test.describe(`Google Home Page: Search results`, () => {
     await googleHomePage.applyVideFilter();
     // Check if each search result actually contains query in its text
     const searchResults = await googleHomePage.getSearchResults();
-    const doesEachSearchResultContainQuery = await googleHomePage.checkIfSearchResultsContainQuery(
+    const doesEachSearchResultContainQuery = await googleHomePage.checkIfAllSearchResultsContainQuery(
       searchResults,
       query
     );
@@ -77,7 +77,7 @@ test.describe(`Google Home Page: Search results`, () => {
     await googleHomePage.searchFor(query);
     // Check if each search result actually contains query in its text
     const searchResults = await googleHomePage.getSearchResults();
-    const doesEachSearchResultContainQuery = await googleHomePage.checkIfSearchResultsContainQuery(
+    const doesEachSearchResultContainQuery = await googleHomePage.checkIfAllSearchResultsContainQuery(
       searchResults,
       query
     );

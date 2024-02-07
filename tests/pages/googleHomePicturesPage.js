@@ -146,8 +146,8 @@ export default class GoogleHomePicturesPage {
     }
   }
 
-  // Check if any search results contain query
-  async checkIfSearchResultsContainQuery(searchResults, query) {
+  // Check if any search result contains query
+  async checkIfAnySearchResultContainsQuery(searchResults, query) {
     try {
       let result = false;
       for (let searchResult of searchResults) {

@@ -65,15 +65,13 @@ export default class GoogleCustomSearchEnginePage {
   }
 
   // Check if all search results contain query
-  async checkIfSearchResultsContainQuery(searchResults, query) {
+  async checkIfAllSearchResultsContainQuery(searchResults, query) {
     try {
       for (let searchResult of searchResults) {
         // Get the text of each searchResult
         let resultText = await searchResult.textContent();
-        resultText = resultText.toLowerCase();
-        query = query.toLowerCase();
         // Check if the text contains query
-        if (!resultText.includes(query)) {
+        if (!resultText.toLowerCase().includes(query.toLowerCase())) {
           return false;
         }
       }

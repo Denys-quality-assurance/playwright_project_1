@@ -20,7 +20,10 @@ test.describe(`Google Custom Search Engine: Search results testing for '${query}
 
     // Check if each search result actually contains the query in its text
     const searchResults = await googleCSEPage.getSearchResults();
-    const doesEachSearchResultContainQuery = await googleCSEPage.checkIfSearchResultsContainQuery(searchResults, query);
+    const doesEachSearchResultContainQuery = await googleCSEPage.checkIfAllSearchResultsContainQuery(
+      searchResults,
+      query
+    );
     expect(doesEachSearchResultContainQuery).toBe(true, `At least one search result does not contain the query`);
   });
 
