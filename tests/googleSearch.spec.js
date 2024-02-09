@@ -53,35 +53,39 @@ test.describe(`Google Home Page: Search results`, () => {
     expect(doesEachSearchResultContainQuery).toBe(true, `At least one search result does not contain the query`);
   });
 
-  test(`Response body contains '${query}' query`, async () => {
-    // Start waiting for response
-    const responsePromise = googleHomePage.waitForSearchResponse();
-    // Search for query
-    await googleHomePage.searchForQueryByEnter(query);
-    const response = await responsePromise;
+  queryData.forEach((queryData) => {
+    test(`Response body contains '${queryData.query}' query`, async () => {
+      // Start waiting for response
+      const responsePromise = googleHomePage.waitForSearchResponse();
+      // Search for query
+      await googleHomePage.searchForQueryByEnter(queryData.query);
+      const response = await responsePromise;
 
-    // Check if status is 200
-    expect(response.status()).toEqual(200);
+      // Check if status is 200
+      expect(response.status()).toEqual(200);
 
-    // Check if response body starts with <!doctype html>
-    const responseBody = await response.text();
-    expect(responseBody.startsWith('<!doctype html>')).toBeTruthy();
+      // Check if response body starts with <!doctype html>
+      const responseBody = await response.text();
+      expect(responseBody.startsWith('<!doctype html>')).toBeTruthy();
 
-    // Check if the body contains at least 1 instance of query
-    const count = await googleHomePage.countQueryInBody(query);
-    expect(count).toBeGreaterThanOrEqual(1, `The html body doesn't contains the query`);
+      // Check if the body contains at least 1 instance of query
+      const count = await googleHomePage.countQueryInBody(queryData.query);
+      expect(count).toBeGreaterThanOrEqual(1, `The html body doesn't contains the query`);
+    });
   });
 
-  test(`Google search results page contains '${query}' query`, async () => {
-    // Search for query
-    await googleHomePage.searchForQueryByEnter(query);
-    // Check if each search result actually contains query in its text
-    const searchResults = await googleHomePage.getSearchResults();
-    const doesEachSearchResultContainQuery = await googleHomePage.checkIfAllSearchResultsContainQuery(
-      searchResults,
-      query
-    );
-    expect(doesEachSearchResultContainQuery).toBe(true, `At least one search result does not contain the query`);
+  queryData.forEach((queryData) => {
+    test(`Google search results page contains '${queryData.query}' query`, async () => {
+      // Search for query
+      await googleHomePage.searchForQueryByEnter(queryData.query);
+      // Check if each search result actually contains query in its text
+      const searchResults = await googleHomePage.getSearchResults();
+      const doesEachSearchResultContainQuery = await googleHomePage.checkIfAllSearchResultsContainQuery(
+        searchResults,
+        queryData.query
+      );
+      expect(doesEachSearchResultContainQuery).toBe(true, `At least one search result does not contain the query`);
+    });
   });
 
   test(`Google search results page contains more than 1 result for '${query}' query`, async () => {
@@ -95,7 +99,7 @@ test.describe(`Google Home Page: Search results`, () => {
     );
   });
 
-  test.only(`User can get the same search results for the same '${query}' query by pressing enter or clicking on search button @only-desktop`, async ({
+  test(`User can get the same search results for the same '${query}' query by pressing enter or clicking on search button @only-desktop`, async ({
     sharedContext,
   }) => {
     test.setTimeout(20000);

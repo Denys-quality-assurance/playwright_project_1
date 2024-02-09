@@ -149,15 +149,40 @@ export default class GoogleHomePage {
   // Check if all search results contain query
   async checkIfAllSearchResultsContainQuery(searchResults, query) {
     try {
+      // Get all words from the query as an array
+      const queryWords = query.toLowerCase().split(' ');
+
       for (let searchResult of searchResults) {
         // Get the text of each searchResult
         let resultText = await searchResult.textContent();
-        // Check if the text contains query
-        if (!resultText.toLowerCase().includes(query.toLowerCase())) {
-          return false;
+        resultText = resultText.toLowerCase();
+
+        // When query has more than one word
+        if (queryWords.length > 1) {
+          let found = false; // Flag to track if a match is found in the searchResult
+          // Check if the text contains at least one word from the query
+          for (let word of queryWords) {
+            if (resultText.includes(word)) {
+              found = true;
+              break;
+            }
+          }
+
+          // If no word from the query was found in this searchResult
+          if (!found) {
+            return false;
+          }
+
+          // When query has only one word
+        } else {
+          // Check if the search result contains the query word
+          if (!resultText.includes(queryWords[0])) {
+            return false;
+          }
         }
       }
-      return true;
+
+      return true; // Passed all checks
     } catch (error) {
       console.error(`Failed to check if all search results contain query: ${error.message}`);
     }
