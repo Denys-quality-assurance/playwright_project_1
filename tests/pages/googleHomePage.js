@@ -12,6 +12,11 @@ export default class GoogleHomePage {
       searchResult: this.isMobile ? `.y0NFKc` : `.MjjYud >> .g`, // One search result for mobile and for desktop
       googleLogo: this.isMobile ? `#hplogo` : `.lnXdpd[alt="Google"]`, // Google Logo for mobile and for desktop
       videoFilterButton: `.LatpMc[href*="tbm=vid"]`, // Video filter button under the main search query imput area
+      pictureUploadButton: `.DV7the[role="button"]`, // Picture upload button of search by picture modal
+    };
+    this.classes = {
+      picturesSearchButton: `nDcEnd`, // Pictures Search button
+      closeSearchByPictureModalButton: `BiKNf`, // Close button of the the search by picture modal
     };
   }
 
@@ -443,6 +448,49 @@ export default class GoogleHomePage {
       await this.clickOrTap(this.selectors.videoFilterButton);
     } catch (error) {
       console.error(`Failed to apply video filter: ${error.message}`);
+    }
+  }
+
+  // Navigate via Tab to select the item number N
+  async selectElementNViaTab(elementNumber) {
+    try {
+      for (let i = 0; i < elementNumber; i++) {
+        await this.page.keyboard.press('Tab'); // Move focus to the next focusable element
+      }
+    } catch (error) {
+      console.error(`Failed to navigate via Tab to select the item number N: ${error.message}`);
+    }
+  }
+
+  // Navigate via Tab to select the item number N
+  async selectElementNViaTab(elementNumber) {
+    try {
+      for (let i = 0; i < elementNumber; i++) {
+        await this.page.keyboard.press('Tab'); // Move focus to the next focusable element
+      }
+    } catch (error) {
+      console.error(`Failed to navigate via Tab to select the item number N: ${error.message}`);
+    }
+  }
+
+  // Navigate via Shift+Tab to select the item number N
+  async selectElementNViaShiftTab(elementNumber) {
+    try {
+      for (let i = 0; i < elementNumber; i++) {
+        await this.page.keyboard.press('Shift+Tab'); // Move focus to the next focusable element
+      }
+    } catch (error) {
+      console.error(`Failed to navigate via Shift+Tab to select the item number N: ${error.message}`);
+    }
+  }
+
+  // Get class of the active (focused) element
+  async getActiveElementClass() {
+    try {
+      // Fetch the class of the active element
+      return await this.page.evaluate(() => document.activeElement.className);
+    } catch (error) {
+      console.error(`Failed to get class of the active (focused) element: ${error.message}`);
     }
   }
 }

@@ -197,6 +197,40 @@ test.describe(`Google Home Page: Search results`, () => {
     });
   });
 
+  test(`User can navigate via Tab, Shift+Tab and Enter @only-desktop`, async ({}) => {
+    // Search for query
+    await googleHomePage.searchFor(query);
+
+    // Navigate via Tab
+    // Navigate via Tab to select the pictures search button (item number N=10)
+    await googleHomePage.selectElementNViaTab(10);
+    // Get class of the active (focused) element
+    let activeElementClass = await googleHomePage.getActiveElementClass();
+    // Chech if the active element has the expected class
+    expect(activeElementClass).toBe(
+      googleHomePage.classes.picturesSearchButton,
+      `The active element has an unexpected class`
+    );
+
+    // Navigate via Enter
+    // Press Enter
+    await page.keyboard.press('Enter');
+    // Check if the search by picture modal with the picture upload button is visible
+    const pictureUploadButton = page.locator(googleHomePage.selectors.pictureUploadButton);
+    await expect(pictureUploadButton).toBeVisible();
+
+    // Navigate via Shift+Tab
+    // Navigate via Shift+Tab to select the close button (item number N=1) of the the search by picture modal
+    await googleHomePage.selectElementNViaShiftTab(1);
+    // Get class of the active (focused) element
+    activeElementClass = await googleHomePage.getActiveElementClass();
+    // Chech if the active element has the expected class
+    expect(activeElementClass).toBe(
+      googleHomePage.classes.closeSearchByPictureModalButton,
+      `The active element has an unexpected class`
+    );
+  });
+
   queryData.forEach((queryData) => {
     test(`Performance metrics for Search results for '${queryData.query}' query`, async ({}, testInfo) => {
       // Get browser type
