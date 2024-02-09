@@ -41,7 +41,7 @@ test.describe(`Google Home Page: Search results`, () => {
     // Mock the search response with Empty Results
     await googleHomePage.mockResponseWithEmptyResults(sharedContext);
     // Search for query
-    await googleHomePage.searchFor(query);
+    await googleHomePage.searchForQueryByEnter(query);
     // Apply video filter
     await googleHomePage.applyVideFilter();
     // Check if each search result actually contains query in its text
@@ -57,7 +57,7 @@ test.describe(`Google Home Page: Search results`, () => {
     // Start waiting for response
     const responsePromise = googleHomePage.waitForSearchResponse();
     // Search for query
-    await googleHomePage.searchFor(query);
+    await googleHomePage.searchForQueryByEnter(query);
     const response = await responsePromise;
 
     // Check if status is 200
@@ -74,7 +74,7 @@ test.describe(`Google Home Page: Search results`, () => {
 
   test(`Google search results page contains '${query}' query`, async () => {
     // Search for query
-    await googleHomePage.searchFor(query);
+    await googleHomePage.searchForQueryByEnter(query);
     // Check if each search result actually contains query in its text
     const searchResults = await googleHomePage.getSearchResults();
     const doesEachSearchResultContainQuery = await googleHomePage.checkIfAllSearchResultsContainQuery(
@@ -86,7 +86,7 @@ test.describe(`Google Home Page: Search results`, () => {
 
   test(`Google search results page contains more than 1 result for '${query}' query`, async () => {
     // Search for query
-    await googleHomePage.searchFor(query);
+    await googleHomePage.searchForQueryByEnter(query);
     // Checking if the search results page contains more than 1 result for the query
     const searchResults = await googleHomePage.getSearchResults();
     expect(searchResults.length).toBeGreaterThan(
@@ -95,17 +95,18 @@ test.describe(`Google Home Page: Search results`, () => {
     );
   });
 
-  test(`Compare search results from two pages with the same '${query}' query @only-desktop`, async ({
+  test.only(`User can get the same search results for the same '${query}' query by pressing enter or clicking on search button @only-desktop`, async ({
     sharedContext,
   }) => {
     test.setTimeout(20000);
     // Search for query
-    await googleHomePage.searchFor(query);
+    await googleHomePage.searchForQueryByEnter(query);
 
     // Create the 2nd page, navigate to Home page and search the query
     const page2 = await sharedContext.newPage();
     const googleHomePage2 = new GoogleHomePage(page2);
-    await googleHomePage2.navigateAndSearch(query);
+    await googleHomePage2.navigateAndRejectCookies();
+    await googleHomePage2.searchForQueryBySearchButton(query);
 
     // Get search results for the page 1
     const searchResults1 = await googleHomePage.getSearchResults();
@@ -124,7 +125,7 @@ test.describe(`Google Home Page: Search results`, () => {
 
   test(`Check local storage content`, async ({}) => {
     // Search for query
-    await googleHomePage.searchFor(query);
+    await googleHomePage.searchForQueryByEnter(query);
     // Check that all expected keys included to the Local storage
     let localStorageHasKeys = await googleHomePage.checkIfAllKeysExist(
       googleHomePage.getLocalStorageItemsByKeys,
@@ -146,7 +147,7 @@ test.describe(`Google Home Page: Search results`, () => {
 
   test(`Check session storage content`, async ({}) => {
     // Search for query
-    await googleHomePage.searchFor(query);
+    await googleHomePage.searchForQueryByEnter(query);
     // Check that all expected keys included to the Session storage
     let sessionStorageHasKeys = await googleHomePage.checkIfAllKeysExist(
       googleHomePage.getSessionStorageItemsByKeys,
@@ -175,7 +176,7 @@ test.describe(`Google Home Page: Search results`, () => {
 
   test(`Check cookies content`, async ({}) => {
     // Search for query
-    await googleHomePage.searchFor(query);
+    await googleHomePage.searchForQueryByEnter(query);
     // Check that all expected names included to the cookies
     const cookies = await googleHomePage.getCookies();
     const cookieNames = cookies.map((cookie) => cookie.name);
@@ -199,7 +200,7 @@ test.describe(`Google Home Page: Search results`, () => {
 
   test(`User can navigate via Tab, Shift+Tab and Enter @only-desktop`, async ({}) => {
     // Search for query
-    await googleHomePage.searchFor(query);
+    await googleHomePage.searchForQueryByEnter(query);
 
     // Navigate via Tab
     // Navigate via Tab to select the pictures search button (item number N=10)

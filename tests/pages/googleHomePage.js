@@ -6,6 +6,7 @@ export default class GoogleHomePage {
     this.page = page;
     this.isMobile = isMobile; // Type of device is mobile
     this.selectors = {
+      searchButton: `.FPdoLc >> .gNO89b[role="button"]`, // Search button on the Home page
       cookiesModal: `#CXQnmb`, // Cookies consent modal
       rejectAllCookiesButton: `button#W0wltc`, // Reject all cookies button
       searchInputTextArea: `textarea[name=q]`, // Search query imput area
@@ -64,16 +65,32 @@ export default class GoogleHomePage {
     }
   }
 
-  // Search for query
-  async searchFor(query) {
+  // Search for query by pressing enter
+  async searchForQueryByEnter(query) {
     try {
       await this.page.waitForSelector(this.selectors.searchInputTextArea);
       await this.page.fill(this.selectors.searchInputTextArea, query);
+      // Submit the query by pressing enter
       await this.page.press(this.selectors.searchInputTextArea, 'Enter');
       // Waiting for search result page to appear
       await this.page.waitForLoadState('networkidle');
     } catch (error) {
-      console.error(`Failed to search: ${error.message}`);
+      console.error(`Failed to search for query by pressing enter: ${error.message}`);
+    }
+  }
+
+  // Search for query by clicking on search button
+  async searchForQueryBySearchButton(query) {
+    try {
+      await this.page.waitForSelector(this.selectors.searchInputTextArea);
+      await this.page.fill(this.selectors.searchInputTextArea, query);
+      // Submit the query by clicking on search button
+      await this.page.waitForSelector(this.selectors.searchButton);
+      await this.clickOrTap(this.selectors.searchButton);
+      // Waiting for search result page to appear
+      await this.page.waitForLoadState('networkidle');
+    } catch (error) {
+      console.error(`Failed to search for query by clicking on search button: ${error.message}`);
     }
   }
 
@@ -81,7 +98,7 @@ export default class GoogleHomePage {
   async navigateAndSearch(query) {
     try {
       await this.navigateAndRejectCookies();
-      await this.searchFor(query);
+      await this.searchForQueryByEnter(query);
     } catch (error) {
       console.error(`Failed to navigate to page, reject all Cookies and search for query: ${error.message}`);
     }
