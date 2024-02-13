@@ -10,6 +10,9 @@ export default class GoogleHomePage {
       cookiesModal: `#CXQnmb`, // Cookies consent modal
       rejectAllCookiesButton: `button#W0wltc`, // Reject all cookies button
       searchInputTextArea: `textarea[name=q]`, // Search query imput area
+      changeToEnglishModal: `#Rzn5id`, // Change to English modal
+      changeToEnglishButton: `text="Change to English"`, // Change to English button
+      didNotMatchText: `text=" - did not match any documents."`, // Message with text “did not match any documents”
       searchResult: this.isMobile ? `.y0NFKc` : `.MjjYud >> .g`, // One search result for mobile and for desktop
       googleLogo: this.isMobile ? `#hplogo` : `.lnXdpd[alt="Google"]`, // Google Logo for mobile and for desktop
       videoFilterButton: `.LatpMc[href*="tbm=vid"]`, // Video filter button under the main search query imput area
@@ -47,6 +50,7 @@ export default class GoogleHomePage {
   async rejectCookiesIfAsked() {
     if (await this.page.isVisible(this.selectors.cookiesModal)) {
       try {
+        await this.page.waitForSelector(this.selectors.rejectAllCookiesButton);
         await this.clickOrTap(this.selectors.rejectAllCookiesButton);
         await this.page.waitForSelector(this.selectors.cookiesModal, { state: 'hidden' });
       } catch (error) {
@@ -91,6 +95,19 @@ export default class GoogleHomePage {
       await this.page.waitForLoadState('networkidle');
     } catch (error) {
       console.error(`Failed to search for query by clicking on search button: ${error.message}`);
+    }
+  }
+
+  // Change to English if it's needed
+  async changeToEnglishIfAsked() {
+    if (await this.page.isVisible(this.selectors.changeToEnglishModal)) {
+      try {
+        await this.page.waitForSelector(this.selectors.changeToEnglishButton);
+        await this.clickOrTap(this.selectors.changeToEnglishButton);
+        await this.page.waitForSelector(this.selectors.changeToEnglishModal, { state: 'hidden' });
+      } catch (error) {
+        console.error(`Failed to change to English: ${error.message}`);
+      }
     }
   }
 

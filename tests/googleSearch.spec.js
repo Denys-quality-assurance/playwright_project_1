@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test';
 import test from '../hooks/testWithAfterEachHooks.mjs';
 import GoogleHomePage from './pages/googleHomePage';
-import { queryDataGeneral, queryDataCaseInsensitive } from './test-data/queryData';
+import { queryDataGeneral, queryDataCaseInsensitive, queryDataEmptyResults } from './test-data/queryData';
 import acceptablePerformanceData from './test-data/acceptablePerformanceData';
 import { checkFileExists, deleteTempFile, getMismatchedPixelsCount } from '../utilities/fileSystemHelpers';
 import { performSearchAndFetchResults } from '../utilities/pagesHelper';
@@ -89,6 +89,18 @@ test.describe(`Google Home Page: Search results`, () => {
     });
   });
 
+  queryDataEmptyResults.forEach((queryData) => {
+    test.only(`Query '${queryData.query}' not having related result leads to “did not match any documents” message`, async () => {
+      // Search for query
+      await googleHomePage.searchForQueryByEnter(queryData.query);
+      // Change to English if it's needed
+      await googleHomePage.changeToEnglishIfAsked();
+      // Check if the message “did not match any documents” is visible
+      const didNotMatchText = page.locator(googleHomePage.selectors.didNotMatchText);
+      await expect(didNotMatchText).toBeVisible();
+    });
+  });
+
   test(`Google search results page contains more than 1 result for '${query}' query`, async () => {
     // Search for query
     await googleHomePage.searchForQueryByEnter(query);
@@ -124,7 +136,7 @@ test.describe(`Google Home Page: Search results`, () => {
   });
 
   queryDataCaseInsensitive.forEach((queryData) => {
-    test.only(`Search results are case insensitive to query case for the '${queryData.query}' query`, async ({
+    test(`Search results are case insensitive to query case for the '${queryData.query}' query`, async ({
       sharedContext,
     }) => {
       test.setTimeout(20000);

@@ -35,6 +35,15 @@ export const queryDataCaseInsensitive = [
   },
 ];
 
+export const queryDataEmptyResults = [
+  {
+    query: 'asfastawjerwerwfdsrtuiujhgrese',
+  },
+  {
+    query: 'asfastawjerwer wfdsrtuiujhgrese',
+  },
+];
+
 export const queryDataMisspelled = [
   {
     query: 'Gogle',
