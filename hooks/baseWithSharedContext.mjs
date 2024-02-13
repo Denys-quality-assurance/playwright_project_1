@@ -15,14 +15,21 @@ function createSharedContextTest(contextOptions) {
       try {
         // Add viewport screenshots as attachments to HTML report
         const screenshotViewport = await page.screenshot();
-        // const screenshotFullPage = await pages[i].screenshot({ fullPage: true }); // Add fullPage screenshots for debugging
         const timestamp = Date.now();
         const projectName = testInfo.project.name;
         await testInfo.attach(`${projectName}_${timestamp}_viewport_screenshot_of_Page_${index}.png`, {
           body: screenshotViewport,
           contentType: 'image/png',
         });
-        // await testInfo.attach(`${projectName}_${timestamp}_fullpage_screenshot_of_Page_${index}, { body: screenshotFullPage, contentType: 'image/png' }); // Add fullPage screenshots for debugging
+
+        // Conditionally save fullpage screenshot if the test had failed
+        if (testInfo.status === 'failed') {
+          const screenshotFullPage = await page.screenshot({ fullPage: true });
+          await testInfo.attach(`${projectName}_${timestamp}_fullpage_screenshot_of_Page_${index}.png`, {
+            body: screenshotFullPage,
+            contentType: 'image/png',
+          });
+        }
       } catch (error) {
         console.error(`Failed to get screenshots: ${error.message}`);
       }
