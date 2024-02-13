@@ -111,7 +111,9 @@ test.describe(`Google Home Page: Search results`, () => {
       sharedContext,
       query,
       GoogleHomePage,
-      'searchForQueryBySearchButton'
+      async (googleHomePage, query) => {
+        await googleHomePage.searchForQueryBySearchButton(query);
+      }
     );
 
     // Compare the search results from both pages
