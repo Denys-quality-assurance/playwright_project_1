@@ -90,7 +90,7 @@ test.describe(`Google Home Page: Search results`, () => {
   });
 
   queryDataEmptyResults.forEach((queryData) => {
-    test.only(`Query '${queryData.query}' not having related result leads to “did not match any documents” message`, async () => {
+    test(`Query '${queryData.query}' not having related result leads to “did not match any documents” message`, async () => {
       // Search for query
       await googleHomePage.searchForQueryByEnter(queryData.query);
       // Change to English if it's needed
@@ -223,7 +223,7 @@ test.describe(`Google Home Page: Search results`, () => {
   queryDataGeneral.forEach((queryData) => {
     test(`Page title contains '${queryData.query}' query`, async ({}) => {
       // Search for query
-      await googleHomePage.searchFor(queryData.query);
+      await googleHomePage.searchForQueryByEnter(queryData.query);
       const title = await googleHomePage.getPageTitle();
       expect(title).toContain(queryData.query, `Page title doesn't contain the query`);
     });
