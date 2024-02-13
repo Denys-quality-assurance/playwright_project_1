@@ -1,4 +1,4 @@
-const queryData = [
+export const queryDataGeneral = [
   {
     query: 'Google', // for Home page search, for Custom Search Engine testing
   },
@@ -20,4 +20,26 @@ const queryData = [
   },
 ];
 
-export default queryData;
+export const queryDataCaseInsensitive = [
+  {
+    query: 'GoOGlE',
+  },
+  {
+    query: 'CAT',
+  },
+  {
+    query: '@ AT',
+  },
+  {
+    query: 'PlayWright TeSt',
+  },
+];
+
+export const queryDataMisspelled = [
+  {
+    query: 'Gogle',
+  },
+  {
+    query: 'Cwat',
+  },
+];

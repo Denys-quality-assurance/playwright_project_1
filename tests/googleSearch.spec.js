@@ -1,10 +1,11 @@
 import { expect } from '@playwright/test';
 import test from '../hooks/testWithAfterEachHooks.mjs';
 import GoogleHomePage from './pages/googleHomePage';
-import queryData from './test-data/queryData';
+import { queryDataGeneral, queryDataCaseInsensitive } from './test-data/queryData';
 import acceptablePerformanceData from './test-data/acceptablePerformanceData';
 import { checkFileExists, deleteTempFile, getMismatchedPixelsCount } from '../utilities/fileSystemHelpers';
-const query = queryData[1].query;
+import { performSearchAndFetchResults } from '../utilities/pagesHelper';
+const query = queryDataGeneral[1].query;
 const expectedLocalStorageKeysData = {
   desktop: [`sb_wiz.zpc.gws-wiz-serp.`, `_c;;i`, `ds;;frib`, `sb_wiz.qc`], // Expected Local storage's keys for desktop
   mobile: [`sb_wiz.zpc.`], // Expected Local storage's keys for mobile
@@ -53,7 +54,7 @@ test.describe(`Google Home Page: Search results`, () => {
     expect(doesEachSearchResultContainQuery).toBe(true, `At least one search result does not contain the query`);
   });
 
-  queryData.forEach((queryData) => {
+  queryDataGeneral.forEach((queryData) => {
     test(`Response body contains '${queryData.query}' query`, async () => {
       // Start waiting for response
       const responsePromise = googleHomePage.waitForSearchResponse();
@@ -74,7 +75,7 @@ test.describe(`Google Home Page: Search results`, () => {
     });
   });
 
-  queryData.forEach((queryData) => {
+  queryDataGeneral.forEach((queryData) => {
     test(`Google search results page contains '${queryData.query}' query`, async () => {
       // Search for query
       await googleHomePage.searchForQueryByEnter(queryData.query);
@@ -103,28 +104,40 @@ test.describe(`Google Home Page: Search results`, () => {
     sharedContext,
   }) => {
     test.setTimeout(20000);
-    // Search for query
-    await googleHomePage.searchForQueryByEnter(query);
-
-    // Create the 2nd page, navigate to Home page and search the query
-    const page2 = await sharedContext.newPage();
-    const googleHomePage2 = new GoogleHomePage(page2);
-    await googleHomePage2.navigateAndRejectCookies();
-    await googleHomePage2.searchForQueryBySearchButton(query);
-
-    // Get search results for the page 1
-    const searchResults1 = await googleHomePage.getSearchResults();
-    const searchResultsTexts1 = await googleHomePage.getTextContent(searchResults1);
-
-    // Get search results for the page 2
-    const searchResults2 = await googleHomePage2.getSearchResults();
-    const searchResultsTexts2 = await googleHomePage2.getTextContent(searchResults2);
+    // Create new page 1 in the same context, search for the query by pressing Enter and get the text content of the results
+    const searchResultsTexts1 = await performSearchAndFetchResults(sharedContext, query, GoogleHomePage);
+    // Create new page 2 in the same context, search for the query by clicking on search button and get the text content of the results
+    const searchResultsTexts2 = await performSearchAndFetchResults(
+      sharedContext,
+      query,
+      GoogleHomePage,
+      'searchForQueryBySearchButton'
+    );
 
     // Compare the search results from both pages
     expect(searchResultsTexts1).toEqual(
       searchResultsTexts2,
       `Search results from two pages with the same query are not equal`
     );
+  });
+
+  queryDataCaseInsensitive.forEach((queryData) => {
+    test.only(`Search results are case insensitive to query case for the '${queryData.query}' query`, async ({
+      sharedContext,
+    }) => {
+      test.setTimeout(20000);
+      // Create new page 1 in the same context, search for the query in lower case and get the text content of the results
+      const searchResultsTexts1 = await performSearchAndFetchResults(
+        sharedContext,
+        queryData.query.toLowerCase(),
+        GoogleHomePage
+      );
+      // Create new page 2 in the same context, search for the query with upper and lower cases and get the text content of the results
+      const searchResultsTexts2 = await performSearchAndFetchResults(sharedContext, queryData.query, GoogleHomePage);
+
+      // Compare the search results from both pages
+      expect(searchResultsTexts1).toEqual(searchResultsTexts2, `Search results are not case insensitive to query case`);
+    });
   });
 
   test(`Check local storage content`, async ({}) => {
@@ -193,7 +206,7 @@ test.describe(`Google Home Page: Search results`, () => {
     expect(cookiesValuesNotEmpty).toBe(true, `At least 1 cookie value is empty`);
   });
 
-  queryData.forEach((queryData) => {
+  queryDataGeneral.forEach((queryData) => {
     test(`Page title contains '${queryData.query}' query`, async ({}) => {
       // Search for query
       await googleHomePage.searchFor(queryData.query);
@@ -236,7 +249,7 @@ test.describe(`Google Home Page: Search results`, () => {
     );
   });
 
-  queryData.forEach((queryData) => {
+  queryDataGeneral.forEach((queryData) => {
     test(`Performance metrics for Search results for '${queryData.query}' query`, async ({}, testInfo) => {
       // Get browser type
       const defaultBrowserType = testInfo.project.use.defaultBrowserType;
