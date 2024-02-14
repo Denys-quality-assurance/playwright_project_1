@@ -253,8 +253,8 @@ test.describe(`Google Home Page: Search results`, () => {
     await googleHomePage.searchForQueryByEnter(query);
 
     // Navigate via Tab
-    // Navigate via Tab to select the pictures search button (item number N=10)
-    await googleHomePage.selectElementNViaTab(10);
+    // Navigate via Tab to select the pictures search button (item number N=11)
+    await googleHomePage.selectElementNViaTab(11);
     // Get class of the active (focused) element
     let activeElementClass = await googleHomePage.getActiveElementClass();
     // Chech if the active element has the expected class
