@@ -112,7 +112,7 @@ test.describe(`Google Home Page: Search results`, () => {
   });
 
   queryDataEmptyResults.forEach((queryData) => {
-    test(`Query '${queryData.query}' not having related result leads to “did not match any documents” message`, async () => {
+    test(`Query '${queryData.query}' not having related result leads to 'did not match any documents' message @only-desktop`, async () => {
       // Search for query
       await googleHomePage.searchForQueryByEnter(queryData.query);
       // Change to English if it's needed
