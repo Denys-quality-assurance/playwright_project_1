@@ -260,26 +260,22 @@ export default class GoogleHomePage {
     try {
       // Get all words from the query as an array
       const queryWords = query.toLowerCase().split(' ');
-      console.log('queryWords', queryWords);
 
       for (let description of searchResultsDescriptions) {
         // Flag to track if a match is found in the description
         let found = false;
         // Get the text of each searchResult
         const descriptionHTML = await description.innerHTML();
-        console.log('descriptionHTML', descriptionHTML);
 
         // Get arrays of highlighted words between <em> and </em> tags
         const highlightedWords = descriptionHTML
           .split('<em>')
           .filter((word) => word.includes('</em>'))
           .map((word) => word.split('</em>')[0]);
-        console.log('highlightedWords', highlightedWords);
 
         // Check if some word from the query is included in the words between <em> and </em> tags.
         for (const highlightedWord of highlightedWords) {
           const highlightedWordParts = highlightedWord.toLowerCase().split(' ');
-          console.log('highlightedWordParts', highlightedWordParts);
 
           if (highlightedWordParts.some((part) => queryWords.some((queryWord) => part.includes(queryWord)))) {
             found = true;
