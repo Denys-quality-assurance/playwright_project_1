@@ -95,6 +95,24 @@ export default class GoogleHomePage {
     }
   }
 
+  // Check if any auto-suggestion contains the expected approptiate option
+  async checkIfAnyAutoSuggestionOptionContainQuery(searchAutoSuggestionOptionsText, query) {
+    try {
+      // Get all words from the query as an array
+      const queryWords = query.toLowerCase().split(' ');
+
+      for (let optionText of searchAutoSuggestionOptionsText) {
+        // Chech if the option contains any query word
+        if (this.hasQueryWords(optionText, queryWords)) {
+          return true;
+        }
+      }
+      return false; // No option contains the query
+    } catch (error) {
+      console.error(`Failed to if any auto-suggestion option contains the query: ${error.message}`);
+    }
+  }
+
   // Search for query by pressing enter
   async searchForQueryByEnter(query) {
     try {

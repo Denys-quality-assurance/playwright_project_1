@@ -1,7 +1,12 @@
 import { expect } from '@playwright/test';
 import test from '../hooks/testWithAfterEachHooks.mjs';
 import GoogleHomePage from './pages/googleHomePage';
-import { queryDataGeneral, queryDataCaseInsensitive, queryDataEmptyResults } from './test-data/queryData';
+import {
+  queryDataGeneral,
+  queryDataCaseInsensitive,
+  queryDataEmptyResults,
+  queryDataAutoSuggestion,
+} from './test-data/queryData';
 import acceptablePerformanceData from './test-data/acceptablePerformanceData';
 import { checkFileExists, deleteTempFile, getMismatchedPixelsCount } from '../utilities/fileSystemHelpers';
 import { performSearchAndFetchResults } from '../utilities/pagesHelper';
@@ -46,7 +51,7 @@ test.describe(`Google Home Page: Search results`, () => {
     // Apply video filter
     await googleHomePage.applyVideFilter();
     // Check if each search result actually contains query in its text
-    const searchResults = await googleHomePage.getSearchResults();
+    const searchResults = await googleHomePage.getSearchResultElements();
     const doesEachSearchResultContainQuery = await googleHomePage.checkIfAllSearchResultsContainQuery(
       searchResults,
       query
@@ -80,7 +85,7 @@ test.describe(`Google Home Page: Search results`, () => {
       // Search for query
       await googleHomePage.searchForQueryByEnter(queryData.query);
       // Check if each search result actually contains query in its text
-      const searchResults = await googleHomePage.getSearchResults();
+      const searchResults = await googleHomePage.getSearchResultElements();
       const doesEachSearchResultContainQuery = await googleHomePage.checkIfAllSearchResultsContainQuery(
         searchResults,
         queryData.query
@@ -94,7 +99,7 @@ test.describe(`Google Home Page: Search results`, () => {
       // Search for query
       await googleHomePage.searchForQueryByEnter(queryData.query);
       // Check if each search result actually contains query in its text
-      const searchResultsDescriptions = await googleHomePage.getSearchResultsDescriptions();
+      const searchResultsDescriptions = await googleHomePage.getSearchResultsDescriptionElements();
       const doesEachSearchResultContainQuery = await googleHomePage.checkIfAllSearchResultsContainHighlightedQuery(
         searchResultsDescriptions,
         queryData.query
@@ -122,7 +127,7 @@ test.describe(`Google Home Page: Search results`, () => {
     // Search for query
     await googleHomePage.searchForQueryByEnter(query);
     // Checking if the search results page contains more than 1 result for the query
-    const searchResults = await googleHomePage.getSearchResults();
+    const searchResults = await googleHomePage.getSearchResultElements();
     expect(searchResults.length).toBeGreaterThan(
       1,
       `Search results page doesn't contain more than 1 result for the query`
@@ -146,6 +151,27 @@ test.describe(`Google Home Page: Search results`, () => {
       firstTitle,
       `The title of the linked page in the search results does not contain the name of the web page from the search results`
     );
+  });
+
+  queryDataAutoSuggestion.forEach((queryData) => {
+    test(`Auto-suggestion menu contains approptiate options for '${queryData.query}' query`, async () => {
+      // Navigate to page and reject all Cookies if it's needed
+      await googleHomePage.navigateAndRejectCookies();
+      // Type the query
+      await page.waitForSelector(googleHomePage.selectors.searchInputTextArea);
+      await page.fill(googleHomePage.selectors.searchInputTextArea, queryData.query);
+      // Get Search auto suggestions
+      const searchAutoSuggestionOptionsText = await googleHomePage.getSearchAutoSuggestionOptions();
+      // Check if any auto-suggestion contains the expected approptiate option
+      const doesAnyAutoSuggestionOptionContainQuery = await googleHomePage.checkIfAnyAutoSuggestionOptionContainQuery(
+        searchAutoSuggestionOptionsText,
+        queryData.autoSuggestion
+      );
+      expect(doesAnyAutoSuggestionOptionContainQuery).toBe(
+        true,
+        `No auto-suggestion option contains the expected approptiate option`
+      );
+    });
   });
 
   test(`User can get the same search results for the same '${query}' query by pressing enter or clicking on search button @only-desktop`, async ({

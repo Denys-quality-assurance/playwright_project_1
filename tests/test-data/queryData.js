@@ -53,6 +53,21 @@ export const queryDataEmptyResults = [
   },
 ];
 
+export const queryDataAutoSuggestion = [
+  {
+    query: 'Goog',
+    autoSuggestion: 'Google',
+  },
+  {
+    query: 'playwright t',
+    autoSuggestion: 'playwright test',
+  },
+  {
+    query: 'кошк',
+    autoSuggestion: 'кошка',
+  },
+];
+
 export const queryDataMisspelled = [
   {
     query: 'Gogle',
