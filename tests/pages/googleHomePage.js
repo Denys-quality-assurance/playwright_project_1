@@ -82,16 +82,56 @@ export default class GoogleHomePage {
     }
   }
 
+  // Fill Search imput with query
+  async fillSearchInput(query) {
+    try {
+      await this.page.waitForSelector(this.selectors.searchInputTextArea);
+      await this.page.fill(this.selectors.searchInputTextArea, query);
+    } catch (error) {
+      console.error(`Failed to fill Search imput with query: ${error.message}`);
+    }
+  }
+
   // Get Search auto suggestions
-  async getSearchAutoSuggestionOptions() {
+  async getSearchAutoSuggestionOptionElements() {
     try {
       await this.page.waitForSelector(this.selectors.autoSuggestionOption);
-      const searchAutoSuggestionOptions = await this.page.$$(this.selectors.autoSuggestionOption);
+      const searchAutoSuggestionOptionElements = await this.page.$$(this.selectors.autoSuggestionOption);
+      return searchAutoSuggestionOptionElements;
+    } catch (error) {
+      console.error(`Failed to get search auto suggestion options elements: ${error.message}`);
+    }
+  }
+
+  // Get Search auto suggestions text
+  async getSearchAutoSuggestionOptions() {
+    try {
+      const searchAutoSuggestionOptionElements = await this.getSearchAutoSuggestionOptionElements();
       // Get text content from searchAutoSuggestionOptions
-      const searchAutoSuggestionOptionsText = await this.getTextContent(searchAutoSuggestionOptions);
+      const searchAutoSuggestionOptionsText = await this.getTextContent(searchAutoSuggestionOptionElements);
       return searchAutoSuggestionOptionsText;
     } catch (error) {
       console.error(`Failed to get search auto suggestions: ${error.message}`);
+    }
+  }
+
+  // Get the 1st element with expected query
+  async getFirstElementWithQuery(elements, query) {
+    try {
+      for (const element of elements) {
+        // get the text content of the element
+        const textContent = await element.textContent();
+
+        // check if the text content contains the query
+        if (textContent.includes(query)) {
+          return element; // return the element if the text content contains the query
+        }
+      }
+
+      // return null if no matching element was found
+      return null;
+    } catch (error) {
+      console.error(`Failed to the 1st  element with expected query: ${error.message}`);
     }
   }
 
@@ -116,8 +156,8 @@ export default class GoogleHomePage {
   // Search for query by pressing enter
   async searchForQueryByEnter(query) {
     try {
-      await this.page.waitForSelector(this.selectors.searchInputTextArea);
-      await this.page.fill(this.selectors.searchInputTextArea, query);
+      // Fill Search imput with query
+      await this.fillSearchInput(query);
       // Submit the query by pressing enter
       await this.page.press(this.selectors.searchInputTextArea, 'Enter');
       // Waiting for search result page to appear
@@ -130,8 +170,8 @@ export default class GoogleHomePage {
   // Search for query by clicking on search button
   async searchForQueryBySearchButton(query) {
     try {
-      await this.page.waitForSelector(this.selectors.searchInputTextArea);
-      await this.page.fill(this.selectors.searchInputTextArea, query);
+      // Fill Search imput with query
+      await this.fillSearchInput(query);
       // Submit the query by clicking on search button
       await this.page.waitForSelector(this.selectors.searchButton);
       await this.clickOrTap(this.selectors.searchButton);
@@ -521,8 +561,8 @@ export default class GoogleHomePage {
       }
 
       // Make Search action
-      await this.page.waitForSelector(this.selectors.searchInputTextArea);
-      await this.page.fill(this.selectors.searchInputTextArea, query);
+      // Fill Search imput with query
+      await this.fillSearchInput(query);
       await this.page.press(this.selectors.searchInputTextArea, 'Enter');
 
       //Performance.mark API: Start performance tracking

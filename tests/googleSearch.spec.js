@@ -9,7 +9,7 @@ import {
 } from './test-data/queryData';
 import acceptablePerformanceData from './test-data/acceptablePerformanceData';
 import { checkFileExists, deleteTempFile, getMismatchedPixelsCount } from '../utilities/fileSystemHelpers';
-import { performSearchAndFetchResults } from '../utilities/pagesHelper';
+import { performSearchAndFetchResultsForNewPage, navigateHomeForNewPage } from '../utilities/pagesHelper';
 const query = queryDataGeneral[1].query;
 const expectedLocalStorageKeysData = {
   desktop: [`sb_wiz.zpc.gws-wiz-serp.`, `_c;;i`, `ds;;frib`, `sb_wiz.qc`], // Expected Local storage's keys for desktop
@@ -160,7 +160,7 @@ test.describe(`Google Home Page: Search results`, () => {
       // Type the query
       await page.waitForSelector(googleHomePage.selectors.searchInputTextArea);
       await page.fill(googleHomePage.selectors.searchInputTextArea, queryData.query);
-      // Get Search auto suggestions
+      // Get Search auto suggestions text
       const searchAutoSuggestionOptionsText = await googleHomePage.getSearchAutoSuggestionOptions();
       // Check if any auto-suggestion contains the expected approptiate option
       const doesAnyAutoSuggestionOptionContainQuery = await googleHomePage.checkIfAnyAutoSuggestionOptionContainQuery(
@@ -174,14 +174,49 @@ test.describe(`Google Home Page: Search results`, () => {
     });
   });
 
+  queryDataAutoSuggestion.forEach((queryData) => {
+    test(`User can get the same search results for the same '${queryData.autoSuggestion}' query by pressing enter or clicking on auto-suggestion option @only-desktop`, async ({
+      sharedContext,
+    }) => {
+      test.setTimeout(20000);
+      // Create new page 1 in the same context, search for the query in lower case and get the text content of the results
+      const searchResultsTexts1 = await performSearchAndFetchResultsForNewPage(
+        sharedContext,
+        queryData.autoSuggestion.toLowerCase(),
+        GoogleHomePage
+      );
+      // Create new page 2 in the same context, navigate to Home page and reject all Cookies if it's needed
+      const { newPage: page2, googleHomePage: googleHomePage2 } = await navigateHomeForNewPage(
+        sharedContext,
+        GoogleHomePage
+      );
+      // Fill Search imput
+      await googleHomePage2.fillSearchInput(queryData.query);
+      // Get Search auto suggestions
+      const autoSuggestionOptionElements = await googleHomePage2.getSearchAutoSuggestionOptionElements();
+      // Get the 1st option element with expected query
+      const elementsWithQuery = await googleHomePage2.getFirstElementWithQuery(
+        autoSuggestionOptionElements,
+        queryData.autoSuggestion
+      );
+      // Click or tap the auto-suggestion option and get search results
+      await googleHomePage2.clickOrTap(elementsWithQuery);
+      const searchResults2 = await googleHomePage2.getSearchResultElements();
+      const searchResultsTexts2 = await googleHomePage2.getTextContent(searchResults2);
+
+      // Compare the search results from both pages
+      expect(searchResultsTexts1).toEqual(searchResultsTexts2, `Search results are not case insensitive to query case`);
+    });
+  });
+
   test(`User can get the same search results for the same '${query}' query by pressing enter or clicking on search button @only-desktop`, async ({
     sharedContext,
   }) => {
     test.setTimeout(20000);
     // Create new page 1 in the same context, search for the query by pressing Enter and get the text content of the results
-    const searchResultsTexts1 = await performSearchAndFetchResults(sharedContext, query, GoogleHomePage);
+    const searchResultsTexts1 = await performSearchAndFetchResultsForNewPage(sharedContext, query, GoogleHomePage);
     // Create new page 2 in the same context, search for the query by clicking on search button and get the text content of the results
-    const searchResultsTexts2 = await performSearchAndFetchResults(
+    const searchResultsTexts2 = await performSearchAndFetchResultsForNewPage(
       sharedContext,
       query,
       GoogleHomePage,
@@ -203,13 +238,17 @@ test.describe(`Google Home Page: Search results`, () => {
     }) => {
       test.setTimeout(20000);
       // Create new page 1 in the same context, search for the query in lower case and get the text content of the results
-      const searchResultsTexts1 = await performSearchAndFetchResults(
+      const searchResultsTexts1 = await performSearchAndFetchResultsForNewPage(
         sharedContext,
         queryData.query.toLowerCase(),
         GoogleHomePage
       );
       // Create new page 2 in the same context, search for the query with upper and lower cases and get the text content of the results
-      const searchResultsTexts2 = await performSearchAndFetchResults(sharedContext, queryData.query, GoogleHomePage);
+      const searchResultsTexts2 = await performSearchAndFetchResultsForNewPage(
+        sharedContext,
+        queryData.query,
+        GoogleHomePage
+      );
 
       // Compare the search results from both pages
       expect(searchResultsTexts1).toEqual(searchResultsTexts2, `Search results are not case insensitive to query case`);

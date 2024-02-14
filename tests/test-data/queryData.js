@@ -49,22 +49,18 @@ export const queryDataEmptyResults = [
     query: 'asfastawjerwerwfdsrtuiujhgrese',
   },
   {
-    query: 'asfastawjerwer wfdsrtuiujhgrese',
+    query: 'asfastawjerwer wfdsrtuiujhgrese', // for Multi-Word Keywords testing
   },
 ];
 
 export const queryDataAutoSuggestion = [
   {
     query: 'Goog',
-    autoSuggestion: 'Google',
+    autoSuggestion: 'google maps',
   },
   {
-    query: 'playwright t',
-    autoSuggestion: 'playwright test',
-  },
-  {
-    query: 'кошк',
-    autoSuggestion: 'кошка',
+    query: 'бег трус', // for Rus language Multi-Word Keywords testing
+    autoSuggestion: 'бег трусцой это',
   },
 ];
 
