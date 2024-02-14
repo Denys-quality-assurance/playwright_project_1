@@ -16,6 +16,7 @@ export default class GoogleHomePage {
       searchResult: this.isMobile ? `.y0NFKc` : `.MjjYud >> .g`, // One search result for mobile and for desktop
       webPageTitle: this.isMobile ? `.v7jaNc` : `.LC20lb`, // One title of the web page in the search result for mobile and for desktop
       webPageUrl: this.isMobile ? `.cz3goc` : `[jsname="UWckNb"]`, // One URL of the web page in the search result for mobile and for desktop
+      webPageDescription: `.VwiC3b`, // One description of the web page in the search result
       googleLogo: this.isMobile ? `#hplogo` : `.lnXdpd[alt="Google"]`, // Google Logo for mobile and for desktop
       videoFilterButton: `.LatpMc[href*="tbm=vid"]`, // Video filter button under the main search query imput area
       pictureUploadButton: `.DV7the[role="button"]`, // Picture upload button of search by picture modal
@@ -177,6 +178,17 @@ export default class GoogleHomePage {
     }
   }
 
+  // Get Search results descriptions
+  async getSearchResultsDescriptions() {
+    try {
+      await this.page.waitForSelector(this.selectors.webPageDescription);
+      const searchResultsDescriptions = await this.page.$$(this.selectors.webPageDescription);
+      return searchResultsDescriptions;
+    } catch (error) {
+      console.error(`Failed to get search results descriptions: ${error.message}`);
+    }
+  }
+
   // Get titles of the web pages in the search results
   async getSearchResultsWebPagesTitles() {
     try {
@@ -240,6 +252,51 @@ export default class GoogleHomePage {
       return true; // Passed all checks
     } catch (error) {
       console.error(`Failed to check if all search results contain query: ${error.message}`);
+    }
+  }
+
+  // Check if all search results contain highlighted query in descriptions of the web pages
+  async checkIfAllSearchResultsContainHighlightedQuery(searchResultsDescriptions, query) {
+    try {
+      // Get all words from the query as an array
+      const queryWords = query.toLowerCase().split(' ');
+      console.log('queryWords', queryWords);
+
+      for (let description of searchResultsDescriptions) {
+        // Flag to track if a match is found in the description
+        let found = false;
+        // Get the text of each searchResult
+        const descriptionHTML = await description.innerHTML();
+        console.log('descriptionHTML', descriptionHTML);
+
+        // Get arrays of highlighted words between <em> and </em> tags
+        const highlightedWords = descriptionHTML
+          .split('<em>')
+          .filter((word) => word.includes('</em>'))
+          .map((word) => word.split('</em>')[0]);
+        console.log('highlightedWords', highlightedWords);
+
+        // Check if some word from the query is included in the words between <em> and </em> tags.
+        for (const highlightedWord of highlightedWords) {
+          const highlightedWordParts = highlightedWord.toLowerCase().split(' ');
+          console.log('highlightedWordParts', highlightedWordParts);
+
+          if (highlightedWordParts.some((part) => queryWords.some((queryWord) => part.includes(queryWord)))) {
+            found = true;
+          }
+        }
+
+        // If no word from the query was found in this searchResult
+        if (!found) {
+          return false;
+        }
+      }
+
+      return true; // Passed all checks
+    } catch (error) {
+      console.error(
+        `Failed to check if all search results contain highlighted query in descriptions of the web pages: ${error.message}`
+      );
     }
   }
 

@@ -12,7 +12,7 @@ export const queryDataGeneral = [
     query: 'playwright test', // for Search by Multi-Word Keywords testing
   },
   {
-    query: 'world population 2023', // for Search by Alphanumeric Keywords testing
+    query: '100 km h', // for Search by Alphanumeric Keywords testing
   },
   {
     query:

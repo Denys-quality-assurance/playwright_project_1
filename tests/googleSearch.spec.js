@@ -36,7 +36,7 @@ test.describe(`Google Home Page: Search results`, () => {
     expect(mismatchedPixelsCount).toBe(0, `At least one pixel of the logo differs from the baseline`);
   });
 
-  test.only(`User can apply video filter on the Empty results page (mocked) and get search results @only-desktop`, async ({
+  test(`User can apply video filter on the Empty results page (mocked) and get search results @only-desktop`, async ({
     sharedContext,
   }) => {
     // Mock the search response with Empty Results
@@ -86,6 +86,25 @@ test.describe(`Google Home Page: Search results`, () => {
         queryData.query
       );
       expect(doesEachSearchResultContainQuery).toBe(true, `At least one search result does not contain the query`);
+    });
+  });
+
+  queryDataGeneral.forEach((queryData) => {
+    test.only(`Web page description contains '${queryData.query}' query highlighted in Google search results @only-desktop`, async () => {
+      // Search for query
+      await googleHomePage.searchForQueryByEnter(queryData.query);
+      // Change to English
+      await googleHomePage.changeToEnglishIfAsked();
+      // Check if each search result actually contains query in its text
+      const searchResultsDescriptions = await googleHomePage.getSearchResultsDescriptions();
+      const doesEachSearchResultContainQuery = await googleHomePage.checkIfAllSearchResultsContainHighlightedQuery(
+        searchResultsDescriptions,
+        queryData.query
+      );
+      expect(doesEachSearchResultContainQuery).toBe(
+        true,
+        `At least one web page description in search results does not contain the highlighted query`
+      );
     });
   });
 
