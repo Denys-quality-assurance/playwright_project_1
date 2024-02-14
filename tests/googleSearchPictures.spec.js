@@ -39,7 +39,7 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
     await googleHomePicturesPage.uploadPictureToSearch(imagePath);
 
     // Get search results
-    const searchResults = await googleHomePicturesPage.getSearchByPictureResults();
+    const searchResults = await googleHomePicturesPage.getSearchByPictureResultElements();
 
     // Delete the picture from PC
     deleteTempFile(imagePath);

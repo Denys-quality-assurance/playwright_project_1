@@ -152,11 +152,11 @@ export default class GoogleHomePicturesPage {
   }
 
   // Get Search by picture results
-  async getSearchByPictureResults() {
+  async getSearchByPictureResultElements() {
     try {
       await this.page.waitForSelector(this.selectors.searchByPictureResults);
-      const searchByPictureResults = await this.page.$$(this.selectors.searchByPictureResults);
-      return searchByPictureResults;
+      const searchByPictureResultElements = await this.page.$$(this.selectors.searchByPictureResults);
+      return searchByPictureResultElements;
     } catch (error) {
       console.error(`Failed to get search by picture results: ${error.message}`);
     }

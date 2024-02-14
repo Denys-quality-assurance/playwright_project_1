@@ -10,6 +10,7 @@ export default class GoogleHomePage {
       cookiesModal: `#CXQnmb`, // Cookies consent modal
       rejectAllCookiesButton: `button#W0wltc`, // Reject all cookies button
       searchInputTextArea: `textarea[name=q]`, // Search query imput area
+      autoSuggestionOption: `[role="option"]`, // One search auto suggestion option
       changeToEnglishModal: `#Rzn5id`, // Change to English modal
       changeToEnglishButton: `text="Change to English"`, // Change to English button
       didNotMatchText: `text=" - did not match any documents."`, // Message with text “did not match any documents”
@@ -78,6 +79,19 @@ export default class GoogleHomePage {
       await this.rejectCookiesIfAsked();
     } catch (error) {
       console.error(`Failed to navigate to page and reject all Cookies: ${error.message}`);
+    }
+  }
+
+  // Get Search auto suggestions
+  async getSearchAutoSuggestionOptions() {
+    try {
+      await this.page.waitForSelector(this.selectors.autoSuggestionOption);
+      const searchAutoSuggestionOptions = await this.page.$$(this.selectors.autoSuggestionOption);
+      // Get text content from searchAutoSuggestionOptions
+      const searchAutoSuggestionOptionsText = await this.getTextContent(searchAutoSuggestionOptions);
+      return searchAutoSuggestionOptionsText;
+    } catch (error) {
+      console.error(`Failed to get search auto suggestions: ${error.message}`);
     }
   }
 
@@ -168,22 +182,22 @@ export default class GoogleHomePage {
   }
 
   // Get Search results
-  async getSearchResults() {
+  async getSearchResultElements() {
     try {
       await this.page.waitForSelector(this.selectors.searchResult);
-      const searchResults = await this.page.$$(this.selectors.searchResult);
-      return searchResults;
+      const searchResultElements = await this.page.$$(this.selectors.searchResult);
+      return searchResultElements;
     } catch (error) {
       console.error(`Failed to get search results: ${error.message}`);
     }
   }
 
   // Get Search results descriptions
-  async getSearchResultsDescriptions() {
+  async getSearchResultsDescriptionElements() {
     try {
       await this.page.waitForSelector(this.selectors.webPageDescription);
-      const searchResultsDescriptions = await this.page.$$(this.selectors.webPageDescription);
-      return searchResultsDescriptions;
+      const searchResultsDescriptionElements = await this.page.$$(this.selectors.webPageDescription);
+      return searchResultsDescriptionElements;
     } catch (error) {
       console.error(`Failed to get search results descriptions: ${error.message}`);
     }

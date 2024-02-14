@@ -11,7 +11,7 @@ export async function performSearchAndFetchResults(sharedContext, query, GoogleH
     await googleHomePage.searchForQueryByEnter(query);
   }
 
-  const searchResults = await googleHomePage.getSearchResults();
+  const searchResults = await googleHomePage.getSearchResultElements();
   const searchResultsTexts = await googleHomePage.getTextContent(searchResults);
 
   return searchResultsTexts;
