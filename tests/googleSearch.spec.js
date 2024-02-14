@@ -112,6 +112,25 @@ test.describe(`Google Home Page: Search results`, () => {
     );
   });
 
+  test(`Clicking the search result leads to the corresponding web page for '${query}' query`, async () => {
+    // Search for query
+    await googleHomePage.searchForQueryByEnter(query);
+    // Get titles of the web pages in the search results
+    const searchResultsWebPagesTitlesText = await googleHomePage.getSearchResultsWebPagesTitles();
+    const firstTitle = searchResultsWebPagesTitlesText[0];
+    // Get elements with web pages URLs in the search results
+    const searchResultsWebPagesUrlElements = await googleHomePage.getSearchResultsWebPagesUrlElements();
+    const firstUrl = searchResultsWebPagesUrlElements[0];
+    // Click or tap the 1st web link
+    await googleHomePage.clickOrTap(firstUrl);
+    // Check if the title of the linked page in the search results contains the name of the web page from the search results
+    const openPageTitle = await googleHomePage.getPageTitle();
+    expect(openPageTitle).toContain(
+      firstTitle,
+      `The title of the linked page in the search results does not contain the name of the web page from the search results`
+    );
+  });
+
   test(`User can get the same search results for the same '${query}' query by pressing enter or clicking on search button @only-desktop`, async ({
     sharedContext,
   }) => {

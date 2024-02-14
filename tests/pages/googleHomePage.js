@@ -14,6 +14,8 @@ export default class GoogleHomePage {
       changeToEnglishButton: `text="Change to English"`, // Change to English button
       didNotMatchText: `text=" - did not match any documents."`, // Message with text “did not match any documents”
       searchResult: this.isMobile ? `.y0NFKc` : `.MjjYud >> .g`, // One search result for mobile and for desktop
+      webPageTitle: this.isMobile ? `.v7jaNc` : `.LC20lb`, // One title of the web page in the search result for mobile and for desktop
+      webPageUrl: this.isMobile ? `.cz3goc` : `[jsname="UWckNb"]`, // One URL of the web page in the search result for mobile and for desktop
       googleLogo: this.isMobile ? `#hplogo` : `.lnXdpd[alt="Google"]`, // Google Logo for mobile and for desktop
       videoFilterButton: `.LatpMc[href*="tbm=vid"]`, // Video filter button under the main search query imput area
       pictureUploadButton: `.DV7the[role="button"]`, // Picture upload button of search by picture modal
@@ -25,12 +27,21 @@ export default class GoogleHomePage {
   }
 
   // Click or Tap
-  async clickOrTap(selector) {
+  async clickOrTap(elementOrSelector) {
     try {
-      if (this.isMobile) {
-        await this.page.tap(selector);
+      if (typeof elementOrSelector === 'string') {
+        if (this.isMobile) {
+          await this.page.tap(elementOrSelector);
+        } else {
+          await this.page.click(elementOrSelector);
+        }
       } else {
-        await this.page.click(selector);
+        // elementOrSelector is an ElementHandle
+        if (this.isMobile) {
+          await elementOrSelector.tap();
+        } else {
+          await elementOrSelector.click();
+        }
       }
     } catch (error) {
       console.error(`Failed to chose click or tap method: ${error.message}`);
@@ -163,6 +174,30 @@ export default class GoogleHomePage {
     }
   }
 
+  // Get titles of the web pages in the search results
+  async getSearchResultsWebPagesTitles() {
+    try {
+      await this.page.waitForSelector(this.selectors.webPageTitle);
+      const searchResultsWebPagesTitles = await this.page.$$(this.selectors.webPageTitle);
+      // Get text content from searchResultsWebPagesTitles
+      const searchResultsWebPagesTitlesText = await this.getTextContent(searchResultsWebPagesTitles);
+      return searchResultsWebPagesTitlesText;
+    } catch (error) {
+      console.error(`Failed to get titles of the web pagep in the search results: ${error.message}`);
+    }
+  }
+
+  // Get elements with web pages URLs in the search results
+  async getSearchResultsWebPagesUrlElements() {
+    try {
+      await this.page.waitForSelector(this.selectors.webPageUrl);
+      const searchResultsWebPagesUrlElements = await this.page.$$(this.selectors.webPageUrl);
+      return searchResultsWebPagesUrlElements;
+    } catch (error) {
+      console.error(`Failed to get URLs of the web pagep in the search results: ${error.message}`);
+    }
+  }
+
   // Check if all search results contain query
   async checkIfAllSearchResultsContainQuery(searchResults, query) {
     try {
@@ -209,13 +244,27 @@ export default class GoogleHomePage {
   async getTextContent(objects) {
     try {
       let results = [];
-      for (let i = 0; i < objects.length; i++) {
-        const text = await objects[i].innerText();
+      for (let element of objects) {
+        const text = await element.innerText();
         results.push(text);
       }
       return results;
     } catch (error) {
       console.error(`Failed to get text content from array of objects: ${error.message}`);
+    }
+  }
+
+  // Get href attributes from array of objects
+  async getHrefAttribute(objects) {
+    try {
+      let results = [];
+      for (let element of objects) {
+        const href = await element.getAttribute('href');
+        results.push(href);
+      }
+      return results;
+    } catch (error) {
+      console.error(`Failed to get href attributes from array of objects: ${error.message}`);
     }
   }
 
@@ -340,6 +389,8 @@ export default class GoogleHomePage {
   // Get page title
   async getPageTitle() {
     try {
+      // Wait until the title is loaded
+      await this.page.waitForFunction(() => document.title !== '');
       return await this.page.title();
     } catch (error) {
       console.error(`Failed to get page title: ${error.message}`);
