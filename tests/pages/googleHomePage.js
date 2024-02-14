@@ -148,14 +148,17 @@ export default class GoogleHomePage {
   }
 
   // Mock the search response with Empty Results
-  async mockResponseWithEmptyResults(sharedContext) {
+  async mockResponseWithEmptyResults(sharedContext, query) {
     try {
-      const responseBodyForEmptyResults = readFileSync(responseBodyForEmptyResultsMockPath);
+      let responseBodyForEmptyResults = readFileSync(responseBodyForEmptyResultsMockPath);
+      // Replace 'Query' with the current query globally in the HTML
+      responseBodyForEmptyResults = responseBodyForEmptyResults.toString();
+      const responseBodyForEmptyResultsCurrentQuery = responseBodyForEmptyResults.replace(/Query/g, query);
       await sharedContext.route('/search?q=**', (route, request) => {
         route.fulfill({
           status: 200,
           contentType: 'text/html; charset=UTF-8',
-          body: responseBodyForEmptyResults,
+          body: responseBodyForEmptyResultsCurrentQuery,
         });
       });
     } catch (error) {

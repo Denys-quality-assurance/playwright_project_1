@@ -36,11 +36,11 @@ test.describe(`Google Home Page: Search results`, () => {
     expect(mismatchedPixelsCount).toBe(0, `At least one pixel of the logo differs from the baseline`);
   });
 
-  test(`User can apply video filter on the Empty results page (mocked) and get search results @only-desktop`, async ({
+  test.only(`User can apply video filter on the Empty results page (mocked) and get search results @only-desktop`, async ({
     sharedContext,
   }) => {
     // Mock the search response with Empty Results
-    await googleHomePage.mockResponseWithEmptyResults(sharedContext);
+    await googleHomePage.mockResponseWithEmptyResults(sharedContext, query);
     // Search for query
     await googleHomePage.searchForQueryByEnter(query);
     // Apply video filter
