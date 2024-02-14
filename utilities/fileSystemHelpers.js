@@ -33,7 +33,7 @@ export function getTempFilePath(fileName) {
 }
 
 // Download image from url to the system's directory for temporary files
-export async function downloadImageFromUrlToTempDir(url) {
+export async function downloadImageFromUrlToTempDir(url, testInfo) {
   return new Promise((resolve, reject) => {
     https
       .get(url, (response) => {
@@ -46,7 +46,8 @@ export async function downloadImageFromUrlToTempDir(url) {
           return;
         }
         // Path to a new temp file
-        const filePath = getTempFilePath('test_picture.jpg');
+        const fileName = createUniqueFileName(testInfo, 'downloaded_picture.jpg');
+        const filePath = getTempFilePath(fileName);
 
         const fileStream = fs.createWriteStream(filePath);
 
@@ -100,14 +101,23 @@ export function deleteTempFile(filePath) {
   }
 }
 
-// Read the file data into a buffer
+// Read the file data into a buffer asynchronously
 export async function readFile(filePath) {
   try {
     const readFilePromise = util.promisify(fs.readFile); // Create a promisified version of fs.readFile
     const fileBuffer = await readFilePromise(filePath);
     return fileBuffer;
   } catch (error) {
-    console.error(`Error while reading the file: ${error.message}`);
+    console.error(`Error while reading the file asynchronously: ${error.message}`);
+  }
+}
+
+// Read the file data into a buffer synchronously
+export function readFileSync(filePath) {
+  try {
+    return fs.readFileSync(filePath);
+  } catch (error) {
+    console.error(`Error while reading the file synchronously: ${error.message}`);
   }
 }
 

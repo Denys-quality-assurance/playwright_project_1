@@ -1,10 +1,11 @@
 import { expect } from '@playwright/test';
 import test from '../hooks/testWithAfterEachHooks.mjs';
 import GoogleHomePage from './pages/googleHomePage';
-import queryData from './test-data/queryData';
+import { queryDataGeneral, queryDataCaseInsensitive, queryDataEmptyResults } from './test-data/queryData';
 import acceptablePerformanceData from './test-data/acceptablePerformanceData';
 import { checkFileExists, deleteTempFile, getMismatchedPixelsCount } from '../utilities/fileSystemHelpers';
-const query = queryData[1].query;
+import { performSearchAndFetchResults } from '../utilities/pagesHelper';
+const query = queryDataGeneral[1].query;
 const expectedLocalStorageKeysData = {
   desktop: [`sb_wiz.zpc.gws-wiz-serp.`, `_c;;i`, `ds;;frib`, `sb_wiz.qc`], // Expected Local storage's keys for desktop
   mobile: [`sb_wiz.zpc.`], // Expected Local storage's keys for mobile
@@ -14,7 +15,7 @@ const expectedSessionStorageKeys = [`_c;;i`]; // Expected session storage's keys
 const expectedCookiesNames = ['__Secure-ENID', 'CONSENT', 'AEC', 'SOCS', 'DV']; // Expected cookies names
 const acceptableActionDutation = acceptablePerformanceData.acceptableSearchDutation; // The duration of the action should not exide the limit (ms)
 
-test.describe(`Google Home Page: Search results testing for '${query}' query`, () => {
+test.describe(`Google Home Page: Search results`, () => {
   let page; // Page instance
   let googleHomePage; // Page object instance
 
@@ -35,21 +36,74 @@ test.describe(`Google Home Page: Search results testing for '${query}' query`, (
     expect(mismatchedPixelsCount).toBe(0, `At least one pixel of the logo differs from the baseline`);
   });
 
-  test(`Google search results page contains '${query}' query`, async () => {
+  test(`User can apply video filter on the Empty results page (mocked) and get search results @only-desktop`, async ({
+    sharedContext,
+  }) => {
+    // Mock the search response with Empty Results
+    await googleHomePage.mockResponseWithEmptyResults(sharedContext);
     // Search for query
-    await googleHomePage.searchFor(query);
+    await googleHomePage.searchForQueryByEnter(query);
+    // Apply video filter
+    await googleHomePage.applyVideFilter();
     // Check if each search result actually contains query in its text
     const searchResults = await googleHomePage.getSearchResults();
-    const doesEachSearchResultContainQuery = await googleHomePage.checkIfSearchResultsContainQuery(
+    const doesEachSearchResultContainQuery = await googleHomePage.checkIfAllSearchResultsContainQuery(
       searchResults,
       query
     );
     expect(doesEachSearchResultContainQuery).toBe(true, `At least one search result does not contain the query`);
   });
 
+  queryDataGeneral.forEach((queryData) => {
+    test(`Response body contains '${queryData.query}' query`, async () => {
+      // Start waiting for response
+      const responsePromise = googleHomePage.waitForSearchResponse();
+      // Search for query
+      await googleHomePage.searchForQueryByEnter(queryData.query);
+      const response = await responsePromise;
+
+      // Check if status is 200
+      expect(response.status()).toEqual(200);
+
+      // Check if response body starts with <!doctype html>
+      const responseBody = await response.text();
+      expect(responseBody.startsWith('<!doctype html>')).toBeTruthy();
+
+      // Check if the body contains at least 1 instance of query
+      const count = await googleHomePage.countQueryInBody(queryData.query);
+      expect(count).toBeGreaterThanOrEqual(1, `The html body doesn't contains the query`);
+    });
+  });
+
+  queryDataGeneral.forEach((queryData) => {
+    test(`Google search results page contains '${queryData.query}' query`, async () => {
+      // Search for query
+      await googleHomePage.searchForQueryByEnter(queryData.query);
+      // Check if each search result actually contains query in its text
+      const searchResults = await googleHomePage.getSearchResults();
+      const doesEachSearchResultContainQuery = await googleHomePage.checkIfAllSearchResultsContainQuery(
+        searchResults,
+        queryData.query
+      );
+      expect(doesEachSearchResultContainQuery).toBe(true, `At least one search result does not contain the query`);
+    });
+  });
+
+  queryDataEmptyResults.forEach((queryData) => {
+    test(`Query '${queryData.query}' not having related result leads to “did not match any documents” message`, async () => {
+      // Search for query
+      await googleHomePage.searchForQueryByEnter(queryData.query);
+      // Change to English if it's needed
+      await googleHomePage.changeToEnglishIfAsked();
+      // Check if the message “did not match any documents” is visible
+      const didNotMatchText = page.locator(googleHomePage.selectors.didNotMatchText);
+      await expect(didNotMatchText).toBeVisible();
+    });
+  });
+
   test(`Google search results page contains more than 1 result for '${query}' query`, async () => {
     // Search for query
-    await googleHomePage.searchFor(query);
+    await googleHomePage.searchForQueryByEnter(query);
     // Checking if the search results page contains more than 1 result for the query
     const searchResults = await googleHomePage.getSearchResults();
     expect(searchResults.length).toBeGreaterThan(
@@ -58,25 +112,40 @@ test.describe(`Google Home Page: Search results testing for '${query}' query`, (
     );
   });
 
-  test(`Compare search results from two pages with the same '${query}' query @only-desktop`, async ({
+  test(`Clicking the search result leads to the corresponding web page for '${query}' query`, async () => {
+    // Search for query
+    await googleHomePage.searchForQueryByEnter(query);
+    // Get titles of the web pages in the search results
+    const searchResultsWebPagesTitlesText = await googleHomePage.getSearchResultsWebPagesTitles();
+    const firstTitle = searchResultsWebPagesTitlesText[0];
+    // Get elements with web pages URLs in the search results
+    const searchResultsWebPagesUrlElements = await googleHomePage.getSearchResultsWebPagesUrlElements();
+    const firstUrl = searchResultsWebPagesUrlElements[0];
+    // Click or tap the 1st web link
+    await googleHomePage.clickOrTap(firstUrl);
+    // Check if the title of the linked page in the search results contains the name of the web page from the search results
+    const openPageTitle = await googleHomePage.getPageTitle();
+    expect(openPageTitle).toContain(
+      firstTitle,
+      `The title of the linked page in the search results does not contain the name of the web page from the search results`
+    );
+  });
+
+  test(`User can get the same search results for the same '${query}' query by pressing enter or clicking on search button @only-desktop`, async ({
     sharedContext,
   }) => {
     test.setTimeout(20000);
-    // Search for query
-    await googleHomePage.searchFor(query);
-
-    // Create the 2nd page, navigate to Home page and search the query
-    const page2 = await sharedContext.newPage();
-    const googleHomePage2 = new GoogleHomePage(page2);
-    await googleHomePage2.navigateAndSearch(query);
-
-    // Get search results for the page 1
-    const searchResults1 = await googleHomePage.getSearchResults();
-    const searchResultsTexts1 = await googleHomePage.getTextContent(searchResults1);
-
-    // Get search results for the page 2
-    const searchResults2 = await googleHomePage2.getSearchResults();
-    const searchResultsTexts2 = await googleHomePage2.getTextContent(searchResults2);
+    // Create new page 1 in the same context, search for the query by pressing Enter and get the text content of the results
+    const searchResultsTexts1 = await performSearchAndFetchResults(sharedContext, query, GoogleHomePage);
+    // Create new page 2 in the same context, search for the query by clicking on search button and get the text content of the results
+    const searchResultsTexts2 = await performSearchAndFetchResults(
+      sharedContext,
+      query,
+      GoogleHomePage,
+      async (googleHomePage, query) => {
+        await googleHomePage.searchForQueryBySearchButton(query);
+      }
+    );
 
     // Compare the search results from both pages
     expect(searchResultsTexts1).toEqual(
@@ -85,9 +154,28 @@ test.describe(`Google Home Page: Search results testing for '${query}' query`, (
     );
   });
 
+  queryDataCaseInsensitive.forEach((queryData) => {
+    test(`Search results are case insensitive to query case for the '${queryData.query}' query`, async ({
+      sharedContext,
+    }) => {
+      test.setTimeout(20000);
+      // Create new page 1 in the same context, search for the query in lower case and get the text content of the results
+      const searchResultsTexts1 = await performSearchAndFetchResults(
+        sharedContext,
+        queryData.query.toLowerCase(),
+        GoogleHomePage
+      );
+      // Create new page 2 in the same context, search for the query with upper and lower cases and get the text content of the results
+      const searchResultsTexts2 = await performSearchAndFetchResults(sharedContext, queryData.query, GoogleHomePage);
+
+      // Compare the search results from both pages
+      expect(searchResultsTexts1).toEqual(searchResultsTexts2, `Search results are not case insensitive to query case`);
+    });
+  });
+
   test(`Check local storage content`, async ({}) => {
     // Search for query
-    await googleHomePage.searchFor(query);
+    await googleHomePage.searchForQueryByEnter(query);
     // Check that all expected keys included to the Local storage
     let localStorageHasKeys = await googleHomePage.checkIfAllKeysExist(
       googleHomePage.getLocalStorageItemsByKeys,
@@ -109,7 +197,7 @@ test.describe(`Google Home Page: Search results testing for '${query}' query`, (
 
   test(`Check session storage content`, async ({}) => {
     // Search for query
-    await googleHomePage.searchFor(query);
+    await googleHomePage.searchForQueryByEnter(query);
     // Check that all expected keys included to the Session storage
     let sessionStorageHasKeys = await googleHomePage.checkIfAllKeysExist(
       googleHomePage.getSessionStorageItemsByKeys,
@@ -138,7 +226,7 @@ test.describe(`Google Home Page: Search results testing for '${query}' query`, (
 
   test(`Check cookies content`, async ({}) => {
     // Search for query
-    await googleHomePage.searchFor(query);
+    await googleHomePage.searchForQueryByEnter(query);
     // Check that all expected names included to the cookies
     const cookies = await googleHomePage.getCookies();
     const cookieNames = cookies.map((cookie) => cookie.name);
@@ -151,16 +239,50 @@ test.describe(`Google Home Page: Search results testing for '${query}' query`, (
     expect(cookiesValuesNotEmpty).toBe(true, `At least 1 cookie value is empty`);
   });
 
-  queryData.forEach((queryData) => {
+  queryDataGeneral.forEach((queryData) => {
     test(`Page title contains '${queryData.query}' query`, async ({}) => {
       // Search for query
-      await googleHomePage.searchFor(queryData.query);
+      await googleHomePage.searchForQueryByEnter(queryData.query);
       const title = await googleHomePage.getPageTitle();
       expect(title).toContain(queryData.query, `Page title doesn't contain the query`);
     });
   });
 
-  queryData.forEach((queryData) => {
+  test(`User can navigate via Tab, Shift+Tab and Enter @only-desktop`, async ({}) => {
+    // Search for query
+    await googleHomePage.searchForQueryByEnter(query);
+
+    // Navigate via Tab
+    // Navigate via Tab to select the pictures search button (item number N=10)
+    await googleHomePage.selectElementNViaTab(10);
+    // Get class of the active (focused) element
+    let activeElementClass = await googleHomePage.getActiveElementClass();
+    // Chech if the active element has the expected class
+    expect(activeElementClass).toBe(
+      googleHomePage.classes.picturesSearchButton,
+      `The active element has an unexpected class`
+    );
+
+    // Navigate via Enter
+    // Press Enter
+    await page.keyboard.press('Enter');
+    // Check if the search by picture modal with the picture upload button is visible
+    const pictureUploadButton = page.locator(googleHomePage.selectors.pictureUploadButton);
+    await expect(pictureUploadButton).toBeVisible();
+
+    // Navigate via Shift+Tab
+    // Navigate via Shift+Tab to select the close button (item number N=1) of the the search by picture modal
+    await googleHomePage.selectElementNViaShiftTab(1);
+    // Get class of the active (focused) element
+    activeElementClass = await googleHomePage.getActiveElementClass();
+    // Chech if the active element has the expected class
+    expect(activeElementClass).toBe(
+      googleHomePage.classes.closeSearchByPictureModalButton,
+      `The active element has an unexpected class`
+    );
+  });
+
+  queryDataGeneral.forEach((queryData) => {
     test(`Performance metrics for Search results for '${queryData.query}' query`, async ({}, testInfo) => {
       // Get browser type
       const defaultBrowserType = testInfo.project.use.defaultBrowserType;

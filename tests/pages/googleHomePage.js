@@ -1,16 +1,51 @@
-import { createUniqueFileName, getTempFilePath, writeFile } from '../../utilities/fileSystemHelpers';
+import { readFileSync, createUniqueFileName, getTempFilePath, writeFile } from '../../utilities/fileSystemHelpers';
+const responseBodyForEmptyResultsMockPath = './tests/test-data/mocks/responseBodyForEmptyResults.html';
 
 export default class GoogleHomePage {
   constructor(page, isMobile) {
     this.page = page;
     this.isMobile = isMobile; // Type of device is mobile
     this.selectors = {
+      searchButton: `.FPdoLc >> .gNO89b[role="button"]`, // Search button on the Home page
       cookiesModal: `#CXQnmb`, // Cookies consent modal
       rejectAllCookiesButton: `button#W0wltc`, // Reject all cookies button
       searchInputTextArea: `textarea[name=q]`, // Search query imput area
+      changeToEnglishModal: `#Rzn5id`, // Change to English modal
+      changeToEnglishButton: `text="Change to English"`, // Change to English button
+      didNotMatchText: `text=" - did not match any documents."`, // Message with text “did not match any documents”
       searchResult: this.isMobile ? `.y0NFKc` : `.MjjYud >> .g`, // One search result for mobile and for desktop
+      webPageTitle: this.isMobile ? `.v7jaNc` : `.LC20lb`, // One title of the web page in the search result for mobile and for desktop
+      webPageUrl: this.isMobile ? `.cz3goc` : `[jsname="UWckNb"]`, // One URL of the web page in the search result for mobile and for desktop
       googleLogo: this.isMobile ? `#hplogo` : `.lnXdpd[alt="Google"]`, // Google Logo for mobile and for desktop
+      videoFilterButton: `.LatpMc[href*="tbm=vid"]`, // Video filter button under the main search query imput area
+      pictureUploadButton: `.DV7the[role="button"]`, // Picture upload button of search by picture modal
     };
+    this.classes = {
+      picturesSearchButton: `nDcEnd`, // Pictures Search button
+      closeSearchByPictureModalButton: `BiKNf`, // Close button of the the search by picture modal
+    };
+  }
+
+  // Click or Tap
+  async clickOrTap(elementOrSelector) {
+    try {
+      if (typeof elementOrSelector === 'string') {
+        if (this.isMobile) {
+          await this.page.tap(elementOrSelector);
+        } else {
+          await this.page.click(elementOrSelector);
+        }
+      } else {
+        // elementOrSelector is an ElementHandle
+        if (this.isMobile) {
+          await elementOrSelector.tap();
+        } else {
+          await elementOrSelector.click();
+        }
+      }
+    } catch (error) {
+      console.error(`Failed to chose click or tap method: ${error.message}`);
+    }
   }
 
   // Navigate to Home page
@@ -26,7 +61,8 @@ export default class GoogleHomePage {
   async rejectCookiesIfAsked() {
     if (await this.page.isVisible(this.selectors.cookiesModal)) {
       try {
-        await this.page.click(this.selectors.rejectAllCookiesButton);
+        await this.page.waitForSelector(this.selectors.rejectAllCookiesButton);
+        await this.clickOrTap(this.selectors.rejectAllCookiesButton);
         await this.page.waitForSelector(this.selectors.cookiesModal, { state: 'hidden' });
       } catch (error) {
         console.error(`Failed to reject all Cookies: ${error.message}`);
@@ -44,16 +80,45 @@ export default class GoogleHomePage {
     }
   }
 
-  // Search for query
-  async searchFor(query) {
+  // Search for query by pressing enter
+  async searchForQueryByEnter(query) {
     try {
       await this.page.waitForSelector(this.selectors.searchInputTextArea);
       await this.page.fill(this.selectors.searchInputTextArea, query);
+      // Submit the query by pressing enter
       await this.page.press(this.selectors.searchInputTextArea, 'Enter');
       // Waiting for search result page to appear
       await this.page.waitForLoadState('networkidle');
     } catch (error) {
-      console.error(`Failed to search: ${error.message}`);
+      console.error(`Failed to search for query by pressing enter: ${error.message}`);
+    }
+  }
+
+  // Search for query by clicking on search button
+  async searchForQueryBySearchButton(query) {
+    try {
+      await this.page.waitForSelector(this.selectors.searchInputTextArea);
+      await this.page.fill(this.selectors.searchInputTextArea, query);
+      // Submit the query by clicking on search button
+      await this.page.waitForSelector(this.selectors.searchButton);
+      await this.clickOrTap(this.selectors.searchButton);
+      // Waiting for search result page to appear
+      await this.page.waitForLoadState('networkidle');
+    } catch (error) {
+      console.error(`Failed to search for query by clicking on search button: ${error.message}`);
+    }
+  }
+
+  // Change to English if it's needed
+  async changeToEnglishIfAsked() {
+    if (await this.page.isVisible(this.selectors.changeToEnglishModal)) {
+      try {
+        await this.page.waitForSelector(this.selectors.changeToEnglishButton);
+        await this.clickOrTap(this.selectors.changeToEnglishButton);
+        await this.page.waitForSelector(this.selectors.changeToEnglishModal, { state: 'hidden' });
+      } catch (error) {
+        console.error(`Failed to change to English: ${error.message}`);
+      }
     }
   }
 
@@ -61,9 +126,40 @@ export default class GoogleHomePage {
   async navigateAndSearch(query) {
     try {
       await this.navigateAndRejectCookies();
-      await this.searchFor(query);
+      await this.searchForQueryByEnter(query);
     } catch (error) {
       console.error(`Failed to navigate to page, reject all Cookies and search for query: ${error.message}`);
+    }
+  }
+
+  // Wait for the search response
+  async waitForSearchResponse() {
+    return this.page.waitForResponse('/search?q=**');
+  }
+
+  // Get number of query instances in the page body
+  async countQueryInBody(query) {
+    try {
+      const bodyText = await this.page.textContent('body');
+      return (bodyText.match(new RegExp(query, 'g')) || []).length;
+    } catch (error) {
+      console.error(`Failed to get the number of query instances in the page body: ${error.message}`);
+    }
+  }
+
+  // Mock the search response with Empty Results
+  async mockResponseWithEmptyResults(sharedContext) {
+    try {
+      const responseBodyForEmptyResults = readFileSync(responseBodyForEmptyResultsMockPath);
+      await sharedContext.route('/search?q=**', (route, request) => {
+        route.fulfill({
+          status: 200,
+          contentType: 'text/html; charset=UTF-8',
+          body: responseBodyForEmptyResults,
+        });
+      });
+    } catch (error) {
+      console.error(`Failed to mock the search response with Empty Results: ${error.message}`);
     }
   }
 
@@ -78,22 +174,69 @@ export default class GoogleHomePage {
     }
   }
 
-  // Check if all search results contain query
-  async checkIfSearchResultsContainQuery(searchResults, query) {
+  // Get titles of the web pages in the search results
+  async getSearchResultsWebPagesTitles() {
     try {
+      await this.page.waitForSelector(this.selectors.webPageTitle);
+      const searchResultsWebPagesTitles = await this.page.$$(this.selectors.webPageTitle);
+      // Get text content from searchResultsWebPagesTitles
+      const searchResultsWebPagesTitlesText = await this.getTextContent(searchResultsWebPagesTitles);
+      return searchResultsWebPagesTitlesText;
+    } catch (error) {
+      console.error(`Failed to get titles of the web pagep in the search results: ${error.message}`);
+    }
+  }
+
+  // Get elements with web pages URLs in the search results
+  async getSearchResultsWebPagesUrlElements() {
+    try {
+      await this.page.waitForSelector(this.selectors.webPageUrl);
+      const searchResultsWebPagesUrlElements = await this.page.$$(this.selectors.webPageUrl);
+      return searchResultsWebPagesUrlElements;
+    } catch (error) {
+      console.error(`Failed to get URLs of the web pagep in the search results: ${error.message}`);
+    }
+  }
+
+  // Check if all search results contain query
+  async checkIfAllSearchResultsContainQuery(searchResults, query) {
+    try {
+      // Get all words from the query as an array
+      const queryWords = query.toLowerCase().split(' ');
+
       for (let searchResult of searchResults) {
         // Get the text of each searchResult
         let resultText = await searchResult.textContent();
         resultText = resultText.toLowerCase();
-        query = query.toLowerCase();
-        // Check if the text contains query
-        if (!resultText.includes(query)) {
-          return false;
+
+        // When query has more than one word
+        if (queryWords.length > 1) {
+          let found = false; // Flag to track if a match is found in the searchResult
+          // Check if the text contains at least one word from the query
+          for (let word of queryWords) {
+            if (resultText.includes(word)) {
+              found = true;
+              break;
+            }
+          }
+
+          // If no word from the query was found in this searchResult
+          if (!found) {
+            return false;
+          }
+
+          // When query has only one word
+        } else {
+          // Check if the search result contains the query word
+          if (!resultText.includes(queryWords[0])) {
+            return false;
+          }
         }
       }
-      return true;
+
+      return true; // Passed all checks
     } catch (error) {
-      console.error(`Failed to validate search results contain query: ${error.message}`);
+      console.error(`Failed to check if all search results contain query: ${error.message}`);
     }
   }
 
@@ -101,13 +244,27 @@ export default class GoogleHomePage {
   async getTextContent(objects) {
     try {
       let results = [];
-      for (let i = 0; i < objects.length; i++) {
-        const text = await objects[i].innerText();
+      for (let element of objects) {
+        const text = await element.innerText();
         results.push(text);
       }
       return results;
     } catch (error) {
       console.error(`Failed to get text content from array of objects: ${error.message}`);
+    }
+  }
+
+  // Get href attributes from array of objects
+  async getHrefAttribute(objects) {
+    try {
+      let results = [];
+      for (let element of objects) {
+        const href = await element.getAttribute('href');
+        results.push(href);
+      }
+      return results;
+    } catch (error) {
+      console.error(`Failed to get href attributes from array of objects: ${error.message}`);
     }
   }
 
@@ -232,6 +389,8 @@ export default class GoogleHomePage {
   // Get page title
   async getPageTitle() {
     try {
+      // Wait until the title is loaded
+      await this.page.waitForFunction(() => document.title !== '');
       return await this.page.title();
     } catch (error) {
       console.error(`Failed to get page title: ${error.message}`);
@@ -389,6 +548,59 @@ export default class GoogleHomePage {
       return { metrics, actionDuration };
     } catch (error) {
       console.error(`Failed to get performance metrics for Search results: ${error.message}`);
+    }
+  }
+
+  // Switch to video searh
+  async applyVideFilter() {
+    try {
+      await this.page.waitForSelector(this.selectors.videoFilterButton);
+      await this.clickOrTap(this.selectors.videoFilterButton);
+    } catch (error) {
+      console.error(`Failed to apply video filter: ${error.message}`);
+    }
+  }
+
+  // Navigate via Tab to select the item number N
+  async selectElementNViaTab(elementNumber) {
+    try {
+      for (let i = 0; i < elementNumber; i++) {
+        await this.page.keyboard.press('Tab'); // Move focus to the next focusable element
+      }
+    } catch (error) {
+      console.error(`Failed to navigate via Tab to select the item number N: ${error.message}`);
+    }
+  }
+
+  // Navigate via Tab to select the item number N
+  async selectElementNViaTab(elementNumber) {
+    try {
+      for (let i = 0; i < elementNumber; i++) {
+        await this.page.keyboard.press('Tab'); // Move focus to the next focusable element
+      }
+    } catch (error) {
+      console.error(`Failed to navigate via Tab to select the item number N: ${error.message}`);
+    }
+  }
+
+  // Navigate via Shift+Tab to select the item number N
+  async selectElementNViaShiftTab(elementNumber) {
+    try {
+      for (let i = 0; i < elementNumber; i++) {
+        await this.page.keyboard.press('Shift+Tab'); // Move focus to the next focusable element
+      }
+    } catch (error) {
+      console.error(`Failed to navigate via Shift+Tab to select the item number N: ${error.message}`);
+    }
+  }
+
+  // Get class of the active (focused) element
+  async getActiveElementClass() {
+    try {
+      // Fetch the class of the active element
+      return await this.page.evaluate(() => document.activeElement.className);
+    } catch (error) {
+      console.error(`Failed to get class of the active (focused) element: ${error.message}`);
     }
   }
 }

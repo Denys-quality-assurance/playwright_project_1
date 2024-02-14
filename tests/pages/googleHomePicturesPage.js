@@ -18,6 +18,19 @@ export default class GoogleHomePicturesPage {
     };
   }
 
+  // Click or Tap
+  async clickOrTap(selector) {
+    try {
+      if (this.isMobile) {
+        await this.page.tap(selector);
+      } else {
+        await this.page.click(selector);
+      }
+    } catch (error) {
+      console.error(`Failed to chose click or tap method: ${error.message}`);
+    }
+  }
+
   // Navigate to Home page
   async navigateHome() {
     try {
@@ -31,7 +44,7 @@ export default class GoogleHomePicturesPage {
   async rejectCookiesIfAsked() {
     if (await this.page.isVisible(this.selectors.cookiesModal)) {
       try {
-        await this.page.click(this.selectors.rejectAllCookiesButton);
+        await this.clickOrTap(this.selectors.rejectAllCookiesButton);
         await this.page.waitForSelector(this.selectors.cookiesModal, { state: 'hidden' });
       } catch (error) {
         console.error(`Failed to reject all Cookies: ${error.message}`);
@@ -66,7 +79,8 @@ export default class GoogleHomePicturesPage {
   async navigateAndSearchPictures(query) {
     try {
       await this.navigateAndRejectCookies();
-      await this.page.click(this.selectors.picturesSearchButton);
+      await this.page.waitForSelector(this.selectors.picturesSearchButton);
+      await this.clickOrTap(this.selectors.picturesSearchButton);
       await this.page.waitForNavigation();
       await this.searchFor(query);
     } catch (error) {
@@ -79,7 +93,7 @@ export default class GoogleHomePicturesPage {
   // Click on the search result to open picture preview
   async openPicturePreview(picture) {
     try {
-      await this.page.click(picture);
+      await this.clickOrTap(picture);
       await this.page.waitForSelector(this.selectors.picturePriview);
       return this.page.$(this.selectors.picturePriview);
     } catch (error) {
@@ -89,15 +103,22 @@ export default class GoogleHomePicturesPage {
 
   // Get description and picture link of the the 1st picture search result
   async get1stPictureDescriptionAndDownload() {
-    // Get text from the 1st search result
-    const pictureDescription = await this.page.$eval(this.selectors.firstSearchResultText, (el) => el.innerText);
+    try {
+      // Get text from the 1st search result
+      await this.page.waitForSelector(this.selectors.firstSearchResultText);
+      const pictureDescription = await this.page.$eval(this.selectors.firstSearchResultText, (el) => el.innerText);
 
-    // Click on the 1st search result to open picture preview
-    const picturePriview = await this.openPicturePreview(this.selectors.firstSearchResult);
+      // Click on the 1st search result to open picture preview
+      const picturePriview = await this.openPicturePreview(this.selectors.firstSearchResult);
 
-    // Get picture link of the preview
-    const imageUrl = await picturePriview.getAttribute('src');
-    return { pictureDescription, imageUrl };
+      // Get picture link of the preview
+      const imageUrl = await picturePriview.getAttribute('src');
+      return { pictureDescription, imageUrl };
+    } catch (error) {
+      console.error(
+        `Failed to get description and picture link of the the 1st picture search result: ${error.message}`
+      );
+    }
   }
 
   // Upload the picture to search by picture
@@ -105,7 +126,7 @@ export default class GoogleHomePicturesPage {
     try {
       // Click on the Search by picture button to open picture upload area
       await this.page.waitForSelector(this.selectors.searchByPictureButton);
-      await this.page.click(this.selectors.searchByPictureButton);
+      await this.clickOrTap(this.selectors.searchByPictureButton);
       await this.page.waitForSelector(this.selectors.pictureUploadButton);
 
       // Listen for the 'filechooser' event that triggers when file chooser dialog opens
@@ -115,7 +136,7 @@ export default class GoogleHomePicturesPage {
       });
 
       // Click the button that opens the file chooser dialog
-      await this.page.click(this.selectors.pictureUploadButton);
+      await this.clickOrTap(this.selectors.pictureUploadButton);
     } catch (error) {
       console.error(`Failed to open upload picture to search: ${error.message}`);
     }
@@ -146,8 +167,8 @@ export default class GoogleHomePicturesPage {
     }
   }
 
-  // Check if any search results contain query
-  async checkIfSearchResultsContainQuery(searchResults, query) {
+  // Check if any search result contains query
+  async checkIfAnySearchResultContainsQuery(searchResults, query) {
     try {
       let result = false;
       for (let searchResult of searchResults) {

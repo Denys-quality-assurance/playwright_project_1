@@ -11,6 +11,19 @@ export default class GoogleMapsPage {
     };
   }
 
+  // Click or Tap
+  async clickOrTap(selector) {
+    try {
+      if (this.isMobile) {
+        await this.page.tap(selector);
+      } else {
+        await this.page.click(selector);
+      }
+    } catch (error) {
+      console.error(`Failed to chose click or tap method: ${error.message}`);
+    }
+  }
+
   // Navigate to URL
   async navigateHome(URL) {
     try {
@@ -25,7 +38,7 @@ export default class GoogleMapsPage {
   async rejectCookiesIfAsked() {
     if (await this.page.isVisible(this.selectors.cookiesModal)) {
       try {
-        await this.page.click(this.selectors.rejectAllCookiesButton);
+        await this.clickOrTap(this.selectors.rejectAllCookiesButton);
         await this.page.waitForSelector(this.selectors.cookiesModal, { state: 'hidden' });
       } catch (error) {
         console.error(`Failed to reject all Cookies: ${error.message}`);
@@ -37,7 +50,7 @@ export default class GoogleMapsPage {
   async rejectNavigationIfAsked() {
     if (await this.page.isVisible(this.selectors.navigationModal)) {
       try {
-        await this.page.click(this.selectors.rejectNavigationButton);
+        await this.clickOrTap(this.selectors.rejectNavigationButton);
         await this.page.waitForSelector(this.selectors.navigationModal, { state: 'hidden' });
       } catch (error) {
         console.error(`Failed to reject location tracking: ${error.message}`);
@@ -56,7 +69,7 @@ export default class GoogleMapsPage {
   // Go to My Place
   async goToMyLocation() {
     await this.page.waitForSelector(this.selectors.myPlaceButton);
-    await this.page.click(this.selectors.myPlaceButton);
+    await this.clickOrTap(this.selectors.myPlaceButton);
     await this.page.waitForNavigation();
     // Waiting for result page to appear
     await this.page.waitForLoadState('networkidle');
