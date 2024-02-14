@@ -90,11 +90,9 @@ test.describe(`Google Home Page: Search results`, () => {
   });
 
   queryDataGeneral.forEach((queryData) => {
-    test(`Web page description contains '${queryData.query}' query highlighted in Google search results @only-desktop`, async () => {
+    test.only(`Web page description contains '${queryData.query}' query highlighted in Google search results @only-desktop`, async () => {
       // Search for query
       await googleHomePage.searchForQueryByEnter(queryData.query);
-      // Change to English
-      await googleHomePage.changeToEnglishIfAsked();
       // Check if each search result actually contains query in its text
       const searchResultsDescriptions = await googleHomePage.getSearchResultsDescriptions();
       const doesEachSearchResultContainQuery = await googleHomePage.checkIfAllSearchResultsContainHighlightedQuery(

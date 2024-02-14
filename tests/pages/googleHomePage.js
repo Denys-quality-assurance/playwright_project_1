@@ -262,28 +262,13 @@ export default class GoogleHomePage {
       const queryWords = query.toLowerCase().split(' ');
 
       for (let description of searchResultsDescriptions) {
-        // Flag to track if a match is found in the description
-        let found = false;
         // Get the text of each searchResult
         const descriptionHTML = await description.innerHTML();
 
-        // Get arrays of highlighted words between <em> and </em> tags
-        const highlightedWords = descriptionHTML
-          .split('<em>')
-          .filter((word) => word.includes('</em>'))
-          .map((word) => word.split('</em>')[0]);
-
-        // Check if some word from the query is included in the words between <em> and </em> tags.
-        for (const highlightedWord of highlightedWords) {
-          const highlightedWordParts = highlightedWord.toLowerCase().split(' ');
-
-          if (highlightedWordParts.some((part) => queryWords.some((queryWord) => part.includes(queryWord)))) {
-            found = true;
-          }
-        }
-
-        // If no word from the query was found in this searchResult
-        if (!found) {
+        // Chech if the description contains any query word highlighted
+        if (this.hasHighlightedWords(descriptionHTML, queryWords)) {
+          continue;
+        } else {
           return false;
         }
       }
@@ -294,6 +279,25 @@ export default class GoogleHomePage {
         `Failed to check if all search results contain highlighted query in descriptions of the web pages: ${error.message}`
       );
     }
+  }
+
+  // Chech if the description contains any query word highlighted
+  hasHighlightedWords(descriptionHTML, queryWords) {
+    // Get arrays of highlighted words between <em> and </em> tags
+    const highlightedWords = descriptionHTML
+      .split('<em>')
+      .filter((word) => word.includes('</em>'))
+      .map((word) => word.split('</em>')[0].toLowerCase());
+
+    // Check if some word from the query is included in the words between <em> and </em> tags
+    for (let highlightedWord of highlightedWords) {
+      const highlightedParts = highlightedWord.split(' ');
+
+      if (highlightedParts.some((part) => queryWords.some((queryWord) => part.includes(queryWord)))) {
+        return true;
+      }
+    }
+    return false;
   }
 
   // Get text content from array of objects
