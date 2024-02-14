@@ -10,12 +10,14 @@ export default class GoogleHomePage {
       cookiesModal: `#CXQnmb`, // Cookies consent modal
       rejectAllCookiesButton: `button#W0wltc`, // Reject all cookies button
       searchInputTextArea: `textarea[name=q]`, // Search query imput area
+      autoSuggestionOption: `[role="option"]`, // One search auto suggestion option
       changeToEnglishModal: `#Rzn5id`, // Change to English modal
       changeToEnglishButton: `text="Change to English"`, // Change to English button
       didNotMatchText: `text=" - did not match any documents."`, // Message with text “did not match any documents”
       searchResult: this.isMobile ? `.y0NFKc` : `.MjjYud >> .g`, // One search result for mobile and for desktop
       webPageTitle: this.isMobile ? `.v7jaNc` : `.LC20lb`, // One title of the web page in the search result for mobile and for desktop
       webPageUrl: this.isMobile ? `.cz3goc` : `[jsname="UWckNb"]`, // One URL of the web page in the search result for mobile and for desktop
+      webPageDescription: `.VwiC3b`, // One description of the web page in the search result
       googleLogo: this.isMobile ? `#hplogo` : `.lnXdpd[alt="Google"]`, // Google Logo for mobile and for desktop
       videoFilterButton: `.LatpMc[href*="tbm=vid"]`, // Video filter button under the main search query imput area
       pictureUploadButton: `.DV7the[role="button"]`, // Picture upload button of search by picture modal
@@ -80,11 +82,82 @@ export default class GoogleHomePage {
     }
   }
 
-  // Search for query by pressing enter
-  async searchForQueryByEnter(query) {
+  // Fill Search imput with query
+  async fillSearchInput(query) {
     try {
       await this.page.waitForSelector(this.selectors.searchInputTextArea);
       await this.page.fill(this.selectors.searchInputTextArea, query);
+    } catch (error) {
+      console.error(`Failed to fill Search imput with query: ${error.message}`);
+    }
+  }
+
+  // Get Search auto suggestions
+  async getSearchAutoSuggestionOptionElements() {
+    try {
+      await this.page.waitForSelector(this.selectors.autoSuggestionOption);
+      const searchAutoSuggestionOptionElements = await this.page.$$(this.selectors.autoSuggestionOption);
+      return searchAutoSuggestionOptionElements;
+    } catch (error) {
+      console.error(`Failed to get search auto suggestion options elements: ${error.message}`);
+    }
+  }
+
+  // Get Search auto suggestions text
+  async getSearchAutoSuggestionOptions() {
+    try {
+      const searchAutoSuggestionOptionElements = await this.getSearchAutoSuggestionOptionElements();
+      // Get text content from searchAutoSuggestionOptions
+      const searchAutoSuggestionOptionsText = await this.getTextContent(searchAutoSuggestionOptionElements);
+      return searchAutoSuggestionOptionsText;
+    } catch (error) {
+      console.error(`Failed to get search auto suggestions: ${error.message}`);
+    }
+  }
+
+  // Get the 1st element with expected query
+  async getFirstElementWithQuery(elements, query) {
+    try {
+      for (const element of elements) {
+        // get the text content of the element
+        const textContent = await element.textContent();
+
+        // check if the text content contains the query
+        if (textContent.includes(query)) {
+          return element; // return the element if the text content contains the query
+        }
+      }
+
+      // return null if no matching element was found
+      return null;
+    } catch (error) {
+      console.error(`Failed to the 1st  element with expected query: ${error.message}`);
+    }
+  }
+
+  // Check if any auto-suggestion contains the expected approptiate option
+  async checkIfAnyAutoSuggestionOptionContainQuery(searchAutoSuggestionOptionsText, query) {
+    try {
+      // Get all words from the query as an array
+      const queryWords = query.toLowerCase().split(' ');
+
+      for (let optionText of searchAutoSuggestionOptionsText) {
+        // Chech if the option contains any query word
+        if (this.hasQueryWords(optionText, queryWords)) {
+          return true;
+        }
+      }
+      return false; // No option contains the query
+    } catch (error) {
+      console.error(`Failed to if any auto-suggestion option contains the query: ${error.message}`);
+    }
+  }
+
+  // Search for query by pressing enter
+  async searchForQueryByEnter(query) {
+    try {
+      // Fill Search imput with query
+      await this.fillSearchInput(query);
       // Submit the query by pressing enter
       await this.page.press(this.selectors.searchInputTextArea, 'Enter');
       // Waiting for search result page to appear
@@ -97,8 +170,8 @@ export default class GoogleHomePage {
   // Search for query by clicking on search button
   async searchForQueryBySearchButton(query) {
     try {
-      await this.page.waitForSelector(this.selectors.searchInputTextArea);
-      await this.page.fill(this.selectors.searchInputTextArea, query);
+      // Fill Search imput with query
+      await this.fillSearchInput(query);
       // Submit the query by clicking on search button
       await this.page.waitForSelector(this.selectors.searchButton);
       await this.clickOrTap(this.selectors.searchButton);
@@ -148,14 +221,17 @@ export default class GoogleHomePage {
   }
 
   // Mock the search response with Empty Results
-  async mockResponseWithEmptyResults(sharedContext) {
+  async mockResponseWithEmptyResults(sharedContext, query) {
     try {
-      const responseBodyForEmptyResults = readFileSync(responseBodyForEmptyResultsMockPath);
+      let responseBodyForEmptyResults = readFileSync(responseBodyForEmptyResultsMockPath);
+      // Replace 'Query' with the current query globally in the HTML
+      responseBodyForEmptyResults = responseBodyForEmptyResults.toString();
+      const responseBodyForEmptyResultsCurrentQuery = responseBodyForEmptyResults.replace(/Query/g, query);
       await sharedContext.route('/search?q=**', (route, request) => {
         route.fulfill({
           status: 200,
           contentType: 'text/html; charset=UTF-8',
-          body: responseBodyForEmptyResults,
+          body: responseBodyForEmptyResultsCurrentQuery,
         });
       });
     } catch (error) {
@@ -164,13 +240,24 @@ export default class GoogleHomePage {
   }
 
   // Get Search results
-  async getSearchResults() {
+  async getSearchResultElements() {
     try {
       await this.page.waitForSelector(this.selectors.searchResult);
-      const searchResults = await this.page.$$(this.selectors.searchResult);
-      return searchResults;
+      const searchResultElements = await this.page.$$(this.selectors.searchResult);
+      return searchResultElements;
     } catch (error) {
       console.error(`Failed to get search results: ${error.message}`);
+    }
+  }
+
+  // Get Search results descriptions
+  async getSearchResultsDescriptionElements() {
+    try {
+      await this.page.waitForSelector(this.selectors.webPageDescription);
+      const searchResultsDescriptionElements = await this.page.$$(this.selectors.webPageDescription);
+      return searchResultsDescriptionElements;
+    } catch (error) {
+      console.error(`Failed to get search results descriptions: ${error.message}`);
     }
   }
 
@@ -209,28 +296,11 @@ export default class GoogleHomePage {
         let resultText = await searchResult.textContent();
         resultText = resultText.toLowerCase();
 
-        // When query has more than one word
-        if (queryWords.length > 1) {
-          let found = false; // Flag to track if a match is found in the searchResult
-          // Check if the text contains at least one word from the query
-          for (let word of queryWords) {
-            if (resultText.includes(word)) {
-              found = true;
-              break;
-            }
-          }
-
-          // If no word from the query was found in this searchResult
-          if (!found) {
-            return false;
-          }
-
-          // When query has only one word
+        // Chech if the search result contains any query word
+        if (this.hasQueryWords(resultText, queryWords)) {
+          continue;
         } else {
-          // Check if the search result contains the query word
-          if (!resultText.includes(queryWords[0])) {
-            return false;
-          }
+          return false;
         }
       }
 
@@ -238,6 +308,58 @@ export default class GoogleHomePage {
     } catch (error) {
       console.error(`Failed to check if all search results contain query: ${error.message}`);
     }
+  }
+
+  // Chech if the search result contains any query word
+  hasQueryWords(resultText, queryWords) {
+    if (queryWords.some((queryWord) => resultText.includes(queryWord))) {
+      return true;
+    } else return false;
+  }
+
+  // Check if all search results contain highlighted query in descriptions of the web pages
+  async checkIfAllSearchResultsContainHighlightedQuery(searchResultsDescriptions, query) {
+    try {
+      // Get all words from the query as an array
+      const queryWords = query.toLowerCase().split(' ');
+
+      for (let description of searchResultsDescriptions) {
+        // Get the text of each searchResult
+        const descriptionHTML = await description.innerHTML();
+
+        // Chech if the description contains any query word highlighted
+        if (this.hasHighlightedWords(descriptionHTML, queryWords)) {
+          continue;
+        } else {
+          return false;
+        }
+      }
+
+      return true; // Passed all checks
+    } catch (error) {
+      console.error(
+        `Failed to check if all search results contain highlighted query in descriptions of the web pages: ${error.message}`
+      );
+    }
+  }
+
+  // Chech if the description contains any query word highlighted
+  hasHighlightedWords(descriptionHTML, queryWords) {
+    // Get arrays of highlighted words between <em> and </em> tags
+    const highlightedWords = descriptionHTML
+      .split('<em>')
+      .filter((word) => word.includes('</em>'))
+      .map((word) => word.split('</em>')[0].toLowerCase());
+
+    // Check if some word from the query is included in the words between <em> and </em> tags
+    for (let highlightedWord of highlightedWords) {
+      const highlightedParts = highlightedWord.split(' ');
+
+      if (highlightedParts.some((part) => queryWords.some((queryWord) => part.includes(queryWord)))) {
+        return true;
+      }
+    }
+    return false;
   }
 
   // Get text content from array of objects
@@ -439,8 +561,8 @@ export default class GoogleHomePage {
       }
 
       // Make Search action
-      await this.page.waitForSelector(this.selectors.searchInputTextArea);
-      await this.page.fill(this.selectors.searchInputTextArea, query);
+      // Fill Search imput with query
+      await this.fillSearchInput(query);
       await this.page.press(this.selectors.searchInputTextArea, 'Enter');
 
       //Performance.mark API: Start performance tracking

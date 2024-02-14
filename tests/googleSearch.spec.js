@@ -1,10 +1,15 @@
 import { expect } from '@playwright/test';
 import test from '../hooks/testWithAfterEachHooks.mjs';
 import GoogleHomePage from './pages/googleHomePage';
-import { queryDataGeneral, queryDataCaseInsensitive, queryDataEmptyResults } from './test-data/queryData';
+import {
+  queryDataGeneral,
+  queryDataCaseInsensitive,
+  queryDataEmptyResults,
+  queryDataAutoSuggestion,
+} from './test-data/queryData';
 import acceptablePerformanceData from './test-data/acceptablePerformanceData';
 import { checkFileExists, deleteTempFile, getMismatchedPixelsCount } from '../utilities/fileSystemHelpers';
-import { performSearchAndFetchResults } from '../utilities/pagesHelper';
+import { performSearchAndFetchResultsForNewPage, navigateHomeForNewPage } from '../utilities/pagesHelper';
 const query = queryDataGeneral[1].query;
 const expectedLocalStorageKeysData = {
   desktop: [`sb_wiz.zpc.gws-wiz-serp.`, `_c;;i`, `ds;;frib`, `sb_wiz.qc`], // Expected Local storage's keys for desktop
@@ -40,13 +45,13 @@ test.describe(`Google Home Page: Search results`, () => {
     sharedContext,
   }) => {
     // Mock the search response with Empty Results
-    await googleHomePage.mockResponseWithEmptyResults(sharedContext);
+    await googleHomePage.mockResponseWithEmptyResults(sharedContext, query);
     // Search for query
     await googleHomePage.searchForQueryByEnter(query);
     // Apply video filter
     await googleHomePage.applyVideFilter();
     // Check if each search result actually contains query in its text
-    const searchResults = await googleHomePage.getSearchResults();
+    const searchResults = await googleHomePage.getSearchResultElements();
     const doesEachSearchResultContainQuery = await googleHomePage.checkIfAllSearchResultsContainQuery(
       searchResults,
       query
@@ -80,7 +85,7 @@ test.describe(`Google Home Page: Search results`, () => {
       // Search for query
       await googleHomePage.searchForQueryByEnter(queryData.query);
       // Check if each search result actually contains query in its text
-      const searchResults = await googleHomePage.getSearchResults();
+      const searchResults = await googleHomePage.getSearchResultElements();
       const doesEachSearchResultContainQuery = await googleHomePage.checkIfAllSearchResultsContainQuery(
         searchResults,
         queryData.query
@@ -89,8 +94,25 @@ test.describe(`Google Home Page: Search results`, () => {
     });
   });
 
+  queryDataGeneral.forEach((queryData) => {
+    test(`Web page description contains '${queryData.query}' query highlighted in Google search results @only-desktop`, async () => {
+      // Search for query
+      await googleHomePage.searchForQueryByEnter(queryData.query);
+      // Check if each search result actually contains query in its text
+      const searchResultsDescriptions = await googleHomePage.getSearchResultsDescriptionElements();
+      const doesEachSearchResultContainQuery = await googleHomePage.checkIfAllSearchResultsContainHighlightedQuery(
+        searchResultsDescriptions,
+        queryData.query
+      );
+      expect(doesEachSearchResultContainQuery).toBe(
+        true,
+        `At least one web page description in search results does not contain the highlighted query`
+      );
+    });
+  });
+
   queryDataEmptyResults.forEach((queryData) => {
-    test(`Query '${queryData.query}' not having related result leads to “did not match any documents” message`, async () => {
+    test(`Query '${queryData.query}' not having related result leads to 'did not match any documents' message @only-desktop`, async () => {
       // Search for query
       await googleHomePage.searchForQueryByEnter(queryData.query);
       // Change to English if it's needed
@@ -105,7 +127,7 @@ test.describe(`Google Home Page: Search results`, () => {
     // Search for query
     await googleHomePage.searchForQueryByEnter(query);
     // Checking if the search results page contains more than 1 result for the query
-    const searchResults = await googleHomePage.getSearchResults();
+    const searchResults = await googleHomePage.getSearchResultElements();
     expect(searchResults.length).toBeGreaterThan(
       1,
       `Search results page doesn't contain more than 1 result for the query`
@@ -131,14 +153,70 @@ test.describe(`Google Home Page: Search results`, () => {
     );
   });
 
+  queryDataAutoSuggestion.forEach((queryData) => {
+    test(`Auto-suggestion menu contains approptiate options for '${queryData.query}' query`, async () => {
+      // Navigate to page and reject all Cookies if it's needed
+      await googleHomePage.navigateAndRejectCookies();
+      // Type the query
+      await page.waitForSelector(googleHomePage.selectors.searchInputTextArea);
+      await page.fill(googleHomePage.selectors.searchInputTextArea, queryData.query);
+      // Get Search auto suggestions text
+      const searchAutoSuggestionOptionsText = await googleHomePage.getSearchAutoSuggestionOptions();
+      // Check if any auto-suggestion contains the expected approptiate option
+      const doesAnyAutoSuggestionOptionContainQuery = await googleHomePage.checkIfAnyAutoSuggestionOptionContainQuery(
+        searchAutoSuggestionOptionsText,
+        queryData.autoSuggestion
+      );
+      expect(doesAnyAutoSuggestionOptionContainQuery).toBe(
+        true,
+        `No auto-suggestion option contains the expected approptiate option`
+      );
+    });
+  });
+
+  queryDataAutoSuggestion.forEach((queryData) => {
+    test(`User can get the same search results for the same '${queryData.autoSuggestion}' query by pressing enter or clicking on auto-suggestion option @only-desktop`, async ({
+      sharedContext,
+    }) => {
+      test.setTimeout(20000);
+      // Create new page 1 in the same context, search for the query in lower case and get the text content of the results
+      const searchResultsTexts1 = await performSearchAndFetchResultsForNewPage(
+        sharedContext,
+        queryData.autoSuggestion.toLowerCase(),
+        GoogleHomePage
+      );
+      // Create new page 2 in the same context, navigate to Home page and reject all Cookies if it's needed
+      const { newPage: page2, googleHomePage: googleHomePage2 } = await navigateHomeForNewPage(
+        sharedContext,
+        GoogleHomePage
+      );
+      // Fill Search imput
+      await googleHomePage2.fillSearchInput(queryData.query);
+      // Get Search auto suggestions
+      const autoSuggestionOptionElements = await googleHomePage2.getSearchAutoSuggestionOptionElements();
+      // Get the 1st option element with expected query
+      const elementsWithQuery = await googleHomePage2.getFirstElementWithQuery(
+        autoSuggestionOptionElements,
+        queryData.autoSuggestion
+      );
+      // Click or tap the auto-suggestion option and get search results
+      await googleHomePage2.clickOrTap(elementsWithQuery);
+      const searchResults2 = await googleHomePage2.getSearchResultElements();
+      const searchResultsTexts2 = await googleHomePage2.getTextContent(searchResults2);
+
+      // Compare the search results from both pages
+      expect(searchResultsTexts1).toEqual(searchResultsTexts2, `Search results are not case insensitive to query case`);
+    });
+  });
+
   test(`User can get the same search results for the same '${query}' query by pressing enter or clicking on search button @only-desktop`, async ({
     sharedContext,
   }) => {
     test.setTimeout(20000);
     // Create new page 1 in the same context, search for the query by pressing Enter and get the text content of the results
-    const searchResultsTexts1 = await performSearchAndFetchResults(sharedContext, query, GoogleHomePage);
+    const searchResultsTexts1 = await performSearchAndFetchResultsForNewPage(sharedContext, query, GoogleHomePage);
     // Create new page 2 in the same context, search for the query by clicking on search button and get the text content of the results
-    const searchResultsTexts2 = await performSearchAndFetchResults(
+    const searchResultsTexts2 = await performSearchAndFetchResultsForNewPage(
       sharedContext,
       query,
       GoogleHomePage,
@@ -160,13 +238,17 @@ test.describe(`Google Home Page: Search results`, () => {
     }) => {
       test.setTimeout(20000);
       // Create new page 1 in the same context, search for the query in lower case and get the text content of the results
-      const searchResultsTexts1 = await performSearchAndFetchResults(
+      const searchResultsTexts1 = await performSearchAndFetchResultsForNewPage(
         sharedContext,
         queryData.query.toLowerCase(),
         GoogleHomePage
       );
       // Create new page 2 in the same context, search for the query with upper and lower cases and get the text content of the results
-      const searchResultsTexts2 = await performSearchAndFetchResults(sharedContext, queryData.query, GoogleHomePage);
+      const searchResultsTexts2 = await performSearchAndFetchResultsForNewPage(
+        sharedContext,
+        queryData.query,
+        GoogleHomePage
+      );
 
       // Compare the search results from both pages
       expect(searchResultsTexts1).toEqual(searchResultsTexts2, `Search results are not case insensitive to query case`);
@@ -253,8 +335,8 @@ test.describe(`Google Home Page: Search results`, () => {
     await googleHomePage.searchForQueryByEnter(query);
 
     // Navigate via Tab
-    // Navigate via Tab to select the pictures search button (item number N=10)
-    await googleHomePage.selectElementNViaTab(10);
+    // Navigate via Tab to select the pictures search button (item number N=11)
+    await googleHomePage.selectElementNViaTab(11);
     // Get class of the active (focused) element
     let activeElementClass = await googleHomePage.getActiveElementClass();
     // Chech if the active element has the expected class

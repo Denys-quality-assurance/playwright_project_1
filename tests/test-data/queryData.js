@@ -12,7 +12,7 @@ export const queryDataGeneral = [
     query: 'playwright test', // for Search by Multi-Word Keywords testing
   },
   {
-    query: 'world population 2023', // for Search by Alphanumeric Keywords testing
+    query: '100 km h', // for Search by Alphanumeric Keywords testing
   },
   {
     query:
@@ -49,7 +49,18 @@ export const queryDataEmptyResults = [
     query: 'asfastawjerwerwfdsrtuiujhgrese',
   },
   {
-    query: 'asfastawjerwer wfdsrtuiujhgrese',
+    query: 'asfastawjerwer wfdsrtuiujhgrese', // for Multi-Word Keywords testing
+  },
+];
+
+export const queryDataAutoSuggestion = [
+  {
+    query: 'Goog',
+    autoSuggestion: 'google maps',
+  },
+  {
+    query: 'бег трус', // for Rus language Multi-Word Keywords testing
+    autoSuggestion: 'бег трусцой это',
   },
 ];
 

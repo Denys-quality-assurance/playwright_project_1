@@ -54,11 +54,11 @@ export default class GoogleCustomSearchEnginePage {
   }
 
   // Get Search results
-  async getSearchResults() {
+  async getSearchResultElements() {
     try {
       await this.frame.waitForSelector(this.selectors.searchResult);
-      const searchResults = await this.frame.$$(this.selectors.searchResult);
-      return searchResults;
+      const searchResultElements = await this.frame.$$(this.selectors.searchResult);
+      return searchResultElements;
     } catch (error) {
       console.error(`Failed to get search results: ${error.message}`);
     }

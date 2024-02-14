@@ -19,12 +19,21 @@ export default class GoogleHomePicturesPage {
   }
 
   // Click or Tap
-  async clickOrTap(selector) {
+  async clickOrTap(elementOrSelector) {
     try {
-      if (this.isMobile) {
-        await this.page.tap(selector);
+      if (typeof elementOrSelector === 'string') {
+        if (this.isMobile) {
+          await this.page.tap(elementOrSelector);
+        } else {
+          await this.page.click(elementOrSelector);
+        }
       } else {
-        await this.page.click(selector);
+        // elementOrSelector is an ElementHandle
+        if (this.isMobile) {
+          await elementOrSelector.tap();
+        } else {
+          await elementOrSelector.click();
+        }
       }
     } catch (error) {
       console.error(`Failed to chose click or tap method: ${error.message}`);
@@ -143,11 +152,11 @@ export default class GoogleHomePicturesPage {
   }
 
   // Get Search by picture results
-  async getSearchByPictureResults() {
+  async getSearchByPictureResultElements() {
     try {
       await this.page.waitForSelector(this.selectors.searchByPictureResults);
-      const searchByPictureResults = await this.page.$$(this.selectors.searchByPictureResults);
-      return searchByPictureResults;
+      const searchByPictureResultElements = await this.page.$$(this.selectors.searchByPictureResults);
+      return searchByPictureResultElements;
     } catch (error) {
       console.error(`Failed to get search by picture results: ${error.message}`);
     }
