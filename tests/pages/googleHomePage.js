@@ -224,28 +224,11 @@ export default class GoogleHomePage {
         let resultText = await searchResult.textContent();
         resultText = resultText.toLowerCase();
 
-        // When query has more than one word
-        if (queryWords.length > 1) {
-          let found = false; // Flag to track if a match is found in the searchResult
-          // Check if the text contains at least one word from the query
-          for (let word of queryWords) {
-            if (resultText.includes(word)) {
-              found = true;
-              break;
-            }
-          }
-
-          // If no word from the query was found in this searchResult
-          if (!found) {
-            return false;
-          }
-
-          // When query has only one word
+        // Chech if the search result contains any query word
+        if (this.hasQueryWords(resultText, queryWords)) {
+          continue;
         } else {
-          // Check if the search result contains the query word
-          if (!resultText.includes(queryWords[0])) {
-            return false;
-          }
+          return false;
         }
       }
 
@@ -253,6 +236,13 @@ export default class GoogleHomePage {
     } catch (error) {
       console.error(`Failed to check if all search results contain query: ${error.message}`);
     }
+  }
+
+  // Chech if the search result contains any query word
+  hasQueryWords(resultText, queryWords) {
+    if (queryWords.some((queryWord) => resultText.includes(queryWord))) {
+      return true;
+    } else return false;
   }
 
   // Check if all search results contain highlighted query in descriptions of the web pages
