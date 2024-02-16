@@ -18,7 +18,7 @@ const expectedLocalStorageKeysData = {
 };
 let expectedLocalStorageKeys;
 const expectedSessionStorageKeys = [`_c;;i`]; // Expected session storage's keys
-const expectedCookiesNames = ['__Secure-ENID', 'CONSENT', 'AEC', 'SOCS', 'DV']; // Expected cookies names
+const expectedCookiesNames = ['__Secure-ENID', 'AEC', 'SOCS', 'DV']; // Expected cookies names
 const acceptableActionDutation = acceptablePerformanceData.acceptableSearchDutation; // The duration of the action should not exide the limit (ms)
 
 test.describe(`Google Home Page: Search results`, () => {
