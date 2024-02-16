@@ -6,6 +6,7 @@ import {
   queryDataCaseInsensitive,
   queryDataEmptyResults,
   queryDataAutoSuggestion,
+  queryDataMisspelled,
 } from './test-data/queryData';
 import acceptablePerformanceData from './test-data/acceptablePerformanceData';
 import { checkFileExists, deleteTempFile, getMismatchedPixelsCount } from '../utilities/fileSystemHelpers';
@@ -91,6 +92,23 @@ test.describe(`Google Home Page: Search results`, () => {
         queryData.query
       );
       expect(doesEachSearchResultContainQuery).toBe(true, `At least one search result does not contain the query`);
+    });
+  });
+
+  queryDataMisspelled.forEach((queryData) => {
+    test(`Google search results page contains the corrected '${queryData.correctedQuery}' query when the query '${queryData.query}' is misspelled`, async () => {
+      // Search for query
+      await googleHomePage.searchForQueryByEnter(queryData.query);
+      // Check if each search result actually contains query in its text
+      const searchResults = await googleHomePage.getSearchResultElements();
+      const doesEachSearchResultContainQuery = await googleHomePage.checkIfAllSearchResultsContainQuery(
+        searchResults,
+        queryData.correctedQuery
+      );
+      expect(doesEachSearchResultContainQuery).toBe(
+        true,
+        `At least one search result does not contain the corrected query`
+      );
     });
   });
 

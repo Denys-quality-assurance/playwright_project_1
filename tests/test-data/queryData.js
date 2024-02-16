@@ -67,8 +67,14 @@ export const queryDataAutoSuggestion = [
 export const queryDataMisspelled = [
   {
     query: 'Gogle',
+    correctedQuery: 'Google',
   },
   {
-    query: 'Cwat',
+    query: 'plawright teting',
+    correctedQuery: 'playwright testing',
+  },
+  {
+    query: 'новоти мра',
+    correctedQuery: 'новости мира',
   },
 ];
