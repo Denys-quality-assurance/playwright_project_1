@@ -99,6 +99,12 @@ test.describe(`Google Home Page: Search results`, () => {
     test(`Google search results page contains the corrected '${queryData.correctedQuery}' query when the query '${queryData.query}' is misspelled`, async () => {
       // Search for query
       await googleHomePage.searchForQueryByEnter(queryData.query);
+      // Check if the message "Showing results for <correcter query> contains the corrected query
+      const correctedQueryElementText = await googleHomePage.getCorrectedQueryFormMessageText();
+      expect(correctedQueryElementText).toContain(
+        queryData.correctedQuery,
+        `The message "Showing results for <correcter query>" doesn't contain the corrected query`
+      );
       // Check if each search result actually contains query in its text
       const searchResults = await googleHomePage.getSearchResultElements();
       const doesEachSearchResultContainQuery = await googleHomePage.checkIfAllSearchResultsContainQuery(

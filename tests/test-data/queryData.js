@@ -1,18 +1,18 @@
 export const queryDataGeneral = [
   {
-    query: 'Google', // for Home page search, for Custom Search Engine testing
+    query: 'Google', // for En language testing (Home page search, Custom Search Engine)
   },
   {
-    query: 'cat', // for Search by Picture testing
+    query: 'cat', // for En language testing (Search by Picture testing)
   },
   {
-    query: '@ at', // for Search by Keywords with Special Characters testing
+    query: '@ at', // for Keywords with Special Characters testing
   },
   {
-    query: 'playwright test', // for Search by Multi-Word Keywords testing
+    query: 'playwright test', // for En language Multi-Word Keywords testing
   },
   {
-    query: '100 km h', // for Search by Alphanumeric Keywords testing
+    query: '100 km h', // for Alphanumeric Keywords testing
   },
   {
     query:
@@ -28,25 +28,25 @@ export const queryDataGeneral = [
 
 export const queryDataCaseInsensitive = [
   {
-    query: 'GoOGlE',
+    query: 'GoOGlE', // for En language testing
   },
   {
-    query: 'CAT',
+    query: 'CAT', // for En language testing
   },
   {
-    query: '@ AT',
+    query: '@ AT', // for Keywords with Special Characters testing
   },
   {
-    query: 'PlayWright TeSt',
+    query: 'PlayWright TeSt', // for En language Multi-Word Keywords testing
   },
   {
-    query: 'ПлэйрайТ',
+    query: 'ПлэйрайТ', // for Cyr language testing
   },
 ];
 
 export const queryDataEmptyResults = [
   {
-    query: 'asfastawjerwerwfdsrtuiujhgrese',
+    query: 'asfastawjerwerwfdsrtuiujhgrese', // for 1 Keyword testing
   },
   {
     query: 'asfastawjerwer wfdsrtuiujhgrese', // for Multi-Word Keywords testing
@@ -55,26 +55,30 @@ export const queryDataEmptyResults = [
 
 export const queryDataAutoSuggestion = [
   {
-    query: 'Goog',
+    query: 'Goog', // for En language testing
     autoSuggestion: 'google maps',
   },
   {
-    query: 'бег трус', // for Rus language Multi-Word Keywords testing
+    query: 'бег трус', // for Cyr language Multi-Word Keywords testing
     autoSuggestion: 'бег трусцой это',
   },
 ];
 
 export const queryDataMisspelled = [
   {
-    query: 'Gogle',
+    query: 'Gogle', // for En language testing
     correctedQuery: 'Google',
   },
   {
-    query: 'plawright teting',
+    query: 'plawright teting', // for En language Multi-Word Keywords testing
     correctedQuery: 'playwright testing',
   },
   {
-    query: 'новоти мра',
-    correctedQuery: 'новости мира',
+    query: 'новоти', // for Cyr language testing
+    correctedQuery: 'новости',
+  },
+  {
+    query: 'свужие новоти', // for Cyr language Multi-Word Keywords testing
+    correctedQuery: 'свежие новости',
   },
 ];

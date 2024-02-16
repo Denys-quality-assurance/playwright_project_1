@@ -14,6 +14,7 @@ export default class GoogleHomePage {
       changeToEnglishModal: `#Rzn5id`, // Change to English modal
       changeToEnglishButton: `text="Change to English"`, // Change to English button
       didNotMatchText: `text=" - did not match any documents."`, // Message with text “did not match any documents”
+      correctedQuery: `.p64x9c.KDCVqf`, // The corrected query text for the misspelled query in the message "Showing results for <correcter query>"
       searchResult: this.isMobile ? `.y0NFKc` : `.MjjYud >> .g`, // One search result for mobile and for desktop
       webPageTitle: this.isMobile ? `.v7jaNc` : `.LC20lb`, // One title of the web page in the search result for mobile and for desktop
       webPageUrl: this.isMobile ? `.cz3goc` : `[jsname="UWckNb"]`, // One URL of the web page in the search result for mobile and for desktop
@@ -271,6 +272,21 @@ export default class GoogleHomePage {
       return searchResultsWebPagesTitlesText;
     } catch (error) {
       console.error(`Failed to get titles of the web pagep in the search results: ${error.message}`);
+    }
+  }
+
+  // Get corrected query text for the misspelled query in the message "Showing results for <correcter query>"
+  async getCorrectedQueryFormMessageText() {
+    try {
+      await this.page.waitForSelector(this.selectors.correctedQuery);
+      const correctedQueryElement = await this.page.$(this.selectors.correctedQuery);
+      // Get text content from correctedQueryElement
+      const correctedQueryElementText = await correctedQueryElement.innerText();
+      return correctedQueryElementText;
+    } catch (error) {
+      console.error(
+        `Failed to get corrected query text for the misspelled query in the message "Showing results for <correcter query>": ${error.message}`
+      );
     }
   }
 
