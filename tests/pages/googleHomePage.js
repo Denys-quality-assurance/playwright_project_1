@@ -13,6 +13,7 @@ export default class GoogleHomePage {
       autoSuggestionOption: `[role="option"]`, // One search auto suggestion option
       changeToEnglishModal: `#Rzn5id`, // Change to English modal
       changeToEnglishButton: `text="Change to English"`, // Change to English button
+      resultsNumberAndTimeMessage: `.LHJvCe >> #result-stats`, // Message with text “About X results (Y.YY seconds) ”
       didNotMatchText: `text=" - did not match any documents."`, // Message with text “did not match any documents”
       correctedQuery: `.p64x9c.KDCVqf`, // The corrected query text for the misspelled query in the message "Showing results for <correcter query>"
       searchResult: this.isMobile ? `.y0NFKc` : `.MjjYud >> .g`, // One search result for mobile and for desktop
@@ -113,6 +114,21 @@ export default class GoogleHomePage {
       return searchAutoSuggestionOptionsText;
     } catch (error) {
       console.error(`Failed to get search auto suggestions: ${error.message}`);
+    }
+  }
+
+  // Get the text of the message with the total number of results and the time taken to fetch the result
+  async getResultsNumberAndTimeMessageText() {
+    try {
+      await this.page.waitForSelector(this.selectors.resultsNumberAndTimeMessage);
+      const resultsNumberAndTimeMessageElement = await this.page.$(this.selectors.resultsNumberAndTimeMessage);
+      // Get text content from resultsNumberAndTimeMessageElement
+      const resultsNumberAndTimeMessageText = await resultsNumberAndTimeMessageElement.innerText();
+      return resultsNumberAndTimeMessageText;
+    } catch (error) {
+      console.error(
+        `Failed to get the text of the message with the total number of results and the time taken to fetch the result: ${error.message}`
+      );
     }
   }
 
