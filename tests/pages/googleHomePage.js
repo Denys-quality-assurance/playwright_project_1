@@ -121,7 +121,7 @@ export default class GoogleHomePage {
     try {
       for (const element of elements) {
         // get the text content of the element
-        const textContent = await element.textContent();
+        const textContent = await element.innerText();
 
         // check if the text content contains the query
         if (textContent.includes(query)) {
@@ -309,7 +309,7 @@ export default class GoogleHomePage {
 
       for (let searchResult of searchResults) {
         // Get the text of each searchResult
-        let resultText = await searchResult.textContent();
+        let resultText = await searchResult.innerText();
         resultText = resultText.toLowerCase();
 
         // Chech if the search result contains any query word

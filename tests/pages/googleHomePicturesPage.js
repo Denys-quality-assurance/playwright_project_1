@@ -182,7 +182,7 @@ export default class GoogleHomePicturesPage {
       let result = false;
       for (let searchResult of searchResults) {
         // Get the text of each searchResult
-        let resultText = await searchResult.textContent();
+        let resultText = await searchResult.innerText();
         resultText = resultText.toLowerCase();
         query = query.toLowerCase();
         // Check if the text contains query
