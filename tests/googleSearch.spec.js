@@ -243,7 +243,10 @@ test.describe(`Google Home Page: Search results`, () => {
       const searchResultsTexts2 = await googleHomePage2.getTextContent(searchResults2);
 
       // Compare the search results from both pages
-      expect(searchResultsTexts1).toEqual(searchResultsTexts2, `Search results are not case insensitive to query case`);
+      expect(searchResultsTexts1).toEqual(
+        searchResultsTexts2,
+        `Search results are not the same for the same query submitted by pressing enter and selecting the auto-suggest option`
+      );
     });
   });
 
