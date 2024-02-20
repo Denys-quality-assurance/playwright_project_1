@@ -22,7 +22,7 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
     // Get description and picture link of the the 1st picture search result
     const { pictureDescription, imageUrl } = await googleHomePicturesPage.get1stPictureDescriptionAndDownload();
 
-    // Chech if the picture's description contains the query
+    // Check if the picture's description contains the query
     expect(pictureDescription.toLowerCase().includes(query.toLowerCase())).toBe(
       true,
       `The picture's description doesn't contain the query`
@@ -58,7 +58,7 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
     // Get description and picture link of the the 1st picture search result
     const { pictureDescription, imageUrl } = await googleHomePicturesPage.get1stPictureDescriptionAndDownload();
 
-    // Chech if the picture's description contains the query
+    // Check if the picture's description contains the query
     expect(pictureDescription.toLowerCase().includes(query.toLowerCase())).toBe(
       true,
       `The picture's description doesn't contain the query`

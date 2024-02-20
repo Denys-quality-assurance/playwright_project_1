@@ -380,7 +380,7 @@ test.describe(`Google Home Page: Search results`, () => {
     await googleHomePage.selectElementNViaTab(11);
     // Get class of the active (focused) element
     let activeElementClass = await googleHomePage.getActiveElementClass();
-    // Chech if the active element has the expected class
+    // Check if the active element has the expected class
     expect(activeElementClass).toBe(
       googleHomePage.classes.picturesSearchButton,
       `The active element has an unexpected class`
@@ -398,7 +398,7 @@ test.describe(`Google Home Page: Search results`, () => {
     await googleHomePage.selectElementNViaShiftTab(1);
     // Get class of the active (focused) element
     activeElementClass = await googleHomePage.getActiveElementClass();
-    // Chech if the active element has the expected class
+    // Check if the active element has the expected class
     expect(activeElementClass).toBe(
       googleHomePage.classes.closeSearchByPictureModalButton,
       `The active element has an unexpected class`
