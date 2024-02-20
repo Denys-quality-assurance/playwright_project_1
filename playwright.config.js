@@ -10,86 +10,102 @@ module.exports = {
     {
       name: 'Desktop_Google_Chrome_PROD',
       grepInvert: /^(.*@(skip-for-chromium|only-mobile)).*$/, // skip tests with @skip-for-chromium or @only-mobile
+      metadata: {
+        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
+      },
       use: {
         ...devices['Desktop Chrome'],
         channel: 'chrome', // or 'chrome-beta'
         headless: false,
         baseURL: process.env.BASE_URL || 'https://www.google.com', // default PROD URL
-        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
       },
     },
     {
       name: 'Desktop_Webkit_PROD',
       grepInvert: /^(.*@(skip-for-webkit|only-mobile)).*$/, // skip tests with @skip-for-webkit or @only-mobile
+      metadata: {
+        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
+      },
       use: {
         ...devices['Desktop Safari'],
         headless: false,
         baseURL: process.env.BASE_URL || 'https://www.google.com', //default PROD URL
-        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
       },
     },
     {
       name: 'Desktop_Microsoft_Edge_PROD',
       grepInvert: /^(.*@(skip-for-edge|only-mobile)).*$/, // skip tests with @skip-for-edge or @only-mobile
+      metadata: {
+        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
+      },
       use: {
         ...devices['Desktop Edge'],
         channel: 'msedge', // or "msedge-beta" or 'msedge-dev'
         headless: false,
         baseURL: process.env.BASE_URL || 'https://www.google.com', //default PROD URL
-        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
       },
     },
     {
       name: 'Desktop_Firefox_PROD',
       grepInvert: /^(.*@(skip-for-firefox|only-mobile)).*$/, // skip tests with @skip-for-firefox or @only-mobile
+      metadata: {
+        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
+      },
       use: {
         ...devices['Desktop Firefox'],
         headless: false,
         baseURL: process.env.BASE_URL || 'https://www.google.com', //default PROD URL
-        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
       },
     },
     /* Test against mobile viewports. */
     {
       name: 'iPhone_14_Safari_PROD',
       grepInvert: /^(.*@(skip-for-webkit|only-desktop)).*$/, // skip tests with @skip-for-webkit or @only-desktop
+      metadata: {
+        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
+      },
       use: {
         ...devices['iPhone 14'],
         headless: false,
         baseURL: process.env.BASE_URL || 'https://www.google.com', //default PROD URL
-        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
       },
     },
     {
       name: 'iPhone_14_Safari_landscape_PROD',
       grepInvert: /^(.*@(skip-for-webkit|only-desktop)).*$/, // skip tests with @skip-for-webkit or @only-desktop
+      metadata: {
+        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
+      },
       use: {
         ...devices['iPhone 14 landscape'],
         headless: false,
         baseURL: process.env.BASE_URL || 'https://www.google.com', //default PROD URL
-        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
       },
     },
     {
       name: 'Galaxy_Tab_S4_Chrome_PROD',
       grepInvert: /^(.*@(skip-for-chromium|only-desktop)).*$/, // skip tests with @skip-for-chromium or @only-desktop
+      metadata: {
+        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
+      },
       use: {
         ...devices['Galaxy Tab S4'],
         channel: 'chrome', // or 'chrome-beta'
         headless: false,
         baseURL: process.env.BASE_URL || 'https://www.google.com', //default PROD URL
-        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
       },
     },
     {
       name: 'Galaxy_Tab_S4_Chrome_landscape_PROD',
       grepInvert: /^(.*@(skip-for-chromium|only-desktop)).*$/, // skip tests with @skip-for-chromium or @only-desktop
+      metadata: {
+        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
+      },
       use: {
         ...devices['Galaxy Tab S4 landscape'],
         channel: 'chrome', // or 'chrome-beta'
         headless: false,
         baseURL: process.env.BASE_URL || 'https://www.google.com', //default PROD URL
-        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
       },
     },
   ],
