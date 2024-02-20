@@ -69,7 +69,7 @@ export default class GoogleCustomSearchEnginePage {
     try {
       for (let searchResult of searchResults) {
         // Get the text of each searchResult
-        let resultText = await searchResult.textContent();
+        let resultText = await searchResult.innerText();
         // Check if the text contains query
         if (!resultText.toLowerCase().includes(query.toLowerCase())) {
           return false;

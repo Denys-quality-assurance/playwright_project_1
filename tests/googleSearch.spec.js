@@ -6,6 +6,7 @@ import {
   queryDataCaseInsensitive,
   queryDataEmptyResults,
   queryDataAutoSuggestion,
+  queryDataMisspelled,
 } from './test-data/queryData';
 import acceptablePerformanceData from './test-data/acceptablePerformanceData';
 import { checkFileExists, deleteTempFile, getMismatchedPixelsCount } from '../utilities/fileSystemHelpers';
@@ -15,9 +16,10 @@ const expectedLocalStorageKeysData = {
   desktop: [`sb_wiz.zpc.gws-wiz-serp.`, `_c;;i`, `ds;;frib`, `sb_wiz.qc`], // Expected Local storage's keys for desktop
   mobile: [`sb_wiz.zpc.`], // Expected Local storage's keys for mobile
 };
+const expectedPatternOfNumberAndTimeMessageText = /\b\w+\b\s\b\d+(\.\d{3})*\b\s\b\w+\b\s\(\b\d+\,\d+\b\s\b\w+\b\)/; // Regex for the message with the total number of results and the time taken to fetch the result based on the template: <1 word> <Integer possibly with thousands as '.'> <1 space> <1 word> <space> (<floating point number with ','> <1 space> <1 word>): \b matches word boundary, \w+ matches matches one or more word character, \s matches whitespace, \d+ matches one or more digits, \,\d+ matches a comma followed by one or more digits, \b\d+(\.\d{3})*\bs\b matches an integer number that might have dot separators between thousands
 let expectedLocalStorageKeys;
 const expectedSessionStorageKeys = [`_c;;i`]; // Expected session storage's keys
-const expectedCookiesNames = ['__Secure-ENID', 'CONSENT', 'AEC', 'SOCS', 'DV']; // Expected cookies names
+const expectedCookiesNames = ['__Secure-ENID', 'AEC', 'SOCS', 'DV']; // Expected cookies names
 const acceptableActionDutation = acceptablePerformanceData.acceptableSearchDutation; // The duration of the action should not exide the limit (ms)
 
 test.describe(`Google Home Page: Search results`, () => {
@@ -91,6 +93,42 @@ test.describe(`Google Home Page: Search results`, () => {
         queryData.query
       );
       expect(doesEachSearchResultContainQuery).toBe(true, `At least one search result does not contain the query`);
+    });
+  });
+
+  queryDataGeneral.forEach((queryData) => {
+    test(`Google search results page contains a message with the total number of results and the time taken to fetch the result for '${queryData.query}' query @only-desktop`, async () => {
+      test.setTimeout(10000);
+      // Search for query
+      await googleHomePage.searchForQueryByEnter(queryData.query);
+      // Get the text of the message with the total number of results and the time taken to fetch the result
+      const resultsNumberAndTimeMessageText = await googleHomePage.getResultsNumberAndTimeMessageText();
+      // Check if the message is according according to the template:
+      // < 1 word > <Integer possibly with thousands as '.' > < 1 space > < 1 word > <space> (<floating point number with ','> <1 space> <1 word>)
+      expect(resultsNumberAndTimeMessageText).toMatch(expectedPatternOfNumberAndTimeMessageText);
+    });
+  });
+
+  queryDataMisspelled.forEach((queryData) => {
+    test(`Google search results page contains the corrected '${queryData.correctedQuery}' query when the query '${queryData.query}' is misspelled`, async () => {
+      // Search for query
+      await googleHomePage.searchForQueryByEnter(queryData.query);
+      // Check if the message "Showing results for <correcter query> contains the corrected query
+      const correctedQueryElementText = await googleHomePage.getCorrectedQueryFormMessageText();
+      expect(correctedQueryElementText).toContain(
+        queryData.correctedQuery,
+        `The message "Showing results for <correcter query>" doesn't contain the corrected query`
+      );
+      // Check if each search result actually contains query in its text
+      const searchResults = await googleHomePage.getSearchResultElements();
+      const doesEachSearchResultContainQuery = await googleHomePage.checkIfAllSearchResultsContainQuery(
+        searchResults,
+        queryData.correctedQuery
+      );
+      expect(doesEachSearchResultContainQuery).toBe(
+        true,
+        `At least one search result does not contain the corrected query`
+      );
     });
   });
 
@@ -205,7 +243,10 @@ test.describe(`Google Home Page: Search results`, () => {
       const searchResultsTexts2 = await googleHomePage2.getTextContent(searchResults2);
 
       // Compare the search results from both pages
-      expect(searchResultsTexts1).toEqual(searchResultsTexts2, `Search results are not case insensitive to query case`);
+      expect(searchResultsTexts1).toEqual(
+        searchResultsTexts2,
+        `Search results are not the same for the same query submitted by pressing enter and selecting the auto-suggest option`
+      );
     });
   });
 

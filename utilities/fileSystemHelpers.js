@@ -22,30 +22,45 @@ export function createUniqueFileName(testInfo, filename) {
 
 // Shorten the string
 export function getShortenName(str) {
-  const MAX_LENGTH = 30;
+  try {
+    const MAX_LENGTH = 30;
 
-  // Check if the string contains underscore
-  if (str.includes('_')) {
-    // Split the string on the underscore
-    const parts = str.split('_');
-    const beforeUnderscore = parts[0].slice(0, MAX_LENGTH); // Get first part, cut up to 30 symbols
-    const afterUnderscore = parts.slice(1).join('_'); // If there are multiple underscores, join the strings after the first underscore
-    // Concatenate the parts into one string using template literals
-    const newString = `${beforeUnderscore}_${afterUnderscore}`;
+    // Check if the string contains underscore
+    if (str.includes('_')) {
+      // Split the string on the underscore
+      const parts = str.split('_');
+      const beforeUnderscore = parts[0].slice(0, MAX_LENGTH); // Get first part, cut up to 30 symbols
+      const afterUnderscore = parts.slice(1).join('_'); // If there are multiple underscores, join the strings after the first underscore
+      // Concatenate the parts into one string using template literals
+      const newString = `${beforeUnderscore}_${afterUnderscore}`;
 
-    // Return the constructed string
-    return newString;
+      // Return the constructed string
+      return newString;
+    }
+
+    // If there is no underscore, cut the string up to 30 characters
+    return str.slice(0, MAX_LENGTH);
+  } catch (error) {
+    console.error(`Error while getting the short file name: ${error.message}`);
   }
+}
 
-  // If there is no underscore, cut the string up to 30 characters
-  return str.slice(0, MAX_LENGTH);
+// Get path to the system's temp directory
+export function getTempDirPath() {
+  try {
+    // Get the system's temp directory
+    const tmpDir = os.tmpdir();
+    return tmpDir;
+  } catch (error) {
+    console.error(`Error while getting the path to the temporaty directory: ${error.message}`);
+  }
 }
 
 // Get path to the system's temp directory with the temporaty file
 export function getTempFilePath(fileName) {
   try {
     // Get the system's temp directory
-    const tmpDir = os.tmpdir();
+    const tmpDir = getTempDirPath();
     // Path to a new temp file
     const filePath = path.join(tmpDir, fileName);
     return filePath;
@@ -229,15 +244,32 @@ export async function getMismatchedPixelsCount(actualScreenshotPath, testInfo, s
 
 // Write the data into new file via stream
 export function writeDataToFile(data, fileName) {
-  const filePath = getTempFilePath(fileName);
-  data.pack().pipe(fs.createWriteStream(filePath));
-  return filePath;
+  try {
+    const filePath = getTempFilePath(fileName);
+    data.pack().pipe(fs.createWriteStream(filePath));
+    return filePath;
+  } catch (error) {
+    console.error(`Error while writing the data into new file via stream: ${error.message}`);
+  }
 }
 
 // Attach image to test report
 export async function attachImage(testInfo, imagePath) {
-  return testInfo.attach(path.basename(imagePath), {
-    path: imagePath,
-    contentType: 'image/png',
-  });
+  try {
+    return testInfo.attach(getFileName(imagePath), {
+      path: imagePath,
+      contentType: 'image/png',
+    });
+  } catch (error) {
+    console.error(`Error while attaching image to test report: ${error.message}`);
+  }
+}
+
+// Get the file name from the file path
+export function getFileName(filePath) {
+  try {
+    return path.basename(filePath);
+  } catch (error) {
+    console.error(`Error while getting the file name from the file path: ${error.message}`);
+  }
 }
