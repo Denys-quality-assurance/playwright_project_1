@@ -1,7 +1,8 @@
 import { devices } from '@playwright/test';
 
 module.exports = {
-  workers: parseInt(process.env.CI_WORKERS, 5) || 3, // for CI: run up to CI_WORKERS tests concurrently; for local run: run up to 3 tests concurrently
+  fullyParallel: true, // run tests in parallel
+  workers: parseInt(process.env.CI_WORKERS, 4) || 2, // for CI: run up to CI_WORKERS tests concurrently; for local run: run up to 3 tests concurrently
   timeout: 30000, // Timeout of 30 seconds: 30000. Unlimited Timeout for debugging - timeout: 0
   retries: 2, // Defines the maximum attempts to retry a test after a failure
   projects: [
@@ -94,5 +95,5 @@ module.exports = {
   ],
   reporter: process.env.CI
     ? [['dot'], ['html', { outputFolder: 'playwright-report' }]] // for CI: use concise 'dot' and 'html' reporters
-    : [['list'], ['html', { outputFolder: 'playwright-report' }]], // fol local run: use default 'list' and 'html' reporters
+    : [['list'], ['./tests/setup/customReporter.js'], ['html', { outputFolder: 'playwright-report' }]], // fol local run: use default 'list' and 'html' reporters
 };
