@@ -45,11 +45,22 @@ export function getShortenName(str) {
   }
 }
 
+// Get path to the system's temp directory
+export function getTempDirPath() {
+  try {
+    // Get the system's temp directory
+    const tmpDir = os.tmpdir();
+    return tmpDir;
+  } catch (error) {
+    console.error(`Error while getting the path to the temporaty directory: ${error.message}`);
+  }
+}
+
 // Get path to the system's temp directory with the temporaty file
 export function getTempFilePath(fileName) {
   try {
     // Get the system's temp directory
-    const tmpDir = os.tmpdir();
+    const tmpDir = getTempDirPath();
     // Path to a new temp file
     const filePath = path.join(tmpDir, fileName);
     return filePath;
