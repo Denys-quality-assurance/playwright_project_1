@@ -29,7 +29,7 @@ export const knownBugs = [
     status: {
       QA: 'unfixed',
       PrePROD: 'unfixed',
-      PROD: 'fixed',
+      PROD: 'unfixed',
     },
   },
   {
@@ -40,7 +40,7 @@ export const knownBugs = [
     status: {
       QA: 'unfixed',
       PrePROD: 'unfixed',
-      PROD: 'fixed',
+      PROD: 'unfixed',
     },
   },
   {
@@ -51,7 +51,7 @@ export const knownBugs = [
     status: {
       QA: 'unfixed',
       PrePROD: 'unfixed',
-      PROD: 'fixed',
+      PROD: 'unfixed',
     },
   },
   {
@@ -62,7 +62,7 @@ export const knownBugs = [
     status: {
       QA: 'unfixed',
       PrePROD: 'unfixed',
-      PROD: 'fixed',
+      PROD: 'unfixed',
     },
   },
   {
@@ -73,7 +73,7 @@ export const knownBugs = [
     status: {
       QA: 'unfixed',
       PrePROD: 'unfixed',
-      PROD: 'fixed',
+      PROD: 'unfixed',
     },
   },
   {
@@ -84,7 +84,7 @@ export const knownBugs = [
     status: {
       QA: 'unfixed',
       PrePROD: 'unfixed',
-      PROD: 'fixed',
+      PROD: 'unfixed',
     },
   },
   {
@@ -95,7 +95,7 @@ export const knownBugs = [
     status: {
       QA: 'unfixed',
       PrePROD: 'unfixed',
-      PROD: 'fixed',
+      PROD: 'unfixed',
     },
   },
   {
@@ -106,7 +106,7 @@ export const knownBugs = [
     status: {
       QA: 'unfixed',
       PrePROD: 'unfixed',
-      PROD: 'fixed',
+      PROD: 'unfixed',
     },
   },
   {
@@ -117,7 +117,7 @@ export const knownBugs = [
     status: {
       QA: 'unfixed',
       PrePROD: 'unfixed',
-      PROD: 'fixed',
+      PROD: 'unfixed',
     },
   },
   {
@@ -128,7 +128,7 @@ export const knownBugs = [
     status: {
       QA: 'unfixed',
       PrePROD: 'unfixed',
-      PROD: 'fixed',
+      PROD: 'unfixed',
     },
   },
   {
@@ -139,7 +139,7 @@ export const knownBugs = [
     status: {
       QA: 'unfixed',
       PrePROD: 'unfixed',
-      PROD: 'fixed',
+      PROD: 'unfixed',
     },
   },
 ];
