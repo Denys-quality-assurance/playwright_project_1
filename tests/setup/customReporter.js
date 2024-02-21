@@ -50,9 +50,9 @@ export default class CustomReporter {
           );
 
           // List of the known unfixed issues for the test
-          this.allKnownUnfixedIssues = [...this.allKnownUnfixedIssues, ...listKnownIssues.listKnownUnfixedIssues];
+          this.allKnownUnfixedIssues = listKnownIssues.listKnownUnfixedIssues;
           // List of the known fixed issues for the test
-          this.allKnownFixedIssues = [...this.allKnownFixedIssues, ...listKnownIssues.listKnownFixedIssues];
+          this.allKnownFixedIssues = listKnownIssues.listKnownFixedIssues;
         } else {
           // If there is no known bugs for the test add the info about the absence of known bugs for the current failed test to custom report
           this.allUnknownIssues.push(`${FAILED_STR} ${currentTestPath}`);
