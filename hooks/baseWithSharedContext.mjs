@@ -12,7 +12,6 @@ function createSharedContextTest(contextOptions) {
     sharedContext: async ({ browser }, use) => {
       const context = await browser.newContext(contextOptions);
       await use(context);
-      await context.close();
     },
   });
 
@@ -42,7 +41,7 @@ function createSharedContextTest(contextOptions) {
           });
         }
       } catch (error) {
-        console.error(`Failed to add screenshots: ${error.message}`);
+        console.error(`Failed to add screenshots for Page ${index}: ${error.message}`);
       }
     });
 
