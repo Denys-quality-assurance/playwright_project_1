@@ -216,7 +216,6 @@ test.describe(`Google Home Page: Search results`, () => {
     test(`User can get the same search results for the same '${queryData.autoSuggestion}' query by pressing enter or clicking on auto-suggestion option @only-desktop`, async ({
       sharedContext,
     }) => {
-      test.setTimeout(20000);
       // Create new page 1 in the same context, search for the query in lower case and get the text content of the results
       const searchResultsTexts1 = await performSearchAndFetchResultsForNewPage(
         sharedContext,
@@ -253,7 +252,6 @@ test.describe(`Google Home Page: Search results`, () => {
   test(`User can get the same search results for the same '${query}' query by pressing enter or clicking on search button @only-desktop`, async ({
     sharedContext,
   }) => {
-    test.setTimeout(20000);
     // Create new page 1 in the same context, search for the query by pressing Enter and get the text content of the results
     const searchResultsTexts1 = await performSearchAndFetchResultsForNewPage(sharedContext, query, GoogleHomePage);
     // Create new page 2 in the same context, search for the query by clicking on search button and get the text content of the results
@@ -277,7 +275,6 @@ test.describe(`Google Home Page: Search results`, () => {
     test(`Search results are case insensitive to query case for the '${queryData.query}' query`, async ({
       sharedContext,
     }) => {
-      test.setTimeout(20000);
       // Create new page 1 in the same context, search for the query in lower case and get the text content of the results
       const searchResultsTexts1 = await performSearchAndFetchResultsForNewPage(
         sharedContext,
