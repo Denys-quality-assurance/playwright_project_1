@@ -552,9 +552,9 @@ export default class GoogleHomePage {
   }
 
   // Attach JSON to test
-  async attachJSONToTest(testInfo, data, filename) {
+  async attachJSONToTest(testInfo, data, fileName) {
     try {
-      const dataName = createUniqueFileName(testInfo, `${filename}.json`);
+      const dataName = createUniqueFileName(testInfo, `${fileName}.json`);
       const dataPath = getTempFilePath(dataName);
       await writeFile(dataPath, JSON.stringify(data, null, 2));
       await testInfo.attach(dataName, {
