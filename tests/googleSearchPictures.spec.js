@@ -11,18 +11,21 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
   let googleHomePicturesPage; // Page object instance
 
   // Navigate to Home page, reject all Cookies and search the query before each test in this block
-  test.beforeEach(async ({ sharedContext }) => {
-    page = await sharedContext.newPage();
-    const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
-    googleHomePicturesPage = new GoogleHomePicturesPage(page, isMobile);
-    await googleHomePicturesPage.navigateAndSearchPictures(queryWithExtension);
-  });
+  test.beforeEach(
+    'Navigate to Home page, reject all Cookies and search the query before each test in this block',
+    async ({ sharedContext }) => {
+      page = await sharedContext.newPage();
+      const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
+      googleHomePicturesPage = new GoogleHomePicturesPage(page, isMobile);
+      await googleHomePicturesPage.navigateAndSearchPictures(queryWithExtension);
+    }
+  );
 
   test(`User can download picture from test results, User can search by picture @skip-for-webkit @only-desktop`, async ({}, testInfo) => {
     // Get description and picture link of the the 1st picture search result
     const { pictureDescription, imageUrl } = await googleHomePicturesPage.get1stPictureDescriptionAndDownload();
 
-    // Chech if the picture's description contains the query
+    // Check if the picture's description contains the query
     expect(pictureDescription.toLowerCase().includes(query.toLowerCase())).toBe(
       true,
       `The picture's description doesn't contain the query`
@@ -58,7 +61,7 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
     // Get description and picture link of the the 1st picture search result
     const { pictureDescription, imageUrl } = await googleHomePicturesPage.get1stPictureDescriptionAndDownload();
 
-    // Chech if the picture's description contains the query
+    // Check if the picture's description contains the query
     expect(pictureDescription.toLowerCase().includes(query.toLowerCase())).toBe(
       true,
       `The picture's description doesn't contain the query`

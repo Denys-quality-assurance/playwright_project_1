@@ -159,7 +159,7 @@ export default class GoogleHomePage {
       const queryWords = query.toLowerCase().split(' ');
 
       for (let optionText of searchAutoSuggestionOptionsText) {
-        // Chech if the option contains any query word
+        // Check if the option contains any query word
         if (this.hasQueryWords(optionText, queryWords)) {
           return true;
         }
@@ -328,7 +328,7 @@ export default class GoogleHomePage {
         let resultText = await searchResult.innerText();
         resultText = resultText.toLowerCase();
 
-        // Chech if the search result contains any query word
+        // Check if the search result contains any query word
         if (this.hasQueryWords(resultText, queryWords)) {
           continue;
         } else {
@@ -342,7 +342,7 @@ export default class GoogleHomePage {
     }
   }
 
-  // Chech if the search result contains any query word
+  // Check if the search result contains any query word
   hasQueryWords(resultText, queryWords) {
     if (queryWords.some((queryWord) => resultText.includes(queryWord))) {
       return true;
@@ -359,7 +359,7 @@ export default class GoogleHomePage {
         // Get the text of each searchResult
         const descriptionHTML = await description.innerHTML();
 
-        // Chech if the description contains any query word highlighted
+        // Check if the description contains any query word highlighted
         if (this.hasHighlightedWords(descriptionHTML, queryWords)) {
           continue;
         } else {
@@ -375,7 +375,7 @@ export default class GoogleHomePage {
     }
   }
 
-  // Chech if the description contains any query word highlighted
+  // Check if the description contains any query word highlighted
   hasHighlightedWords(descriptionHTML, queryWords) {
     // Get arrays of highlighted words between <em> and </em> tags
     const highlightedWords = descriptionHTML
@@ -552,9 +552,9 @@ export default class GoogleHomePage {
   }
 
   // Attach JSON to test
-  async attachJSONToTest(testInfo, data, filename) {
+  async attachJSONToTest(testInfo, data, fileName) {
     try {
-      const dataName = createUniqueFileName(testInfo, `${filename}.json`);
+      const dataName = createUniqueFileName(testInfo, `${fileName}.json`);
       const dataPath = getTempFilePath(dataName);
       await writeFile(dataPath, JSON.stringify(data, null, 2));
       await testInfo.attach(dataName, {

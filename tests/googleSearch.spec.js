@@ -27,13 +27,16 @@ test.describe(`Google Home Page: Search results`, () => {
   let googleHomePage; // Page object instance
 
   // Navigate to Home page, reject all Cookies and search the query before each test in this block
-  test.beforeEach(async ({ sharedContext }) => {
-    page = await sharedContext.newPage();
-    const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
-    expectedLocalStorageKeys = isMobile ? expectedLocalStorageKeysData.mobile : expectedLocalStorageKeysData.desktop; // expectedLocalStorageKeys for mobile and for desktop
-    googleHomePage = new GoogleHomePage(page, isMobile);
-    await googleHomePage.navigateAndRejectCookies();
-  });
+  test.beforeEach(
+    'Navigate to Home page, reject all Cookies and search the query before each test in this block',
+    async ({ sharedContext }) => {
+      page = await sharedContext.newPage();
+      const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
+      expectedLocalStorageKeys = isMobile ? expectedLocalStorageKeysData.mobile : expectedLocalStorageKeysData.desktop; // expectedLocalStorageKeys for mobile and for desktop
+      googleHomePage = new GoogleHomePage(page, isMobile);
+      await googleHomePage.navigateAndRejectCookies();
+    }
+  );
 
   test(`Google logo is visiable on the Home page`, async ({ sharedContext }, testInfo) => {
     // Make and save a screenshot of the Google Logo
@@ -216,7 +219,6 @@ test.describe(`Google Home Page: Search results`, () => {
     test(`User can get the same search results for the same '${queryData.autoSuggestion}' query by pressing enter or clicking on auto-suggestion option @only-desktop`, async ({
       sharedContext,
     }) => {
-      test.setTimeout(20000);
       // Create new page 1 in the same context, search for the query in lower case and get the text content of the results
       const searchResultsTexts1 = await performSearchAndFetchResultsForNewPage(
         sharedContext,
@@ -253,7 +255,6 @@ test.describe(`Google Home Page: Search results`, () => {
   test(`User can get the same search results for the same '${query}' query by pressing enter or clicking on search button @only-desktop`, async ({
     sharedContext,
   }) => {
-    test.setTimeout(20000);
     // Create new page 1 in the same context, search for the query by pressing Enter and get the text content of the results
     const searchResultsTexts1 = await performSearchAndFetchResultsForNewPage(sharedContext, query, GoogleHomePage);
     // Create new page 2 in the same context, search for the query by clicking on search button and get the text content of the results
@@ -277,7 +278,6 @@ test.describe(`Google Home Page: Search results`, () => {
     test(`Search results are case insensitive to query case for the '${queryData.query}' query`, async ({
       sharedContext,
     }) => {
-      test.setTimeout(20000);
       // Create new page 1 in the same context, search for the query in lower case and get the text content of the results
       const searchResultsTexts1 = await performSearchAndFetchResultsForNewPage(
         sharedContext,
@@ -380,7 +380,7 @@ test.describe(`Google Home Page: Search results`, () => {
     await googleHomePage.selectElementNViaTab(11);
     // Get class of the active (focused) element
     let activeElementClass = await googleHomePage.getActiveElementClass();
-    // Chech if the active element has the expected class
+    // Check if the active element has the expected class
     expect(activeElementClass).toBe(
       googleHomePage.classes.picturesSearchButton,
       `The active element has an unexpected class`
@@ -398,7 +398,7 @@ test.describe(`Google Home Page: Search results`, () => {
     await googleHomePage.selectElementNViaShiftTab(1);
     // Get class of the active (focused) element
     activeElementClass = await googleHomePage.getActiveElementClass();
-    // Chech if the active element has the expected class
+    // Check if the active element has the expected class
     expect(activeElementClass).toBe(
       googleHomePage.classes.closeSearchByPictureModalButton,
       `The active element has an unexpected class`

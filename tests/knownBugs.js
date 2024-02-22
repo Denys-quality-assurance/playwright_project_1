@@ -5,9 +5,9 @@ export const knownBugs = [
     testFile: 'googleSearch.spec.js',
     testTitle: `Google search results page contains the corrected 'новости' query when the query 'новоти' is misspelled`,
     status: {
-      QA: 'unfixed',
-      PreProd: 'unfixed',
-      Prod: 'fixed',
+      QA: 'unfixed', // change to 'FIXED' after error correction and rechecking // change to 'FIXED' after error correction and rechecking
+      PrePROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
     },
   },
   {
@@ -16,9 +16,9 @@ export const knownBugs = [
     testFile: 'googleSearch.spec.js',
     testTitle: `Google search results page contains the corrected 'свежие новости' query when the query 'свужие новоти' is misspelled`,
     status: {
-      QA: 'unfixed',
-      PreProd: 'unfixed',
-      Prod: 'fixed',
+      QA: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PrePROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
     },
   },
   {
@@ -27,9 +27,9 @@ export const knownBugs = [
     testFile: 'googleSearch.spec.js',
     testTitle: `Web page description contains 'Google' query highlighted in Google search results @only-desktop`,
     status: {
-      QA: 'unfixed',
-      PreProd: 'unfixed',
-      Prod: 'fixed',
+      QA: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PrePROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
     },
   },
   {
@@ -38,9 +38,9 @@ export const knownBugs = [
     testFile: 'googleSearch.spec.js',
     testTitle: `Web page description contains 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer viverra malesuada augue, eget sollicitudin est hendrerit id. Nullam dui sapien, dignissim sit amet sapien eu, vehicula convallis elit. Cras in feugiat libero, et iaculis enim. Nam et sodales lorem. Proin in tortor placerat, elementum mi a, rhoncus eros. Morbi sed aliquam diam. Suspendisse consectetur lectus vitae ipsum condimentum tincidunt. Suspendisse fermentum tincidunt tellus. Sed tincidunt sapien sit amet nisi fermentum condimentum. Praesent fringilla volutpat luctus.' query highlighted in Google search results @only-desktop`,
     status: {
-      QA: 'unfixed',
-      PreProd: 'unfixed',
-      Prod: 'fixed',
+      QA: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PrePROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
     },
   },
   {
@@ -49,9 +49,9 @@ export const knownBugs = [
     testFile: 'googleSearch.spec.js',
     testTitle: `Web page description contains '今天' query highlighted in Google search results @only-desktop`,
     status: {
-      QA: 'unfixed',
-      PreProd: 'unfixed',
-      Prod: 'fixed',
+      QA: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PrePROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
     },
   },
   {
@@ -60,9 +60,9 @@ export const knownBugs = [
     testFile: 'googleSearch.spec.js',
     testTitle: `User can get the same search results for the same 'google maps' query by pressing enter or clicking on auto-suggestion option @only-desktop`,
     status: {
-      QA: 'unfixed',
-      PreProd: 'unfixed',
-      Prod: 'fixed',
+      QA: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PrePROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
     },
   },
   {
@@ -71,9 +71,9 @@ export const knownBugs = [
     testFile: 'googleSearch.spec.js',
     testTitle: `User can get the same search results for the same 'бег трусцой это' query by pressing enter or clicking on auto-suggestion option @only-desktop`,
     status: {
-      QA: 'unfixed',
-      PreProd: 'unfixed',
-      Prod: 'fixed',
+      QA: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PrePROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
     },
   },
   {
@@ -82,9 +82,9 @@ export const knownBugs = [
     testFile: 'googleSearch.spec.js',
     testTitle: `Search results are case insensitive to query case for the '@ AT' query`,
     status: {
-      QA: 'unfixed',
-      PreProd: 'unfixed',
-      Prod: 'fixed',
+      QA: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PrePROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
     },
   },
   {
@@ -93,9 +93,9 @@ export const knownBugs = [
     testFile: 'googleSearch.spec.js',
     testTitle: `Search results are case insensitive to query case for the 'PlayWright TeSt' query`,
     status: {
-      QA: 'unfixed',
-      PreProd: 'unfixed',
-      Prod: 'fixed',
+      QA: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PrePROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
     },
   },
   {
@@ -104,9 +104,9 @@ export const knownBugs = [
     testFile: 'googleSearch.spec.js',
     testTitle: `Search results are case insensitive to query case for the 'CAT' query`,
     status: {
-      QA: 'unfixed',
-      PreProd: 'unfixed',
-      Prod: 'fixed',
+      QA: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PrePROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
     },
   },
   {
@@ -115,9 +115,9 @@ export const knownBugs = [
     testFile: 'googleSearch.spec.js',
     testTitle: `Google search results page contains a message with the total number of results and the time taken to fetch the result for '今天' query @only-desktop`,
     status: {
-      QA: 'unfixed',
-      PreProd: 'unfixed',
-      Prod: 'fixed',
+      QA: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PrePROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
     },
   },
   {
@@ -126,9 +126,9 @@ export const knownBugs = [
     testFile: 'googleSearch.spec.js',
     testTitle: `Google search results page contains a message with the total number of results and the time taken to fetch the result for 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer viverra malesuada augue, eget sollicitudin est hendrerit id. Nullam dui sapien, dignissim sit amet sapien eu, vehicula convallis elit. Cras in feugiat libero, et iaculis enim. Nam et sodales lorem. Proin in tortor placerat, elementum mi a, rhoncus eros. Morbi sed aliquam diam. Suspendisse consectetur lectus vitae ipsum condimentum tincidunt. Suspendisse fermentum tincidunt tellus. Sed tincidunt sapien sit amet nisi fermentum condimentum. Praesent fringilla volutpat luctus.' query @only-desktop`,
     status: {
-      QA: 'unfixed',
-      PreProd: 'unfixed',
-      Prod: 'fixed',
+      QA: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PrePROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
     },
   },
   {
@@ -137,9 +137,9 @@ export const knownBugs = [
     testFile: 'googleSearch.spec.js',
     testTitle: `User can get the same search results for the same 'cat' query by pressing enter or clicking on search button @only-desktop`,
     status: {
-      QA: 'unfixed',
-      PreProd: 'unfixed',
-      Prod: 'fixed',
+      QA: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PrePROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
     },
   },
 ];

@@ -9,7 +9,7 @@ test.describe(`Google Custom Search Engine: Search results testing for '${query}
   test.use({ baseURL: 'https://www.steegle.com/' }); // Set a specific base URL for this test
 
   // Navigate to Google Custom Search Engine page and init iFrame
-  test.beforeEach(async ({ sharedContext }) => {
+  test.beforeEach('Navigate to Google Custom Search Engine page and init iFrame', async ({ sharedContext }) => {
     const page = await sharedContext.newPage();
     googleCSEPage = new GoogleCustomSearchEnginePage(page);
     await googleCSEPage.selectFrame();
