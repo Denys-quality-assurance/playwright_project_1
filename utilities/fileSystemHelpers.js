@@ -9,11 +9,16 @@ import { PNG } from 'pngjs';
 import sharp from 'sharp';
 
 // Create unique file name
-export function createUniqueFileName(testInfo, filename) {
+export function createUniqueFileName(testInfo, fileName) {
   try {
-    const shortenFilename = getShortenName(filename);
-    const timestamp = Date.now();
+    const shortenFilename = getShortenName(fileName);
     const projectName = testInfo.project.name;
+    let timestamp;
+    let filePath;
+    do {
+      timestamp = Date.now();
+      filePath = getTempFilePath(fileName);
+    } while (checkFileExists(filePath));
     return `${projectName}_${timestamp}_${shortenFilename}`;
   } catch (error) {
     console.error(`Error while creating unique file name: ${error.message}`);
