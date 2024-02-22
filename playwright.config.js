@@ -2,7 +2,7 @@ import { devices } from '@playwright/test';
 
 module.exports = {
   fullyParallel: true, // run tests in parallel
-  workers: parseInt(process.env.CI_WORKERS, 4) || 2, // for CI: run up to CI_WORKERS tests concurrently; for local run: run up to 3 tests concurrently
+  workers: process.env.CI ? 4 : 2, // for CI: run up to 4 tests concurrently; for local run: run up to 2 tests concurrently
   timeout: 30000, // Timeout of 30 seconds: 30000. Unlimited Timeout for debugging - timeout: 0
   retries: 2, // Defines the maximum attempts to retry a test after a failure
   projects: [
