@@ -1,7 +1,8 @@
 // Create new page in the same context, navigate to Home page and reject all Cookies if it's needed
 export async function navigateHomeForNewPage(sharedContext, GoogleHomePageClass) {
   const newPage = await sharedContext.newPage();
-  const googleHomePage = new GoogleHomePageClass(newPage);
+  const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
+  const googleHomePage = new GoogleHomePageClass(newPage, isMobile);
   await googleHomePage.navigateAndRejectCookies();
   return { newPage, googleHomePage };
 }
@@ -14,7 +15,8 @@ export async function performSearchAndFetchResultsForNewPage(
   searchFunction
 ) {
   const newPage = await sharedContext.newPage();
-  const googleHomePage = new GoogleHomePageClass(newPage);
+  const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
+  const googleHomePage = new GoogleHomePageClass(newPage, isMobile);
   await googleHomePage.navigateAndRejectCookies();
 
   // Perform search using the passed function
