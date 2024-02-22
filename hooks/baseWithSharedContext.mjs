@@ -4,9 +4,6 @@ import { findRelatedBugsTest, sortKnownIssues } from '../utilities/customReporte
 
 import { NO_KNOWN_ISSUE_STR } from '../utilities/customReporterHelper.js';
 
-// List of failed and flaky tests in the current run
-let failedAndFlakyTests = new Set();
-
 function createSharedContextTest(contextOptions) {
   const test = base.extend({
     sharedContext: async ({ browser }, use) => {
@@ -20,7 +17,7 @@ function createSharedContextTest(contextOptions) {
     // Get the current test path
     const projectName = testInfo.project.name;
     const currentTitlePath = testInfo.titlePath;
-    const currentTestPath = `[${projectName}] › ${currentTitlePath[0]} › ${currentTitlePath[1]} › ${currentTitlePath[2]} › ${currentTitlePath[3]}`;
+    const currentTestPath = `[${projectName}] › ${currentTitlePath[0]} › ${currentTitlePath[1]} › ${currentTitlePath[2]}}`;
     const timestamp = Date.now();
     const screenshotPromises = pages.map(async (page, index) => {
       try {
@@ -32,8 +29,8 @@ function createSharedContextTest(contextOptions) {
           contentType: 'image/png',
         });
 
-        // Conditionally save fullpage screenshot if the test had failed
-        if (testInfo.status === 'failed' || failedAndFlakyTests.has(currentTestPath)) {
+        // Conditionally save fullpage screenshot if the test had failed or retried
+        if (testInfo.status === 'failed' || testInfo.status === 'timedOut' || testInfo.retry > 0) {
           const screenshotFullPage = await page.screenshot({ fullPage: true });
           await testInfo.attach(`${projectName}_${timestamp}_fullpage_screenshot_of_Page_${index}.png`, {
             body: screenshotFullPage,
@@ -55,14 +52,10 @@ function createSharedContextTest(contextOptions) {
       // Environment for current test project
       const currentENV = testInfo.project.metadata.currentENV;
 
-      // Add info to the custom reporter
-      if (testInfo.status === 'failed' && !failedAndFlakyTests.has(currentTestPath)) {
-        // List of the known bugs for the current test
-        let knownBugsForCurrentTest = [];
-
-        // Add the current test path to the set of failed and flaky tests
-        failedAndFlakyTests.add(currentTestPath);
-
+      // List of the known bugs for the current test
+      let knownBugsForCurrentTest = [];
+      // Add info to the custom reporter if the test had failed 1st time
+      if (testInfo.status === 'failed' || testInfo.status === 'timedOut' || testInfo.retry > 0) {
         // Find if the current failed test has known bugs
         const relatedBugs = findRelatedBugsTest(testInfo.file, testInfo.title, knownBugs);
 

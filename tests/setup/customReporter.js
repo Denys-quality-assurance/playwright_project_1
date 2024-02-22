@@ -12,8 +12,6 @@ import {
 
 export default class CustomReporter {
   constructor() {
-    // List of failed and flaky tests in the current run
-    this.failedAndFlakyTests = new Set();
     // List of the known unfixed issues for failed tests on the current environment
     this.allKnownUnfixedIssues = [];
     // List of the failed tests with known fixed issues on the current environment
@@ -32,10 +30,8 @@ export default class CustomReporter {
       // Environment for current test project
       this.currentENV = test.parent.project().metadata.currentENV;
 
-      if (result.status === 'failed' && !this.failedAndFlakyTests.has(currentTestPath)) {
-        // Add the current test path to the set of failed and flaky tests
-        this.failedAndFlakyTests.add(currentTestPath);
-
+      // Add info to the custom reporter if the test had failed 1st time
+      if ((result.status === 'failed' || result.status === 'timedOut') && result.retry === 0) {
         // Find if the current failed test has known bugs
         const relatedBugs = findRelatedBugsTest(test.location.file, test.title, knownBugs);
 
