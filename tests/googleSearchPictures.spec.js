@@ -1,7 +1,8 @@
 import { expect } from '@playwright/test';
 import test from '../hooks/testWithAfterEachHooks.mjs';
 import GoogleHomePicturesPage from './pages/googleHomePicturesPage';
-import { downloadImageFromUrlToTempDir, checkFileExists, deleteTempFile } from '../utilities/fileSystemHelpers';
+import { downloadImageFromUrlToTempDir, checkFileExists, deleteTempFile } from '../utilities/fileSystemHelper';
+import { escapeRegexSpecialCharacters } from '../utilities/regexHelper';
 import { queryDataGeneral } from './test-data/queryData';
 const query = queryDataGeneral[1].query;
 const queryWithExtension = query + ' jpg';
@@ -24,12 +25,10 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
   test(`User can download picture from test results, User can search by picture @skip-for-webkit @only-desktop`, async ({}, testInfo) => {
     // Get description and picture link of the the 1st picture search result
     const { pictureDescription, imageUrl } = await googleHomePicturesPage.get1stPictureDescriptionAndDownload();
-
+    // Case insensitive regex for the query
+    let queryRegex = new RegExp(escapeRegexSpecialCharacters(query), 'i'); // 'i' flag for case insensitive
     // Check if the picture's description contains the query
-    expect(pictureDescription.toLowerCase().includes(query.toLowerCase())).toBe(
-      true,
-      `The picture's description doesn't contain the query`
-    );
+    expect(queryRegex.test(pictureDescription)).toBe(true, `The picture's description doesn't contain the query`);
 
     // Download picture from url to the system's directory for temporary files
     const imagePath = await downloadImageFromUrlToTempDir(imageUrl, testInfo);
@@ -61,12 +60,10 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
   test(`User can download picture from test results, User can search by picture @only-mobile`, async ({}, testInfo) => {
     // Get description and picture link of the the 1st picture search result
     const { pictureDescription, imageUrl } = await googleHomePicturesPage.get1stPictureDescriptionAndDownload();
-
+    // Case insensitive regex for the query
+    let queryRegex = new RegExp(escapeRegexSpecialCharacters(query), 'i'); // 'i' flag for case insensitive
     // Check if the picture's description contains the query
-    expect(pictureDescription.toLowerCase().includes(query.toLowerCase())).toBe(
-      true,
-      `The picture's description doesn't contain the query`
-    );
+    expect(queryRegex.test(pictureDescription)).toBe(true, `The picture's description doesn't contain the query`);
 
     // Download picture from url to the system's directory for temporary files
     const imagePath = await downloadImageFromUrlToTempDir(imageUrl, testInfo);

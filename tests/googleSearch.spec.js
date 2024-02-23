@@ -9,7 +9,7 @@ import {
   queryDataMisspelled,
 } from './test-data/queryData';
 import acceptablePerformanceData from './test-data/acceptablePerformanceData';
-import { checkFileExists, deleteTempFile, getMismatchedPixelsCount } from '../utilities/fileSystemHelpers';
+import { checkFileExists, deleteTempFile, getMismatchedPixelsCount } from '../utilities/fileSystemHelper';
 import { performSearchAndFetchResultsForNewPage, navigateHomeForNewPage } from '../utilities/pagesHelper';
 const query = queryDataGeneral[1].query;
 const expectedLocalStorageKeysData = {
@@ -216,13 +216,13 @@ test.describe(`Google Home Page: Search results`, () => {
   });
 
   queryDataAutoSuggestion.forEach((queryData) => {
-    test(`User can get the same search results for the same '${queryData.autoSuggestion}' query by pressing enter or clicking on auto-suggestion option @only-desktop`, async ({
+    test.only(`User can get the same search results for the same '${queryData.autoSuggestion}' query by pressing enter or clicking on auto-suggestion option @only-desktop`, async ({
       sharedContext,
     }) => {
       // Create new page 1 in the same context, search for the query in lower case and get the text content of the results
       const searchResultsTexts1 = await performSearchAndFetchResultsForNewPage(
         sharedContext,
-        queryData.autoSuggestion.toLowerCase(),
+        queryData.autoSuggestion,
         GoogleHomePage
       );
       // Create new page 2 in the same context, navigate to Home page and reject all Cookies if it's needed

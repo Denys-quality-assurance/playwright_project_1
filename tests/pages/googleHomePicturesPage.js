@@ -1,3 +1,5 @@
+import { escapeRegexSpecialCharacters } from '../../utilities/regexHelper';
+
 export default class GoogleHomePicturesPage {
   constructor(page, isMobile) {
     this.page = page;
@@ -183,10 +185,11 @@ export default class GoogleHomePicturesPage {
       for (let searchResult of searchResults) {
         // Get the text of each searchResult
         let resultText = await searchResult.innerText();
-        resultText = resultText.toLowerCase();
-        query = query.toLowerCase();
+        // Case insensitive regex for the query
+        let queryRegex = new RegExp(escapeRegexSpecialCharacters(query), 'i'); // 'i' flag for case insensitive
+
         // Check if the text contains query
-        if (resultText.includes(query)) {
+        if (queryRegex.test(resultText)) {
           result = true;
         }
       }
