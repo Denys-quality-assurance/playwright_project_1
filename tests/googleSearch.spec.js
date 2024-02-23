@@ -26,17 +26,14 @@ test.describe(`Google Home Page: Search results`, () => {
   let page; // Page instance
   let googleHomePage; // Page object instance
 
-  // Navigate to Home page, reject all Cookies and search the query before each test in this block
-  test.beforeEach(
-    'Navigate to Home page, reject all Cookies and search the query before each test in this block',
-    async ({ sharedContext }) => {
-      page = await sharedContext.newPage();
-      const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
-      expectedLocalStorageKeys = isMobile ? expectedLocalStorageKeysData.mobile : expectedLocalStorageKeysData.desktop; // expectedLocalStorageKeys for mobile and for desktop
-      googleHomePage = new GoogleHomePage(page, isMobile);
-      await googleHomePage.navigateAndRejectCookies();
-    }
-  );
+  // Navigate to Home page and reject all Cookies
+  test.beforeEach('Navigate to Home page and reject all Cookies', async ({ sharedContext }) => {
+    page = await sharedContext.newPage();
+    const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
+    expectedLocalStorageKeys = isMobile ? expectedLocalStorageKeysData.mobile : expectedLocalStorageKeysData.desktop; // expectedLocalStorageKeys for mobile and for desktop
+    googleHomePage = new GoogleHomePage(page, isMobile);
+    await googleHomePage.navigateAndRejectCookies();
+  });
 
   test(`Google logo is visiable on the Home page`, async ({ sharedContext }, testInfo) => {
     // Make and save a screenshot of the Google Logo
