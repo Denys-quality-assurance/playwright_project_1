@@ -41,7 +41,7 @@ test.describe(`Google Home Page: Search results`, () => {
   test(`Google logo is visiable on the Home page`, async ({ sharedContext }, testInfo) => {
     // Make and save a screenshot of the Google Logo
     const actualScreenshotPath = await googleHomePage.saveGoogleLogoScreenshot(testInfo);
-    // Compare the actual Logo against the expected baseline Logo and attach results to the report
+    // Compare the actual Logo against the expected baseline Logo, attach results to the report, delete temporary files
     const mismatchedPixelsCount = await getMismatchedPixelsCount(actualScreenshotPath, testInfo, sharedContext);
     expect(mismatchedPixelsCount).toBe(0, `At least one pixel of the logo differs from the baseline`);
   });

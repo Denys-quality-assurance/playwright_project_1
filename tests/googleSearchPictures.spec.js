@@ -57,6 +57,7 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
       'There is no search result with query of the downloaded picture'
     );
   });
+
   test(`User can download picture from test results, User can search by picture @only-mobile`, async ({}, testInfo) => {
     // Get description and picture link of the the 1st picture search result
     const { pictureDescription, imageUrl } = await googleHomePicturesPage.get1stPictureDescriptionAndDownload();
@@ -73,5 +74,8 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
     // Check if the picture downloaded
     const isPictureDownloaded = checkFileExists(imagePath);
     expect(isPictureDownloaded).toBe(true, 'The picture is not saved in the file system');
+
+    // Delete the picture from PC
+    deleteTempFile(imagePath);
   });
 });
