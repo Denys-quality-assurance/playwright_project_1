@@ -1,3 +1,4 @@
+// Data for general cases testing
 export const queryDataGeneral = [
   {
     query: 'Google', // for En language testing (Home page search, Custom Search Engine)
@@ -26,6 +27,7 @@ export const queryDataGeneral = [
   },
 ];
 
+// Data for testing case insensitive search results
 export const queryDataCaseInsensitive = [
   {
     query: 'GoOGlE', // for En language testing
@@ -44,15 +46,17 @@ export const queryDataCaseInsensitive = [
   },
 ];
 
+// Data for empty results testing
 export const queryDataEmptyResults = [
   {
-    query: 'asfastawjerwerwfdsrtuiujhgrese', // for 1 Keyword testing
+    query: 'asfastawjerwerwfdsrtuiujhgresennnnnnnnnn', // for 1 Keyword testing
   },
   {
     query: 'asfastawjerwer wfdsrtuiujhgrese', // for Multi-Word Keywords testing
   },
 ];
 
+// Data for auto-sugesstion testing
 export const queryDataAutoSuggestion = [
   {
     query: 'Goog', // for En language testing
@@ -64,6 +68,7 @@ export const queryDataAutoSuggestion = [
   },
 ];
 
+// Data for misspelling testing
 export const queryDataMisspelled = [
   {
     query: 'Gogle', // for En language testing
