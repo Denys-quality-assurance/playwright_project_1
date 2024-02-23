@@ -6,6 +6,7 @@ const geoData = { longitude: 12.492507, latitude: 41.889938 }; // Rome, Italy
 test.describe('Geolocation Tests @skip-for-firefox', () => {
   let googleMapsPage; // Page object instance
 
+  // Sets the geolocation, navigate to Google Maps page and reject all Cookies if it's needed
   test.beforeEach(
     `Sets the geolocation, navigate to Google Maps page and reject all Cookies if it's needed`,
     async ({ sharedContext }) => {
