@@ -71,6 +71,11 @@ export const mathOperation = [
     operationName: 'divide',
   },
   {
+    firstNumber: '1',
+    secondNumber: '999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999',
+    operationName: 'divide',
+  },
+  {
     firstNumber: '0.1',
     secondNumber: '-1000000000',
     operationName: 'divide',
@@ -96,12 +101,12 @@ export const mathOperation = [
     operationName: 'multiply',
   },
   {
-    firstNumber: '999999999999999',
+    firstNumber: '999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999',
     secondNumber: '0',
     operationName: 'multiply',
   },
   {
-    firstNumber: '-999999999999999',
+    firstNumber: '-999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999',
     secondNumber: '0',
     operationName: 'multiply',
   },
