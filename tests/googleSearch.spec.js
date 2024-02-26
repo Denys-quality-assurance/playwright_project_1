@@ -9,7 +9,7 @@ import {
   queryDataMisspelled,
 } from './test-data/queryData';
 import acceptablePerformanceData from './test-data/acceptablePerformanceData';
-import { checkFileExists, deleteTempFile, getMismatchedPixelsCount } from '../utilities/fileSystemHelpers';
+import { checkFileExists, deleteTempFile, getMismatchedPixelsCount } from '../utilities/fileSystemHelper';
 import { performSearchAndFetchResultsForNewPage, navigateHomeForNewPage } from '../utilities/pagesHelper';
 const query = queryDataGeneral[1].query;
 const expectedLocalStorageKeysData = {
@@ -26,22 +26,19 @@ test.describe(`Google Home Page: Search results`, () => {
   let page; // Page instance
   let googleHomePage; // Page object instance
 
-  // Navigate to Home page, reject all Cookies and search the query before each test in this block
-  test.beforeEach(
-    'Navigate to Home page, reject all Cookies and search the query before each test in this block',
-    async ({ sharedContext }) => {
-      page = await sharedContext.newPage();
-      const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
-      expectedLocalStorageKeys = isMobile ? expectedLocalStorageKeysData.mobile : expectedLocalStorageKeysData.desktop; // expectedLocalStorageKeys for mobile and for desktop
-      googleHomePage = new GoogleHomePage(page, isMobile);
-      await googleHomePage.navigateAndRejectCookies();
-    }
-  );
+  // Navigate to Home page and reject all Cookies
+  test.beforeEach('Navigate to Home page and reject all Cookies', async ({ sharedContext }) => {
+    page = await sharedContext.newPage();
+    const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
+    expectedLocalStorageKeys = isMobile ? expectedLocalStorageKeysData.mobile : expectedLocalStorageKeysData.desktop; // expectedLocalStorageKeys for mobile and for desktop
+    googleHomePage = new GoogleHomePage(page, isMobile);
+    await googleHomePage.navigateAndRejectCookies();
+  });
 
   test(`Google logo is visiable on the Home page`, async ({ sharedContext }, testInfo) => {
     // Make and save a screenshot of the Google Logo
     const actualScreenshotPath = await googleHomePage.saveGoogleLogoScreenshot(testInfo);
-    // Compare the actual Logo against the expected baseline Logo and attach results to the report
+    // Compare the actual Logo against the expected baseline Logo, attach results to the report, delete temporary files
     const mismatchedPixelsCount = await getMismatchedPixelsCount(actualScreenshotPath, testInfo, sharedContext);
     expect(mismatchedPixelsCount).toBe(0, `At least one pixel of the logo differs from the baseline`);
   });
@@ -222,7 +219,7 @@ test.describe(`Google Home Page: Search results`, () => {
       // Create new page 1 in the same context, search for the query in lower case and get the text content of the results
       const searchResultsTexts1 = await performSearchAndFetchResultsForNewPage(
         sharedContext,
-        queryData.autoSuggestion.toLowerCase(),
+        queryData.autoSuggestion,
         GoogleHomePage
       );
       // Create new page 2 in the same context, navigate to Home page and reject all Cookies if it's needed

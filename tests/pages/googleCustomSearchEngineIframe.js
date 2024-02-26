@@ -1,3 +1,5 @@
+import { escapeRegexSpecialCharacters } from '../../utilities/regexHelper';
+
 export default class GoogleCustomSearchEnginePage {
   constructor(page) {
     this.page = page;
@@ -70,8 +72,12 @@ export default class GoogleCustomSearchEnginePage {
       for (let searchResult of searchResults) {
         // Get the text of each searchResult
         let resultText = await searchResult.innerText();
+
+        // Case insensitive regex for the query
+        let queryRegex = new RegExp(escapeRegexSpecialCharacters(query), 'i'); // 'i' flag for case insensitive
+
         // Check if the text contains query
-        if (!resultText.toLowerCase().includes(query.toLowerCase())) {
+        if (!queryRegex.test(resultText)) {
           return false;
         }
       }

@@ -1,4 +1,5 @@
-import { readFileSync, createUniqueFileName, getTempFilePath, writeFile } from '../../utilities/fileSystemHelpers';
+import { readFileSync, createUniqueFileName, getTempFilePath, writeFile } from '../../utilities/fileSystemHelper';
+import { escapeRegexSpecialCharacters } from '../../utilities/regexHelper';
 const responseBodyForEmptyResultsMockPath = './tests/test-data/mocks/responseBodyForEmptyResults.html';
 
 export default class GoogleHomePage {
@@ -156,7 +157,7 @@ export default class GoogleHomePage {
   async checkIfAnyAutoSuggestionOptionContainQuery(searchAutoSuggestionOptionsText, query) {
     try {
       // Get all words from the query as an array
-      const queryWords = query.toLowerCase().split(' ');
+      const queryWords = query.split(' ');
 
       for (let optionText of searchAutoSuggestionOptionsText) {
         // Check if the option contains any query word
@@ -231,7 +232,7 @@ export default class GoogleHomePage {
   async countQueryInBody(query) {
     try {
       const bodyText = await this.page.textContent('body');
-      return (bodyText.match(new RegExp(query, 'g')) || []).length;
+      return (bodyText.match(new RegExp(escapeRegexSpecialCharacters(query), 'g')) || []).length;
     } catch (error) {
       console.error(`Failed to get the number of query instances in the page body: ${error.message}`);
     }
@@ -321,12 +322,11 @@ export default class GoogleHomePage {
   async checkIfAllSearchResultsContainQuery(searchResults, query) {
     try {
       // Get all words from the query as an array
-      const queryWords = query.toLowerCase().split(' ');
+      const queryWords = query.split(' ');
 
       for (let searchResult of searchResults) {
         // Get the text of each searchResult
         let resultText = await searchResult.innerText();
-        resultText = resultText.toLowerCase();
 
         // Check if the search result contains any query word
         if (this.hasQueryWords(resultText, queryWords)) {
@@ -344,7 +344,7 @@ export default class GoogleHomePage {
 
   // Check if the search result contains any query word
   hasQueryWords(resultText, queryWords) {
-    if (queryWords.some((queryWord) => resultText.includes(queryWord))) {
+    if (queryWords.some((queryWord) => new RegExp(escapeRegexSpecialCharacters(queryWord), 'i').test(resultText))) {
       return true;
     } else return false;
   }
@@ -353,7 +353,7 @@ export default class GoogleHomePage {
   async checkIfAllSearchResultsContainHighlightedQuery(searchResultsDescriptions, query) {
     try {
       // Get all words from the query as an array
-      const queryWords = query.toLowerCase().split(' ');
+      const queryWords = query.split(' ');
 
       for (let description of searchResultsDescriptions) {
         // Get the text of each searchResult
@@ -381,13 +381,17 @@ export default class GoogleHomePage {
     const highlightedWords = descriptionHTML
       .split('<em>')
       .filter((word) => word.includes('</em>'))
-      .map((word) => word.split('</em>')[0].toLowerCase());
+      .map((word) => word.split('</em>')[0]);
 
     // Check if some word from the query is included in the words between <em> and </em> tags
     for (let highlightedWord of highlightedWords) {
       const highlightedParts = highlightedWord.split(' ');
 
-      if (highlightedParts.some((part) => queryWords.some((queryWord) => part.includes(queryWord)))) {
+      if (
+        highlightedParts.some((part) =>
+          queryWords.some((queryWord) => new RegExp(escapeRegexSpecialCharacters(queryWord), 'i').test(part))
+        )
+      ) {
         return true;
       }
     }
@@ -516,7 +520,7 @@ export default class GoogleHomePage {
   checkIfValueExists(object, part) {
     try {
       const values = Object.values(object);
-      return values.some((value) => value.toLowerCase().includes(part.toLowerCase()));
+      return values.some((value) => new RegExp(escapeRegexSpecialCharacters(part), 'i').test(value));
     } catch (error) {
       console.error(`Failed to check if the object includes the part among its values: ${error.message}`);
     }

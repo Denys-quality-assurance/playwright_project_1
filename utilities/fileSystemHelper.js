@@ -173,7 +173,7 @@ export async function writeFile(filePath, data) {
   }
 }
 
-// Compare actual screenshot against a baseline screenshot
+// Compare the actual screenshot against the expected baseline Logo, attach results to the report, delete temporary files
 export async function getMismatchedPixelsCount(actualScreenshotPath, testInfo, sharedContext) {
   try {
     // Get browser type
