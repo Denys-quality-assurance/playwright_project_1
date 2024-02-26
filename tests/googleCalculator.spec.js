@@ -31,11 +31,11 @@ test.describe(`Google calculator`, () => {
       // Change to English if it's needed
       await googleHomeCalculatorPage.changeToEnglishIfAsked();
       // Click or tap the 1st number
-      await googleHomeCalculatorPage.clickOrTapDigits(getCharacterSequence(mathOperation.firstNumber));
+      await googleHomeCalculatorPage.typeNumbers(getCharacterSequence(mathOperation.firstNumber));
       // Click or tap the orertion button
       await googleHomeCalculatorPage.clickOrTapOperation(mathOperation.operationName);
       // Click or tap the 2nd number
-      await googleHomeCalculatorPage.clickOrTapDigits(getCharacterSequence(mathOperation.secondNumber));
+      await googleHomeCalculatorPage.typeNumbers(getCharacterSequence(mathOperation.secondNumber));
       // Click or tap the "equals" button
       await googleHomeCalculatorPage.clickOrTap(googleHomeCalculatorPage.selectors.equalsButton);
       // Waiting for result to appear

@@ -16,6 +16,9 @@ export function getOperationAriaLabel(operation) {
       minus: 'minus',
       plus: 'plus',
       equals: 'equals',
+      'left parenthesis': 'left parenthesis',
+      'right parenthesis': 'right parenthesis',
+      'X to the power of Y': `X to the power of Y`,
     };
     return operationMap[operation];
   } catch (error) {
@@ -35,6 +38,8 @@ export function calculateExpectedResultText(firstNumber, secondNumber, operation
         return (Number(firstNumber) - Number(secondNumber)).toString();
       case 'plus':
         return (Number(firstNumber) + Number(secondNumber)).toString();
+      case 'X to the power of Y':
+        return Math.pow(Number(firstNumber), Number(secondNumber)).toString();
     }
   } catch (error) {
     console.error(`Failed to caclucate result of the math operation with the numbers: ${error.message}`);

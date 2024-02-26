@@ -113,19 +113,49 @@ export default class GoogleHomeCalculatorPage {
     }
   }
 
+  // Type numbers on the calculator
+  async typeNumbers(digits) {
+    try {
+      // copy digits array
+      let digitsArray = [...digits];
+      if (digitsArray[0] === '-') {
+        // Handle negative numbers
+        await this.handleNegativeNumbers(digitsArray);
+      } else {
+        // Click or tap digits on the calculator
+        await this.clickOrTapDigits(digitsArray);
+      }
+    } catch (error) {
+      console.error(`Failed to click or tap digit on the calculator: ${error.message}`);
+    }
+  }
+
+  // Handle negative numbers
+  async handleNegativeNumbers(digits) {
+    try {
+      // Open the parentheses and put -
+      await this.clickOrTapOperation('left parenthesis');
+      await this.clickOrTapOperation('minus');
+      // Remove the first element ('-') from digits
+      digits.shift();
+      // Click or tap digits on the calculator
+      await this.clickOrTapDigits(digits);
+      // Close the parentheses
+      await this.clickOrTapOperation('right parenthesis');
+    } catch (error) {
+      console.error(`Failed to click or tap digit on the calculator: ${error.message}`);
+    }
+  }
+
   // Click or tap digits on the calculator
   async clickOrTapDigits(digits) {
     try {
       for (const digit of digits) {
-        if (digit === '-') {
-          await this.clickOrTapOperation('minus');
-        } else {
-          // Construct unique locator for digit button
-          const digitLocator = `${this.selectors.digitsAndDotButtons}:has-text("${digit}")`;
-          await this.page.waitForSelector(digitLocator);
-          // Click or Tap the locator with the digit in text
-          await this.clickOrTap(digitLocator);
-        }
+        // Construct unique locator for digit button
+        const digitLocator = `${this.selectors.digitsAndDotButtons}:has-text("${digit}")`;
+        await this.page.waitForSelector(digitLocator);
+        // Click or Tap the locator with the digit in text
+        await this.clickOrTap(digitLocator);
       }
     } catch (error) {
       console.error(`Failed to click or tap digit on the calculator: ${error.message}`);
