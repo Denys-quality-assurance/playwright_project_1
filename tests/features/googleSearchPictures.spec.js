@@ -1,9 +1,9 @@
 import { expect } from '@playwright/test';
-import test from '../hooks/testWithAfterEachHooks.mjs';
-import GoogleHomePicturesPage from './pages/googleHomePicturesPage';
-import { downloadImageFromUrlToTempDir, checkFileExists, deleteTempFile } from '../utilities/fileSystemHelper';
-import { escapeRegexSpecialCharacters } from '../utilities/regexHelper';
-import { queryDataGeneral } from './test-data/queryData';
+import test from '../../hooks/testWithAfterEachHooks.mjs';
+import GoogleHomePicturesPage from '../pages/googleHomePicturesPage';
+import { downloadImageFromUrlToTempDir, checkFileExists, deleteTempFile } from '../../utilities/fileSystemHelper';
+import { escapeRegexSpecialCharacters } from '../../utilities/regexHelper';
+import { queryDataGeneral } from '../test-data/queryData';
 const query = queryDataGeneral[1].query;
 const queryWithExtension = query + ' jpg';
 

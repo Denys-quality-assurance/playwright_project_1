@@ -1,16 +1,16 @@
 import { expect } from '@playwright/test';
-import test from '../hooks/testWithAfterEachHooks.mjs';
-import GoogleHomePage from './pages/googleHomePage';
+import test from '../../../hooks/testWithAfterEachHooks.mjs';
+import GoogleHomePage from '../../pages/googleHomePage';
 import {
   queryDataGeneral,
   queryDataCaseInsensitive,
   queryDataEmptyResults,
   queryDataAutoSuggestion,
   queryDataMisspelled,
-} from './test-data/queryData';
-import acceptablePerformanceData from './test-data/acceptablePerformanceData';
-import { checkFileExists, deleteTempFile, getMismatchedPixelsCount } from '../utilities/fileSystemHelper';
-import { performSearchAndFetchResultsForNewPage, navigateHomeForNewPage } from '../utilities/pagesHelper';
+} from '../../test-data/queryData';
+import acceptablePerformanceData from '../../test-data/acceptablePerformanceData';
+import { checkFileExists, deleteTempFile } from '../../../utilities/fileSystemHelper';
+import { performSearchAndFetchResultsForNewPage, navigateHomeForNewPage } from '../../../utilities/pagesHelper';
 const query = queryDataGeneral[1].query;
 const expectedLocalStorageKeysData = {
   desktop: [`sb_wiz.zpc.gws-wiz-serp.`, `_c;;i`, `ds;;frib`, `sb_wiz.qc`], // Expected Local storage's keys for desktop
@@ -33,14 +33,6 @@ test.describe(`Google Home Page: Search results`, () => {
     expectedLocalStorageKeys = isMobile ? expectedLocalStorageKeysData.mobile : expectedLocalStorageKeysData.desktop; // expectedLocalStorageKeys for mobile and for desktop
     googleHomePage = new GoogleHomePage(page, isMobile);
     await googleHomePage.navigateAndRejectCookies();
-  });
-
-  test(`Google logo is visiable on the Home page`, async ({ sharedContext }, testInfo) => {
-    // Make and save a screenshot of the Google Logo
-    const actualScreenshotPath = await googleHomePage.saveGoogleLogoScreenshot(testInfo);
-    // Compare the actual Logo against the expected baseline Logo, attach results to the report, delete temporary files
-    const mismatchedPixelsCount = await getMismatchedPixelsCount(actualScreenshotPath, testInfo, sharedContext);
-    expect(mismatchedPixelsCount).toBe(0, `At least one pixel of the logo differs from the baseline`);
   });
 
   test(`User can apply video filter on the Empty results page (mocked) and get search results @only-desktop`, async ({

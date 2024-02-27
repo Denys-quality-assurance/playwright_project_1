@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
-import test from '../hooks/testWithGeolocation.mjs';
-import GoogleMapsPage from './pages/googleMapsPage';
+import test from '../../hooks/testWithGeolocation.mjs';
+import GoogleMapsPage from '../pages/googleMapsPage';
 const geoData = { longitude: 12.492507, latitude: 41.889938 }; // Rome, Italy
 
 test.describe('Geolocation Tests @skip-for-firefox', () => {
