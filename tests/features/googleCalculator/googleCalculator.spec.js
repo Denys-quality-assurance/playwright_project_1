@@ -2,9 +2,12 @@ import { expect } from '@playwright/test';
 import test from '../../../hooks/testWithAfterEachHooks.mjs';
 import GoogleCalculatorPage from '../../pages/googleCalculatorPage';
 import { mathOperation } from '../../test-data/googleCalculator/mathOperation';
-import { getCharacterSequence, calculateExpectedResultText } from '../../../utilities/calculatorHelper';
+import {
+  getCharacterSequence,
+  calculateExpectedResultText,
+} from '../../../utilities/googleCalculator/calculatorHelper';
 
-test.describe(`Google calculator`, () => {
+test.describe.only(`Google calculator`, () => {
   let page; // Page instance
   let googleCalculatorPage; // Page object instance
 

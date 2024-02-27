@@ -1,4 +1,4 @@
-import { getOperationAriaLabel } from '../../utilities/calculatorHelper';
+import { getOperationAriaLabel } from '../../utilities/googleCalculator/calculatorHelper';
 
 export default class GoogleCalculatorPage {
   constructor(page, isMobile) {
