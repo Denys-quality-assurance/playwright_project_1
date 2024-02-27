@@ -1,8 +1,8 @@
 import { readFileSync, createUniqueFileName, getTempFilePath, writeFile } from '../../utilities/fileSystemHelper';
 import { escapeRegexSpecialCharacters } from '../../utilities/regexHelper';
-const responseBodyForEmptyResultsMockPath = './tests/test-data/mocks/responseBodyForEmptyResults.html';
+const responseBodyForEmptyResultsMockPath = './tests/test-data/googleSearch/mocks/responseBodyForEmptyResults.html';
 
-export default class GoogleHomePage {
+export default class GoogleSearchPage {
   constructor(page, isMobile) {
     this.page = page;
     this.isMobile = isMobile; // Type of device is mobile
@@ -10,7 +10,8 @@ export default class GoogleHomePage {
       searchButton: `.FPdoLc >> .gNO89b[role="button"]`, // Search button on the Home page
       cookiesModal: `#CXQnmb`, // Cookies consent modal
       rejectAllCookiesButton: `button#W0wltc`, // Reject all cookies button
-      searchInputTextArea: `textarea[name=q]`, // Search query imput area
+      searchInputBox: this.isMobile ? `div.zGVn2e` : `.RNNXgb[jsname="RNNXgb"]`, // // Search imput box for mobile and for desktop
+      searchInputTextArea: `textarea[name=q]`, // Text imput field of Search query imput area
       autoSuggestionOption: `[role="option"]`, // One search auto suggestion option
       changeToEnglishModal: `#Rzn5id`, // Change to English modal
       changeToEnglishButton: `text="Change to English"`, // Change to English button
@@ -759,6 +760,19 @@ export default class GoogleHomePage {
       return await this.page.evaluate(() => document.activeElement.className);
     } catch (error) {
       console.error(`Failed to get class of the active (focused) element: ${error.message}`);
+    }
+  }
+
+  // Get horizontal centre of the element by the selector
+  async getHorizontalCentreBySelector(selector) {
+    try {
+      await this.page.waitForSelector(selector);
+      const element = await this.page.$(selector);
+      const elementBox = await element.boundingBox();
+      const elementCentre = elementBox.x + elementBox.width / 2;
+      return elementCentre;
+    } catch (error) {
+      console.error(`Failed to horizontal centre of the element by the selector: ${error.message}`);
     }
   }
 }

@@ -182,9 +182,10 @@ export async function getMismatchedPixelsCount(actualScreenshotPath, testInfo, s
     const isMobile = sharedContext._options.isMobile || false;
     // Path of the expected Baseline Logo image
     if (isMobile && defaultBrowserType == 'webkit') {
-      var expectedBaselinePath = './tests/test-data/baseline-images/baseline_homepage_logo_Webkit_Mobile.png';
+      var expectedBaselinePath =
+        './tests/test-data/googleSearch/baseline-images/baseline_homepage_logo_Webkit_Mobile.png';
     } else {
-      var expectedBaselinePath = './tests/test-data/baseline-images/baseline_homepage_logo.png';
+      var expectedBaselinePath = './tests/test-data/googleSearch/baseline-images/baseline_homepage_logo.png';
     }
 
     // Convert binaris into Buffers, transform Buffers into pixel data for direct comparison

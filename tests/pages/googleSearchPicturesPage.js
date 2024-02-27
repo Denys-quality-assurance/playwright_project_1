@@ -1,6 +1,6 @@
 import { escapeRegexSpecialCharacters } from '../../utilities/regexHelper';
 
-export default class GoogleHomePicturesPage {
+export default class GoogleSearchPicturesPage {
   constructor(page, isMobile) {
     this.page = page;
     this.isMobile = isMobile; // type of device is mobile

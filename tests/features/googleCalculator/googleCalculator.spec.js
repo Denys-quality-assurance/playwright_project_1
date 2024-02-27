@@ -1,12 +1,12 @@
 import { expect } from '@playwright/test';
-import test from '../hooks/testWithAfterEachHooks.mjs';
-import GoogleHomeCalculatorPage from './pages/googleHomeCalculatorPage';
-import { mathOperation } from './test-data/mathOperation';
-import { getCharacterSequence, calculateExpectedResultText } from '../utilities/calculatorHelper';
+import test from '../../../hooks/testWithAfterEachHooks.mjs';
+import GoogleCalculatorPage from '../../pages/googleCalculatorPage';
+import { mathOperation } from '../../test-data/googleCalculator/mathOperation';
+import { getCharacterSequence, calculateExpectedResultText } from '../../../utilities/calculatorHelper';
 
 test.describe(`Google calculator`, () => {
   let page; // Page instance
-  let googleHomeCalculatorPage; // Page object instance
+  let googleCalculatorPage; // Page object instance
 
   // Navigate to Home page, reject all Cookies and search the 'calculator' query
   test.beforeEach(
@@ -14,34 +14,34 @@ test.describe(`Google calculator`, () => {
     async ({ sharedContext }) => {
       page = await sharedContext.newPage();
       const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
-      googleHomeCalculatorPage = new GoogleHomeCalculatorPage(page, isMobile);
-      await googleHomeCalculatorPage.navigateAndRejectCookies();
-      await googleHomeCalculatorPage.searchForQueryByEnter('calculator');
+      googleCalculatorPage = new GoogleCalculatorPage(page, isMobile);
+      await googleCalculatorPage.navigateAndRejectCookies();
+      await googleCalculatorPage.searchForQueryByEnter('calculator');
     }
   );
 
   test(`Google calculator is visiable on the Home page`, async () => {
     // Check if the Google calculator is visiable
-    const calculatorLocator = page.locator(googleHomeCalculatorPage.selectors.calculatorScreen);
+    const calculatorLocator = page.locator(googleCalculatorPage.selectors.calculatorScreen);
     await expect(calculatorLocator).toBeVisible();
   });
 
   mathOperation.forEach((mathOperation) => {
     test(`Perform "${mathOperation.operationName}" operation for ${mathOperation.firstNumber} and ${mathOperation.secondNumber} @only-desktop`, async () => {
       // Change to English if it's needed
-      await googleHomeCalculatorPage.changeToEnglishIfAsked();
+      await googleCalculatorPage.changeToEnglishIfAsked();
       // Click or tap the 1st number
-      await googleHomeCalculatorPage.clickOrTapDigits(getCharacterSequence(mathOperation.firstNumber));
+      await googleCalculatorPage.typeNumbers(getCharacterSequence(mathOperation.firstNumber));
       // Click or tap the orertion button
-      await googleHomeCalculatorPage.clickOrTapOperation(mathOperation.operationName);
+      await googleCalculatorPage.clickOrTapOperation(mathOperation.operationName);
       // Click or tap the 2nd number
-      await googleHomeCalculatorPage.clickOrTapDigits(getCharacterSequence(mathOperation.secondNumber));
+      await googleCalculatorPage.typeNumbers(getCharacterSequence(mathOperation.secondNumber));
       // Click or tap the "equals" button
-      await googleHomeCalculatorPage.clickOrTap(googleHomeCalculatorPage.selectors.equalsButton);
+      await googleCalculatorPage.clickOrTap(googleCalculatorPage.selectors.equalsButton);
       // Waiting for result to appear
       await page.waitForLoadState('networkidle');
       // Get the text of the result
-      const resultAreaText = await googleHomeCalculatorPage.getResultText();
+      const resultAreaText = await googleCalculatorPage.getResultText();
       // Caclucate result of the math operation with the numbers
       const extectedResultText =
         mathOperation.expectedResult ||
