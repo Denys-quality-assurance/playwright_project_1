@@ -3,7 +3,7 @@ import test from '../../../hooks/testWithAfterEachHooks.mjs';
 import GoogleHomePage from '../../pages/googleHomePage';
 import { getMismatchedPixelsCount } from '../../../utilities/fileSystemHelper';
 
-test.describe(`Google Home Page: Search results`, () => {
+test.describe(`Google Home Page: User Interface`, () => {
   let page; // Page instance
   let googleHomePage; // Page object instance
 
