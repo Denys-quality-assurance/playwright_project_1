@@ -1,6 +1,6 @@
 import { getOperationAriaLabel } from '../../utilities/calculatorHelper';
 
-export default class GoogleHomeCalculatorPage {
+export default class GoogleCalculatorPage {
   constructor(page, isMobile) {
     this.page = page;
     this.isMobile = isMobile; // type of device is mobile

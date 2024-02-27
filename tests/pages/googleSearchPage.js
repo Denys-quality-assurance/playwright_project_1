@@ -1,8 +1,8 @@
 import { readFileSync, createUniqueFileName, getTempFilePath, writeFile } from '../../utilities/fileSystemHelper';
 import { escapeRegexSpecialCharacters } from '../../utilities/regexHelper';
-const responseBodyForEmptyResultsMockPath = './tests/test-data/mocks/responseBodyForEmptyResults.html';
+const responseBodyForEmptyResultsMockPath = './tests/test-data/googleSearch/mocks/responseBodyForEmptyResults.html';
 
-export default class GoogleHomePage {
+export default class GoogleSearchPage {
   constructor(page, isMobile) {
     this.page = page;
     this.isMobile = isMobile; // Type of device is mobile
