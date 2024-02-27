@@ -1,22 +1,22 @@
 import { expect } from '@playwright/test';
 import test from '../../../hooks/testWithAfterEachHooks.mjs';
-import GoogleHomePage from '../../pages/googleHomePage';
-import { queryDataGeneral } from '../../test-data/queryData';
-import acceptablePerformanceData from '../../test-data/acceptablePerformanceData';
+import GoogleSearchPage from '../../pages/googleSearchPage';
+import { queryDataGeneral } from '../../test-data/googleSearch/queryData';
+import acceptablePerformanceData from '../../test-data/googleSearch/acceptablePerformanceData';
 import { checkFileExists, deleteTempFile } from '../../../utilities/fileSystemHelper';
 
 const acceptableActionDutation = acceptablePerformanceData.acceptableSearchDutation; // The duration of the action should not exide the limit (ms)
 
 test.describe(`Google Search results: Performance metrics`, () => {
   let page; // Page instance
-  let googleHomePage; // Page object instance
+  let googleSearchPage; // Page object instance
 
   // Navigate to Home page and reject all Cookies
   test.beforeEach('Navigate to Home page and reject all Cookies', async ({ sharedContext }) => {
     page = await sharedContext.newPage();
     const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
-    googleHomePage = new GoogleHomePage(page, isMobile);
-    await googleHomePage.navigateAndRejectCookies();
+    googleSearchPage = new GoogleSearchPage(page, isMobile);
+    await googleSearchPage.navigateAndRejectCookies();
   });
 
   queryDataGeneral.forEach((queryData) => {
@@ -24,7 +24,7 @@ test.describe(`Google Search results: Performance metrics`, () => {
       // Get browser type
       const defaultBrowserType = testInfo.project.use.defaultBrowserType;
       // Get performance metrics for Search results
-      const { metrics, actionDuration } = await googleHomePage.getPerformanceMetricsForSearchResults(
+      const { metrics, actionDuration } = await googleSearchPage.getPerformanceMetricsForSearchResults(
         queryData.query,
         testInfo,
         defaultBrowserType
