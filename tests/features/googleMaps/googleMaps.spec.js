@@ -9,15 +9,17 @@ test.describe('Geolocation Tests @skip-for-firefox', () => {
   // Sets the geolocation, navigate to Google Maps page and reject all Cookies if it's needed
   test.beforeEach(
     `Sets the geolocation, navigate to Google Maps page and reject all Cookies if it's needed`,
-    async ({ sharedContext }) => {
-      // Sets the geolocation
-      await sharedContext.setGeolocation(geoData);
+    async ({ sharedContext }, testInfo) => {
+      if (testInfo.status !== 'skipped' && testInfo.status !== 'interrupted') {
+        // Sets the geolocation
+        await sharedContext.setGeolocation(geoData);
 
-      // Navigate to page and reject all Cookies if it's needed
-      let page = await sharedContext.newPage();
-      const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
-      googleMapsPage = new GoogleMapsPage(page, isMobile);
-      await googleMapsPage.openGoogleMaps();
+        // Navigate to page and reject all Cookies if it's needed
+        let page = await sharedContext.newPage();
+        const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
+        googleMapsPage = new GoogleMapsPage(page, isMobile);
+        await googleMapsPage.openGoogleMaps();
+      }
     }
   );
 

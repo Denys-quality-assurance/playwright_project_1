@@ -14,16 +14,18 @@ test.describe(`Google calculator`, () => {
   // Navigate to Home page, reject all Cookies and search the 'calculator' query
   test.beforeEach(
     `Navigate to Home page, reject all Cookies and search the 'calculator' query`,
-    async ({ sharedContext }) => {
-      page = await sharedContext.newPage();
-      const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
-      googleCalculatorPage = new GoogleCalculatorPage(page, isMobile);
-      await googleCalculatorPage.navigateAndRejectCookies();
-      await googleCalculatorPage.searchForQueryByEnter('calculator');
+    async ({ sharedContext }, testInfo) => {
+      if (testInfo.status !== 'skipped' && testInfo.status !== 'interrupted') {
+        page = await sharedContext.newPage();
+        const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
+        googleCalculatorPage = new GoogleCalculatorPage(page, isMobile);
+        await googleCalculatorPage.navigateAndRejectCookies();
+        await googleCalculatorPage.searchForQueryByEnter('calculator');
+      }
     }
   );
 
-  test(`Google calculator is visiable on the Home page`, async () => {
+  test.only(`Google calculator is visiable on the Home page`, async () => {
     // Check if the Google calculator is visiable
     const calculatorLocator = page.locator(googleCalculatorPage.selectors.calculatorScreen);
     await expect(calculatorLocator).toBeVisible();

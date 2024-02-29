@@ -9,11 +9,13 @@ test.describe(`Google Search results: keyboard navigation`, () => {
   let googleSearchPage; // Page object instance
 
   // Navigate to Home page and reject all Cookies
-  test.beforeEach('Navigate to Home page and reject all Cookies', async ({ sharedContext }) => {
-    page = await sharedContext.newPage();
-    const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
-    googleSearchPage = new GoogleSearchPage(page, isMobile);
-    await googleSearchPage.navigateAndRejectCookies();
+  test.beforeEach('Navigate to Home page and reject all Cookies', async ({ sharedContext }, testInfo) => {
+    if (testInfo.status !== 'skipped' && testInfo.status !== 'interrupted') {
+      page = await sharedContext.newPage();
+      const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
+      googleSearchPage = new GoogleSearchPage(page, isMobile);
+      await googleSearchPage.navigateAndRejectCookies();
+    }
   });
 
   test(`User can navigate via Tab, Shift+Tab and Enter @only-desktop`, async ({}) => {

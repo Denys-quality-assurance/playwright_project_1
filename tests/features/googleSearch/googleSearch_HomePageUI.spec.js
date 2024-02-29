@@ -8,11 +8,13 @@ test.describe(`Google Home Page: User Interface`, () => {
   let googleSearchPage; // Page object instance
 
   // Navigate to Home page and reject all Cookies
-  test.beforeEach('Navigate to Home page and reject all Cookies', async ({ sharedContext }) => {
-    page = await sharedContext.newPage();
-    const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
-    googleSearchPage = new GoogleSearchPage(page, isMobile);
-    await googleSearchPage.navigateAndRejectCookies();
+  test.beforeEach('Navigate to Home page and reject all Cookies', async ({ sharedContext }, testInfo) => {
+    if (testInfo.status !== 'skipped' && testInfo.status !== 'interrupted') {
+      page = await sharedContext.newPage();
+      const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
+      googleSearchPage = new GoogleSearchPage(page, isMobile);
+      await googleSearchPage.navigateAndRejectCookies();
+    }
   });
 
   test(`Google logo is visiable on the Home page`, async ({ sharedContext }, testInfo) => {

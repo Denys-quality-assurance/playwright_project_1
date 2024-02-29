@@ -12,12 +12,17 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
   let googleSearchPicturesPage; // Page object instance
 
   // Navigate to Home page, reject all Cookies and search the query
-  test.beforeEach('Navigate to Home page, reject all Cookies and search the query', async ({ sharedContext }) => {
-    page = await sharedContext.newPage();
-    const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
-    googleSearchPicturesPage = new GoogleSearchPicturesPage(page, isMobile);
-    await googleSearchPicturesPage.navigateAndSearchPictures(queryWithExtension);
-  });
+  test.beforeEach(
+    'Navigate to Home page, reject all Cookies and search the query',
+    async ({ sharedContext }, testInfo) => {
+      if (testInfo.status !== 'skipped' && testInfo.status !== 'interrupted') {
+        page = await sharedContext.newPage();
+        const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
+        googleSearchPicturesPage = new GoogleSearchPicturesPage(page, isMobile);
+        await googleSearchPicturesPage.navigateAndSearchPictures(queryWithExtension);
+      }
+    }
+  );
 
   test(`User can download picture from test results, User can search by picture @skip-for-webkit @only-desktop`, async ({}, testInfo) => {
     // Get description and picture link of the the 1st picture search result

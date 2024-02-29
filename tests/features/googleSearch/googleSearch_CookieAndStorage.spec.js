@@ -16,12 +16,14 @@ test.describe(`Google Search results: Cookies and storage`, () => {
   let googleSearchPage; // Page object instance
 
   // Navigate to Home page and reject all Cookies
-  test.beforeEach('Navigate to Home page and reject all Cookies', async ({ sharedContext }) => {
-    page = await sharedContext.newPage();
-    const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
-    expectedLocalStorageKeys = isMobile ? expectedLocalStorageKeysData.mobile : expectedLocalStorageKeysData.desktop; // expectedLocalStorageKeys for mobile and for desktop
-    googleSearchPage = new GoogleSearchPage(page, isMobile);
-    await googleSearchPage.navigateAndRejectCookies();
+  test.beforeEach('Navigate to Home page and reject all Cookies', async ({ sharedContext }, testInfo) => {
+    if (testInfo.status !== 'skipped' && testInfo.status !== 'interrupted') {
+      page = await sharedContext.newPage();
+      const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
+      expectedLocalStorageKeys = isMobile ? expectedLocalStorageKeysData.mobile : expectedLocalStorageKeysData.desktop; // expectedLocalStorageKeys for mobile and for desktop
+      googleSearchPage = new GoogleSearchPage(page, isMobile);
+      await googleSearchPage.navigateAndRejectCookies();
+    }
   });
 
   test(`Check local storage content`, async ({}) => {
