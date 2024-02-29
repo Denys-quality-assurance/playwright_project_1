@@ -25,7 +25,7 @@ test.describe(`Google calculator`, () => {
     }
   );
 
-  test.only(`Google calculator is visiable on the Home page`, async () => {
+  test(`Google calculator is visiable on the Home page`, async () => {
     // Check if the Google calculator is visiable
     const calculatorLocator = page.locator(googleCalculatorPage.selectors.calculatorScreen);
     await expect(calculatorLocator).toBeVisible();
