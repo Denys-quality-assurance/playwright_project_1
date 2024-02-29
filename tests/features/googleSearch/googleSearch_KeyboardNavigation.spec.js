@@ -4,7 +4,7 @@ import GoogleSearchPage from '../../pages/googleSearchPage';
 import { queryDataGeneral } from '../../test-data/googleSearch/queryData';
 const query = queryDataGeneral[1].query;
 
-test.describe(`Google Search results: keyboard navigation`, () => {
+test.describe(`Google Search results: Keyboard navigation`, () => {
   let page; // Page instance
   let googleSearchPage; // Page object instance
 
@@ -18,7 +18,7 @@ test.describe(`Google Search results: keyboard navigation`, () => {
     }
   });
 
-  test(`User can navigate via Tab, Shift+Tab and Enter @only-desktop`, async ({}) => {
+  test(`User can navigate via Tab, Shift+Tab and Enter @only-desktop @keyboard_navigation`, async ({}) => {
     // Search for query
     await googleSearchPage.searchForQueryByEnter(query);
 

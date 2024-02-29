@@ -26,7 +26,7 @@ test.describe(`Google Search results: Cookies and storage`, () => {
     }
   });
 
-  test(`Check local storage content`, async ({}) => {
+  test(`Check local storage content @results @storage`, async ({}) => {
     // Search for query
     await googleSearchPage.searchForQueryByEnter(query);
     // Check that all expected keys included to the Local storage
@@ -48,7 +48,7 @@ test.describe(`Google Search results: Cookies and storage`, () => {
     expect(localStorageValuesNotEmpty).toBe(true, `At least 1 local storage value is empty`);
   });
 
-  test(`Check session storage content`, async ({}) => {
+  test(`Check session storage content @results @storage`, async ({}) => {
     // Search for query
     await googleSearchPage.searchForQueryByEnter(query);
     // Check that all expected keys included to the Session storage
@@ -77,7 +77,7 @@ test.describe(`Google Search results: Cookies and storage`, () => {
     expect(sessionStorageValuesNotEmpty).toBe(true, `At least 1 session storage value is empty`);
   });
 
-  test(`Check cookies content`, async ({}) => {
+  test(`Check cookies content @results @cookies`, async ({}) => {
     // Search for query
     await googleSearchPage.searchForQueryByEnter(query);
     // Check that all expected names included to the cookies

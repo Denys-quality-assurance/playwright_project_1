@@ -7,6 +7,22 @@ module.exports = {
   retries: 2, // Defines the maximum attempts to retry a test after a failure
   testMatch: 'tests/**/*.spec.js', // Glob patterns or regular expressions that match test files
   projects: [
+    /* Test against desktop browsers - Specific feature testing */
+    {
+      name: 'Desktop_Chromium_Features_PROD',
+      grepInvert: /^(.*@(skip-for-chromium|only-mobile)).*$/, // skip tests with @skip-for-chromium or @only-mobile
+      testMatch: 'tests/**/*.spec.js', // glob patterns or regular expressions that match test files
+      grep: /^(.*@(filters|result_description)).*$/, // only tests with @<feature name>
+      metadata: {
+        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
+        skipKnownBugs: process.env.SKIP_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_KNOWN_BUGS is 'true'
+      },
+      use: {
+        ...devices['Desktop Chrome'],
+        headless: false,
+        baseURL: process.env.BASE_URL || 'https://www.google.com', // default PROD URL
+      },
+    },
     /* Test against desktop browsers */
     {
       name: 'Desktop_Google_Chrome_PROD',
