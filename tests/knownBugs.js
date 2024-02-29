@@ -121,6 +121,17 @@ export const knownBugs = [
     },
   },
   {
+    id: 'BUG-5',
+    summary: `Search results are not the same for the same query with upper and lower cases`,
+    testFile: 'googleSearch_SearchResults.spec.js',
+    testTitle: `Search results are case insensitive to query case for the 'ПлэйрайТ' query`,
+    status: {
+      QA: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PrePROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
+    },
+  },
+  {
     id: 'BUG-6',
     summary: `Message with the total number of results and the time taken to fetch the result is shown only on the second try for Chinese or long queries`,
     testFile: 'googleSearch_SearchResults.spec.js',
@@ -155,6 +166,28 @@ export const knownBugs = [
   },
   {
     id: 'BUG-8',
+    summary: `At least one search result does not contain the query`,
+    testFile: 'googleSearch_SearchResults.spec.js',
+    testTitle: `Google search results page contains 'Плэйрайт' query`,
+    status: {
+      QA: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PrePROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
+    },
+  },
+  {
+    id: 'BUG-9',
+    summary: `At least one search result does not contain the query`,
+    testFile: 'googleSearch_SearchResults.spec.js',
+    testTitle: `Google search results page contains '@ at' query`,
+    status: {
+      QA: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PrePROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
+    },
+  },
+  {
+    id: 'BUG-998',
     summary: `Bug for PASSED TESTS WITH KNOWN UNFIXED ISSUES ON THE ENVIRONMENT testing`,
     testFile: 'googleCalculator.spec.js',
     testTitle: `Google calculator is visiable on the Home page`,
@@ -165,7 +198,7 @@ export const knownBugs = [
     },
   },
   {
-    id: 'BUG-9',
+    id: 'BUG-999',
     summary: `Bug 2 for PASSED TESTS WITH KNOWN UNFIXED ISSUES ON THE ENVIRONMENT testing`,
     testFile: 'googleCalculator.spec.js',
     testTitle: `Google calculator is visiable on the Home page`,
