@@ -18,22 +18,22 @@ function createSharedContextTest(contextOptions) {
 
   // Mark the current test as "should fail" or skip it
   test.beforeEach('Mark the current test as "should fail" or skip it', async ({}, testInfo) => {
-    try {
-      // Environment for current test project
-      const currentENV = testInfo.project.metadata.currentENV;
-
-      // Find if the current test has known bugs unfixed in the current environment
-      const relatedUnfixedBugs = findRelatedUnfixedBugsForTest(testInfo.file, testInfo.title, knownBugs, currentENV);
-      // Number of the related unfixed bugs
-      const numberOfRelatedUnfixedBugs = relatedUnfixedBugs.length;
-      // Test is marked as "should fail" when the condition is true: there is at least 1 related bug
-      testInfo.fail(
-        numberOfRelatedUnfixedBugs > 0,
-        `Test marked as "should fail" due to the presence of ${numberOfRelatedUnfixedBugs} unfixed bug(s)`
-      );
-    } catch (error) {
-      console.error(`Failed to mark the current test as "should fail" or skip it: ${error.message}`);
-    }
+    // Environment for current test project
+    const currentENV = testInfo.project.metadata.currentENV;
+    // Find if the current test has known bugs unfixed in the current environment
+    const relatedUnfixedBugs = findRelatedUnfixedBugsForTest(testInfo.file, testInfo.title, knownBugs, currentENV);
+    // Number of the related unfixed bugs
+    const numberOfRelatedUnfixedBugs = relatedUnfixedBugs.length;
+    // Test is marked as "should fail" when the condition is true: there is at least 1 related bug
+    testInfo.fail(
+      numberOfRelatedUnfixedBugs > 0,
+      `Test marked as "should fail" due to the presence of ${numberOfRelatedUnfixedBugs} unfixed bug(s)`
+    );
+    // Test is skipped when the condition is true: flag SKIP_KNOWN_BUGS is 'true' and there is at least 1 unfixed bug
+    testInfo.skip(
+      process.env.SKIP_KNOWN_BUGS === 'true' && numberOfRelatedUnfixedBugs > 0,
+      `Test skipped due to the presence of ${numberOfRelatedUnfixedBugs} unfixed bug(s)`
+    );
   });
 
   // Add screenshots as attachments to HTML report. Add info to the custom report
