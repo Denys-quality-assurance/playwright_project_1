@@ -7,7 +7,7 @@ import {
   calculateExpectedResultText,
 } from '../../../utilities/googleCalculator/calculatorHelper';
 
-test.describe.only(`Google calculator`, () => {
+test.describe(`Google calculator`, () => {
   let page; // Page instance
   let googleCalculatorPage; // Page object instance
 

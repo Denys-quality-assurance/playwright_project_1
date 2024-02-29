@@ -153,4 +153,15 @@ export const knownBugs = [
       PROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
     },
   },
+  {
+    id: 'BUG-8',
+    summary: `Bug for PASSED TESTS WITH KNOWN UNFIXED ISSUES ON THE ENVIRONMENT testing`,
+    testFile: 'googleCalculator.spec.js',
+    testTitle: `Google calculator is visiable on the Home page`,
+    status: {
+      QA: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PrePROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
+      PROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
+    },
+  },
 ];

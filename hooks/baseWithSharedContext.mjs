@@ -61,39 +61,57 @@ function createSharedContextTest(contextOptions) {
 
           // List of the known bugs for the current test
           let knownBugsForCurrentTest = [];
-          // Add info to the custom report if the test had failed 1st time
-          if (testInfo.status === 'failed' || testInfo.status === 'timedOut' || testInfo.retry > 0) {
-            // Find if the current failed test has known bugs
-            const relatedBugs = findRelatedBugsTest(testInfo.file, testInfo.title, knownBugs);
+          let listKnownIssuesForFailed = [];
+          let listKnownIssuesForPassed = [];
+          // Find if the current test has known bugs
+          const relatedBugs = findRelatedBugsTest(testInfo.file, testInfo.title, knownBugs);
 
-            if (relatedBugs.length > 0) {
-              // Collect the list of the failed tests with known fixed and unfixed issues
-              const listKnownIssues = sortKnownIssues(
+          if (relatedBugs.length > 0) {
+            // Add info to the custom report if the test has related bugs
+            if (testInfo.status === 'failed' || testInfo.status === 'timedOut' || testInfo.retry > 0) {
+              // Collect the list of the known fixed and unfixed issues
+              listKnownIssuesForFailed = sortKnownIssues(
+                testInfo.status,
                 currentTestPath,
                 relatedBugs,
                 currentENV,
                 knownBugsForCurrentTest,
                 knownBugsForCurrentTest
               );
-              // Add a header for the List of the known issues
-              knownBugsForCurrentTest.push('KNOWN ISSUES:');
-              // List of the known unfixed issues for the test
-              knownBugsForCurrentTest = [...knownBugsForCurrentTest, ...listKnownIssues.listKnownUnfixedIssues];
-              // List of the known fixed issues for the test
-              knownBugsForCurrentTest = [...knownBugsForCurrentTest, ...listKnownIssues.listKnownFixedIssues];
-
-              // Attach the bugs info to the test info
-              await testInfo.attach(`${projectName}_${timestamp}_known_bugs_for_the_current_test`, {
-                body: knownBugsForCurrentTest.join('\n'),
-                contentType: 'text/plain',
-              });
-            } else {
-              // If there is no known bugs for the test, attach it under unknown issues
-              await testInfo.attach(`${projectName}_${timestamp}_known_bugs_for_the_current_test_IS_EMPTY`, {
-                body: NO_KNOWN_ISSUE_STR,
-                contentType: 'text/plain',
-              });
+            } else if (testInfo.status === 'passed') {
+              // Collect the list of the unfixed issues
+              listKnownIssuesForPassed = sortKnownIssues(
+                testInfo.status,
+                currentTestPath,
+                relatedBugs,
+                currentENV,
+                knownBugsForCurrentTest
+              );
             }
+            // Add a header for the List of the known issues
+            knownBugsForCurrentTest.push('KNOWN ISSUES:');
+            // List of the known unfixed issues for the test
+            knownBugsForCurrentTest =
+              testInfo.status !== 'passed'
+                ? [...knownBugsForCurrentTest, ...listKnownIssuesForFailed.listKnownUnfixedIssues]
+                : [...knownBugsForCurrentTest, ...listKnownIssuesForPassed.listKnownUnfixedIssues];
+            // List of the known fixed issues for the test
+            knownBugsForCurrentTest =
+              testInfo.status !== 'passed'
+                ? [...knownBugsForCurrentTest, ...listKnownIssuesForFailed.listKnownFixedIssues]
+                : [...knownBugsForCurrentTest];
+
+            // Attach the bugs info to the test info
+            await testInfo.attach(`${projectName}_${timestamp}_known_bugs_for_the_current_test`, {
+              body: knownBugsForCurrentTest.join('\n'),
+              contentType: 'text/plain',
+            });
+          } else {
+            // If there is no known bugs for the test, attach it under unknown issues
+            await testInfo.attach(`${projectName}_${timestamp}_known_bugs_for_the_current_test_IS_EMPTY`, {
+              body: NO_KNOWN_ISSUE_STR,
+              contentType: 'text/plain',
+            });
           }
         } catch (error) {
           console.error(`Failed to add into to the custom report: ${error.message}`);
