@@ -18,6 +18,8 @@ function createSharedContextTest(contextOptions) {
 
   // Mark the current test as "should fail" or skip it
   test.beforeEach('Mark the current test as "should fail" or skip it', async ({}, testInfo) => {
+    // Test with unfixed bugs is skipped when skipKnownBugs is 'true'
+    const skipKnownBugs = testInfo.project.metadata.skipKnownBugs.toLowerCase() === 'true';
     // Environment for current test project
     const currentENV = testInfo.project.metadata.currentENV;
     // Find if the current test has known bugs unfixed in the current environment
@@ -29,9 +31,9 @@ function createSharedContextTest(contextOptions) {
       numberOfRelatedUnfixedBugs > 0,
       `Test marked as "should fail" due to the presence of ${numberOfRelatedUnfixedBugs} unfixed bug(s)`
     );
-    // Test is skipped when the condition is true: flag SKIP_KNOWN_BUGS is 'true' and there is at least 1 unfixed bug
+    // Test is skipped when the condition is true: flag skipKnownBugs is 'true' and there is at least 1 unfixed bug
     testInfo.skip(
-      process.env.SKIP_KNOWN_BUGS === 'true' && numberOfRelatedUnfixedBugs > 0,
+      skipKnownBugs && numberOfRelatedUnfixedBugs > 0,
       `Test skipped due to the presence of ${numberOfRelatedUnfixedBugs} unfixed bug(s)`
     );
   });

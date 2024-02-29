@@ -12,6 +12,7 @@ module.exports = {
       grepInvert: /^(.*@(skip-for-chromium|only-mobile)).*$/, // skip tests with @skip-for-chromium or @only-mobile
       metadata: {
         currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
+        skipKnownBugs: process.env.SKIP_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_KNOWN_BUGS is 'true'
       },
       use: {
         ...devices['Desktop Chrome'],
@@ -25,6 +26,7 @@ module.exports = {
       grepInvert: /^(.*@(skip-for-webkit|only-mobile)).*$/, // skip tests with @skip-for-webkit or @only-mobile
       metadata: {
         currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
+        skipKnownBugs: process.env.SKIP_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_KNOWN_BUGS is 'true'
       },
       use: {
         ...devices['Desktop Safari'],
@@ -37,6 +39,7 @@ module.exports = {
       grepInvert: /^(.*@(skip-for-edge|only-mobile)).*$/, // skip tests with @skip-for-edge or @only-mobile
       metadata: {
         currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
+        skipKnownBugs: process.env.SKIP_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_KNOWN_BUGS is 'true'
       },
       use: {
         ...devices['Desktop Edge'],
@@ -50,6 +53,7 @@ module.exports = {
       grepInvert: /^(.*@(skip-for-firefox|only-mobile)).*$/, // skip tests with @skip-for-firefox or @only-mobile
       metadata: {
         currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
+        skipKnownBugs: process.env.SKIP_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_KNOWN_BUGS is 'true'
       },
       use: {
         ...devices['Desktop Firefox'],
@@ -63,6 +67,7 @@ module.exports = {
       grepInvert: /^(.*@(skip-for-webkit|only-desktop)).*$/, // skip tests with @skip-for-webkit or @only-desktop
       metadata: {
         currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
+        skipKnownBugs: process.env.SKIP_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_KNOWN_BUGS is 'true'
       },
       use: {
         ...devices['iPhone 14'],
@@ -75,6 +80,7 @@ module.exports = {
       grepInvert: /^(.*@(skip-for-webkit|only-desktop)).*$/, // skip tests with @skip-for-webkit or @only-desktop
       metadata: {
         currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
+        skipKnownBugs: process.env.SKIP_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_KNOWN_BUGS is 'true'
       },
       use: {
         ...devices['iPhone 14 landscape'],
@@ -87,6 +93,7 @@ module.exports = {
       grepInvert: /^(.*@(skip-for-chromium|only-desktop)).*$/, // skip tests with @skip-for-chromium or @only-desktop
       metadata: {
         currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
+        skipKnownBugs: process.env.SKIP_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_KNOWN_BUGS is 'true'
       },
       use: {
         ...devices['Galaxy Tab S4'],
@@ -100,6 +107,7 @@ module.exports = {
       grepInvert: /^(.*@(skip-for-chromium|only-desktop)).*$/, // skip tests with @skip-for-chromium or @only-desktop
       metadata: {
         currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
+        skipKnownBugs: process.env.SKIP_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_KNOWN_BUGS is 'true'
       },
       use: {
         ...devices['Galaxy Tab S4 landscape'],

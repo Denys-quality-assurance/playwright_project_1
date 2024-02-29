@@ -15,7 +15,7 @@ test.describe(`Google calculator`, () => {
   test.beforeEach(
     `Navigate to Home page, reject all Cookies and search the 'calculator' query`,
     async ({ sharedContext }, testInfo) => {
-      if (testInfo.status !== 'skipped' && testInfo.status !== 'interrupted') {
+      if (testInfo.expectedStatus !== 'skipped') {
         page = await sharedContext.newPage();
         const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
         googleCalculatorPage = new GoogleCalculatorPage(page, isMobile);

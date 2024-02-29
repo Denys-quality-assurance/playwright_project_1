@@ -9,7 +9,7 @@ test.describe(`Google Home Page: User Interface`, () => {
 
   // Navigate to Home page and reject all Cookies
   test.beforeEach('Navigate to Home page and reject all Cookies', async ({ sharedContext }, testInfo) => {
-    if (testInfo.status !== 'skipped' && testInfo.status !== 'interrupted') {
+    if (testInfo.expectedStatus !== 'skipped') {
       page = await sharedContext.newPage();
       const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
       googleSearchPage = new GoogleSearchPage(page, isMobile);

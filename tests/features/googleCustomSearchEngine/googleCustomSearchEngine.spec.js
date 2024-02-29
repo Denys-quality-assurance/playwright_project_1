@@ -12,7 +12,7 @@ test.describe(`Google Custom Search Engine: Search results testing for '${query}
   test.beforeEach(
     'Navigate to Google Custom Search Engine page and init iFrame',
     async ({ sharedContext }, testInfo) => {
-      if (testInfo.status !== 'skipped' && testInfo.status !== 'interrupted') {
+      if (testInfo.expectedStatus !== 'skipped') {
         const page = await sharedContext.newPage();
         googleCSEPage = new GoogleCustomSearchEnginePage(page);
         await googleCSEPage.selectFrame();

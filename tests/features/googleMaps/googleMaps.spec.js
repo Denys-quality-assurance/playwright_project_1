@@ -10,7 +10,7 @@ test.describe('Geolocation Tests @skip-for-firefox', () => {
   test.beforeEach(
     `Sets the geolocation, navigate to Google Maps page and reject all Cookies if it's needed`,
     async ({ sharedContext }, testInfo) => {
-      if (testInfo.status !== 'skipped' && testInfo.status !== 'interrupted') {
+      if (testInfo.expectedStatus !== 'skipped') {
         // Sets the geolocation
         await sharedContext.setGeolocation(geoData);
 
