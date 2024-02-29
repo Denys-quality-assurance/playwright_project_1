@@ -1,6 +1,10 @@
 import { test as base } from '@playwright/test';
 import { knownBugs } from '../tests/knownBugs.js';
-import { findRelatedBugsTest, sortKnownIssues } from '../utilities/customReporterHelper.js';
+import {
+  findRelatedUnfixedBugsForTest,
+  findRelatedBugsForTest,
+  sortKnownIssues,
+} from '../utilities/customReporterHelper.js';
 
 import { NO_KNOWN_ISSUE_STR } from '../utilities/customReporterHelper.js';
 
@@ -12,6 +16,27 @@ function createSharedContextTest(contextOptions) {
     },
   });
 
+  // Mark the current test as "should fail" or skip it
+  test.beforeEach('Mark the current test as "should fail" or skip it', async ({}, testInfo) => {
+    try {
+      // Environment for current test project
+      const currentENV = testInfo.project.metadata.currentENV;
+
+      // Find if the current test has known bugs unfixed in the current environment
+      const relatedUnfixedBugs = findRelatedUnfixedBugsForTest(testInfo.file, testInfo.title, knownBugs, currentENV);
+      // Number of the related unfixed bugs
+      const numberOfRelatedUnfixedBugs = relatedUnfixedBugs.length;
+      // Test is marked as "should fail" when the condition is true: there is at least 1 related bug
+      testInfo.fail(
+        numberOfRelatedUnfixedBugs > 0,
+        `Test marked as "should fail" due to the presence of ${numberOfRelatedUnfixedBugs} unfixed bug(s)`
+      );
+    } catch (error) {
+      console.error(`Failed to mark the current test as "should fail" or skip it: ${error.message}`);
+    }
+  });
+
+  // Add screenshots as attachments to HTML report. Add info to the custom report
   test.afterEach(
     'Add screenshots as attachments to HTML report. Add info to the custom report',
     async ({ sharedContext }, testInfo) => {
@@ -36,7 +61,11 @@ function createSharedContextTest(contextOptions) {
             });
 
             // Conditionally save fullpage screenshot if the test had failed or retried
-            if (testInfo.status === 'failed' || testInfo.status === 'timedOut' || testInfo.retry > 0) {
+            if (
+              testInfo.status === 'failed' ||
+              testInfo.status === 'timedOut' ||
+              (testInfo.status === 'passed' && testInfo.status === testInfo.expectedStatus && testInfo.retry > 0)
+            ) {
               const screenshotFullPage = await page.screenshot({ fullPage: true });
               await testInfo.attach(`${projectName}_${timestamp}_fullpage_screenshot_of_Page_${index}.png`, {
                 body: screenshotFullPage,
@@ -64,11 +93,15 @@ function createSharedContextTest(contextOptions) {
           let listKnownIssuesForFailed = [];
           let listKnownIssuesForPassed = [];
           // Find if the current test has known bugs
-          const relatedBugs = findRelatedBugsTest(testInfo.file, testInfo.title, knownBugs);
+          const relatedBugs = findRelatedBugsForTest(testInfo.file, testInfo.title, knownBugs);
 
           if (relatedBugs.length > 0) {
             // Add info to the custom report if the test has related bugs
-            if (testInfo.status === 'failed' || testInfo.status === 'timedOut' || testInfo.retry > 0) {
+            if (
+              testInfo.status === 'failed' ||
+              testInfo.status === 'timedOut' ||
+              (testInfo.status === 'passed' && testInfo.status === testInfo.expectedStatus && testInfo.retry > 0)
+            ) {
               // Collect the list of the known fixed and unfixed issues
               listKnownIssuesForFailed = sortKnownIssues(
                 testInfo.status,
@@ -78,7 +111,7 @@ function createSharedContextTest(contextOptions) {
                 knownBugsForCurrentTest,
                 knownBugsForCurrentTest
               );
-            } else if (testInfo.status === 'passed') {
+            } else if (testInfo.status === 'passed' && testInfo.status !== testInfo.expectedStatus) {
               // Collect the list of the unfixed issues
               listKnownIssuesForPassed = sortKnownIssues(
                 testInfo.status,
@@ -114,7 +147,7 @@ function createSharedContextTest(contextOptions) {
             });
           }
         } catch (error) {
-          console.error(`Failed to add into to the custom report: ${error.message}`);
+          console.error(`Failed to add info to the custom report: ${error.message}`);
         }
       } catch (error) {
         console.error(

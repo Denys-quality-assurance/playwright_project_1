@@ -13,10 +13,10 @@ export const FAILED_TESTS_WITH_KNOWN_FIXED_ISSUES_STR =
   'FAILED AND FLAKY TESTS WITH KNOWN FIXED ISSUES ON THE ENVIRONMENT (to determine the cause and link or reopen the bug)';
 export const NO_KNOWN_ISSUE_STR = '››› HAS NO KNOWN ISSUE - to determine the cause and link the bug';
 export const PASSED_TESTS_WITH_KNOWN_UNFIXED_ISSUES_STR =
-  'PASSED TESTS WITH KNOWN UNFIXED ISSUES ON THE ENVIRONMENT (to clarify and update the status of the linked bug)';
+  'PASSED (OR FLAKY) TESTS WITH KNOWN UNFIXED ISSUES ON THE ENVIRONMENT (to clarify and update the status of the linked bug)';
 
 // Find if the current test has known bugs
-export function findRelatedBugsTest(fileName, testTitle, knownBugs) {
+export function findRelatedBugsForTest(fileName, testTitle, knownBugs) {
   try {
     // Current spec file name, test title
     const currentSpecFileName = getFileName(fileName);
@@ -28,6 +28,25 @@ export function findRelatedBugsTest(fileName, testTitle, knownBugs) {
     return relatedBugs;
   } catch (error) {
     console.error(`Error while filtering known bugs for the current test: ${error.message}`);
+  }
+}
+
+// Find if the current test has known bugs unfixed in the current environment
+export function findRelatedUnfixedBugsForTest(fileName, testTitle, knownBugs, currentENV) {
+  try {
+    // Current spec file name, test title
+    const currentSpecFileName = getFileName(fileName);
+    const currentTestTitle = testTitle;
+
+    const relatedUnfixedBugs = knownBugs.filter(
+      (bug) =>
+        bug.testFile === currentSpecFileName && bug.testTitle === currentTestTitle && bug.status[currentENV] !== 'FIXED'
+    );
+    return relatedUnfixedBugs;
+  } catch (error) {
+    console.error(
+      `Error while filtering known unfixed bugs for the current test in the current environment: ${error.message}`
+    );
   }
 }
 

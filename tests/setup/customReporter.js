@@ -1,5 +1,5 @@
 import { knownBugs } from '../knownBugs.js';
-import { findRelatedBugsTest, sortKnownIssues } from '../../utilities/customReporterHelper.js';
+import { findRelatedBugsForTest, sortKnownIssues } from '../../utilities/customReporterHelper.js';
 
 import {
   FAILED_STR,
@@ -34,7 +34,7 @@ export default class CustomReporter {
       this.currentENV = test.parent.project().metadata.currentENV;
 
       // Find if the current test has known bugs
-      const relatedBugs = findRelatedBugsTest(test.location.file, test.title, knownBugs);
+      const relatedBugs = findRelatedBugsForTest(test.location.file, test.title, knownBugs);
 
       if (relatedBugs.length > 0) {
         // Add info to the custom reporter if the test has related bugs
@@ -54,7 +54,7 @@ export default class CustomReporter {
           this.allKnownUnfixedIssuesForFailed = listKnownIssues.listKnownUnfixedIssues;
           // List of the known fixed issues for the test
           this.allKnownFixedIssuesForFailed = listKnownIssues.listKnownFixedIssues;
-        } else if (result.status === 'passed') {
+        } else if (result.status === 'passed' && result.retry === 0) {
           // Collect the list of the passed tests with known unfixed issues
           const listKnownIssues = sortKnownIssues(
             result.status,
