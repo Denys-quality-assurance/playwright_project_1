@@ -4,7 +4,7 @@ import GoogleCustomSearchEnginePage from '../../pages/googleCustomSearchEngineIf
 import { queryDataGeneral } from '../../test-data/googleSearch/queryData';
 const query = queryDataGeneral[0].query;
 
-test.describe(`Google Custom Search Engine: Search results testing for '${query}' query`, () => {
+test.describe.only(`Google Custom Search Engine: Search results testing for '${query}' query`, () => {
   let googleCSEPage; // Page object instance
   test.use({ baseURL: 'https://www.steegle.com/' }); // Set a specific base URL for this test
 

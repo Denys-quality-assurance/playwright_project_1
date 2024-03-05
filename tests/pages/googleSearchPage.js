@@ -336,7 +336,7 @@ export default class GoogleSearchPage {
         }
       }
 
-      return true; // Passed all checks
+      return { success: true }; // Passed all checks
     } catch (error) {
       console.error(`Failed to check if all search results contain query: ${error.message}`);
     }
