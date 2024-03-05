@@ -30,14 +30,14 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
     // Case insensitive regex for the query
     let queryRegex = new RegExp(escapeRegexSpecialCharacters(query), 'i'); // 'i' flag for case insensitive
     // Check if the picture's description contains the query
-    expect(queryRegex.test(pictureDescription)).toBe(true, `The picture's description doesn't contain the query`);
+    expect(queryRegex.test(pictureDescription), `The picture's description doesn't contain the query`).toBe(true);
 
     // Download picture from url to the system's directory for temporary files
     const imagePath = await downloadImageFromUrlToTempDir(imageUrl, testInfo);
 
     // Check if the picture downloaded
     const isPictureDownloaded = checkFileExists(imagePath);
-    expect(isPictureDownloaded).toBe(true, 'The picture is not saved in the file system');
+    expect(isPictureDownloaded, 'The picture is not saved in the file system').toBe(true);
 
     // Upload the picture to search by picture
     await googleSearchPicturesPage.uploadPictureToSearch(imagePath);
@@ -53,10 +53,10 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
       searchResults,
       query
     );
-    expect(doesAnySearchResultContainsPictureQuery).toBe(
-      true,
+    expect(
+      doesAnySearchResultContainsPictureQuery,
       'There is no search result with query of the downloaded picture'
-    );
+    ).toBe(true);
   });
 
   test(`User can download picture from test results, User can search by picture @only-mobile`, async ({}, testInfo) => {
@@ -65,14 +65,14 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
     // Case insensitive regex for the query
     let queryRegex = new RegExp(escapeRegexSpecialCharacters(query), 'i'); // 'i' flag for case insensitive
     // Check if the picture's description contains the query
-    expect(queryRegex.test(pictureDescription)).toBe(true, `The picture's description doesn't contain the query`);
+    expect(queryRegex.test(pictureDescription), `The picture's description doesn't contain the query`).toBe(true);
 
     // Download picture from url to the system's directory for temporary files
     const imagePath = await downloadImageFromUrlToTempDir(imageUrl, testInfo);
 
     // Check if the picture downloaded
     const isPictureDownloaded = checkFileExists(imagePath);
-    expect(isPictureDownloaded).toBe(true, 'The picture is not saved in the file system');
+    expect(isPictureDownloaded, 'The picture is not saved in the file system').toBe(true);
 
     // Delete the picture from PC
     deleteTempFile(imagePath);
