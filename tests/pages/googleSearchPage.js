@@ -360,14 +360,13 @@ export default class GoogleSearchPage {
         const descriptionHTML = await description.innerHTML();
 
         // Check if the description contains any query word highlighted
-        if (this.hasHighlightedWords(descriptionHTML, queryWords)) {
-          continue;
-        } else {
-          return false;
+        const hasHighlightedWords = this.hasHighlightedWords(descriptionHTML, queryWords);
+        if (!hasHighlightedWords) {
+          return { success: false, failedDescriptionHTML: descriptionHTML, failedQuery: query };
         }
       }
 
-      return true; // Passed all checks
+      return { success: true }; // Passed all checks
     } catch (error) {
       console.error(
         `Failed to check if all search results contain highlighted query in descriptions of the web pages: ${error.message}`

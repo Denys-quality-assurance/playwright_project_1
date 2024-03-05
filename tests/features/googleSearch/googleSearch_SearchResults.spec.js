@@ -97,15 +97,15 @@ test.describe(`Google Search results: Search results verification`, () => {
     test(`Web page description contains '${queryData.query}' query highlighted in Google search results @only-desktop @results @result_description`, async () => {
       // Search for query
       await googleSearchPage.searchForQueryByEnter(queryData.query);
-      // Check if each search result actually contains query in its text
+      // Check if each search result actually contains highlighted query in its text
       const searchResultsDescriptions = await googleSearchPage.getSearchResultsDescriptionElements();
-      const doesEachSearchResultContainQuery = await googleSearchPage.checkIfAllSearchResultsContainHighlightedQuery(
+      const checkQueryResults = await googleSearchPage.checkIfAllSearchResultsContainHighlightedQuery(
         searchResultsDescriptions,
         queryData.query
       );
       expect(
-        doesEachSearchResultContainQuery,
-        `At least one web page description in search results does not contain the highlighted query`
+        checkQueryResults.success,
+        `Search result html\n${checkQueryResults.failedDescriptionHTML}\n\ndoes not contain the highlighted query\n'${checkQueryResults.failedQuery}'`
       ).toBe(true);
     });
   });
