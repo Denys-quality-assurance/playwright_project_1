@@ -26,7 +26,7 @@ test.describe(`Google Search results: Auto-suggestion and Correction`, () => {
       const correctedQueryElementText = await googleSearchPage.getCorrectedQueryFormMessageText();
       expect(
         correctedQueryElementText,
-        `The message "Showing results for <correcter query>" doesn't contain the corrected query`
+        `The message "Showing results for <correcter query>" doesn't contain the corrected '${queryData.correctedQuery}' query`
       ).toContain(queryData.correctedQuery);
       // Check if each search result actually contains query in its text
       const searchResults = await googleSearchPage.getSearchResultElements();
@@ -94,7 +94,7 @@ test.describe(`Google Search results: Auto-suggestion and Correction`, () => {
       // Compare the search results from both pages
       expect(
         searchResultsTexts1,
-        `Search results are not the same for the same query submitted by pressing enter and selecting the auto-suggest option`
+        `Search results are not the same for the same '${queryData.autoSuggestion}' query submitted by pressing enter and selecting the auto-suggest option`
       ).toEqual(searchResultsTexts2);
     });
   });

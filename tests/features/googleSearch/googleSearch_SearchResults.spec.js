@@ -59,7 +59,7 @@ test.describe(`Google Search results: Search results verification`, () => {
 
       // Check if the body contains at least 1 instance of query
       const count = await googleSearchPage.countQueryInBody(queryData.query);
-      expect(count, `The html body doesn't contains the query`).toBeGreaterThanOrEqual(1);
+      expect(count, `The html body doesn't contains the '${queryData.query}' query`).toBeGreaterThanOrEqual(1);
     });
   });
 
@@ -129,11 +129,11 @@ test.describe(`Google Search results: Search results verification`, () => {
     const searchResults = await googleSearchPage.getSearchResultElements();
     expect(
       searchResults.length,
-      `Search results page doesn't contain more than 1 result for the query`
+      `Search results page doesn't contain more than 1 result for the '${query}' query`
     ).toBeGreaterThan(1);
   });
 
-  test(`Clicking the search result leads to the corresponding web page for '${query}' query @results @result_navigation`, async () => {
+  test(`Clicking the search result leads to the corresponding web page for the '${query}' query @results @result_navigation`, async () => {
     // Search for query
     await googleSearchPage.searchForQueryByEnter(query);
     // Get titles of the web pages in the search results
@@ -148,7 +148,7 @@ test.describe(`Google Search results: Search results verification`, () => {
     const openPageTitle = await googleSearchPage.getPageTitle();
     expect(
       openPageTitle,
-      `The title of the linked page in the search results does not contain the name of the web page from the search results`
+      `The title of the linked page in the search results does not contain the name of the web page from the search results for the '${query}' query`
     ).toContain(firstTitle);
   });
 
@@ -168,7 +168,7 @@ test.describe(`Google Search results: Search results verification`, () => {
     );
 
     // Compare the search results from both pages
-    expect(searchResultsTexts1, `Search results from two pages with the same query are not equal`).toEqual(
+    expect(searchResultsTexts1, `Search results from two pages with the same '${query}' query are not equal`).toEqual(
       searchResultsTexts2
     );
   });
@@ -191,7 +191,10 @@ test.describe(`Google Search results: Search results verification`, () => {
       );
 
       // Compare the search results from both pages
-      expect(searchResultsTexts1, `Search results are not case insensitive to query case`).toEqual(searchResultsTexts2);
+      expect(
+        searchResultsTexts1,
+        `Search results are not case insensitive to query case for the '${queryData.query}' query`
+      ).toEqual(searchResultsTexts2);
     });
   });
 
@@ -200,7 +203,7 @@ test.describe(`Google Search results: Search results verification`, () => {
       // Search for query
       await googleSearchPage.searchForQueryByEnter(queryData.query);
       const title = await googleSearchPage.getPageTitle();
-      expect(title, `Page title doesn't contain the query`).toContain(queryData.query);
+      expect(title, `Page title doesn't contain the '${queryData.query}' query`).toContain(queryData.query);
     });
   });
 });

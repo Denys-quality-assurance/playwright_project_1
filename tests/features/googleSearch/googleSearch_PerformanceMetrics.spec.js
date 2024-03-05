@@ -36,27 +36,30 @@ test.describe(`Google Search results: Performance metrics`, () => {
 
       // Performance.mark API: Check if marksInfoData collected
       const isMarksInfoFileCreated = checkFileExists(metrics.marksInfoDataPath);
-      expect(isMarksInfoFileCreated, `The trmarksInfoDataaces for the query are not saved in the file system`).toBe(
-        true
-      );
+      expect(
+        isMarksInfoFileCreated,
+        `The marksInfoData for the '${queryData.query}' query are not saved in the file system`
+      ).toBe(true);
       // Performance.mark API: Check if measuresInfoData collected
       const isMeasuresInfoFileCreated = checkFileExists(metrics.measuresInfoDataPath);
-      expect(isMeasuresInfoFileCreated, `The measuresInfoData for the query are not saved in the file system`).toBe(
-        true
-      );
+      expect(
+        isMeasuresInfoFileCreated,
+        `The measuresInfoData for the '${queryData.query}' query are not saved in the file system`
+      ).toBe(true);
 
       // Additional metrics only for cromium browsers
       if (defaultBrowserType == 'chromium') {
         // Performance API: Check if the traices collected
         const isTraiceFileCreated = checkFileExists(metrics.tracesPath);
-        expect(isTraiceFileCreated, `The Performance API traces for the query are not saved in the file system`).toBe(
-          true
-        );
+        expect(
+          isTraiceFileCreated,
+          `The Performance API traces for the '${queryData.query}' query are not saved in the file system`
+        ).toBe(true);
         // Chrome DevTool Protocol API: Check if Chrome DevTool Protocol metrics collected
         const isCDPDataFileCreated = checkFileExists(metrics.metricsDiffDataPath);
         expect(
           isCDPDataFileCreated,
-          `The Chrome DevTool Protocol metrics for the query are not saved in the file system`
+          `The Chrome DevTool Protocol metrics for the '${queryData.query}' query are not saved in the file system`
         ).toBe(true);
       }
 

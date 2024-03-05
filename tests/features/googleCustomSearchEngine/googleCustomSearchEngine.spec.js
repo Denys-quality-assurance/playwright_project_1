@@ -37,6 +37,8 @@ test.describe(`Google Custom Search Engine: Search results testing for '${query}
 
     // Checking if the search results page contains 10 results on 1 page for the query
     const searchResults = await googleCSEPage.getSearchResultElements();
-    expect(searchResults.length, `Search results page doesn't contain 10 results on 1 page for the query`).toBe(10);
+    expect(searchResults.length, `Search results page doesn't contain 10 results on 1 page for '${query}' query`).toBe(
+      10
+    );
   });
 });
