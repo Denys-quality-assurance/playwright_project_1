@@ -336,7 +336,7 @@ export default class GoogleSearchPage {
           failedResults.push(resultText);
         }
       }
-
+      // success is try if no items in failedResults
       return { success: failedResults.length === 0, failedResultText: failedResults, failedQuery: query };
     } catch (error) {
       console.error(`Failed to check if all search results contain query: ${error.message}`);
@@ -367,7 +367,7 @@ export default class GoogleSearchPage {
           failedResults.push(resultText);
         }
       }
-
+      // success is try if no items in failedResults
       return { success: failedResults.length === 0, failedDescriptionHTML: descriptionHTML, failedQuery: query };
     } catch (error) {
       console.error(
@@ -493,6 +493,7 @@ export default class GoogleSearchPage {
         // Sleep for 1 second between retries
         await page.waitForTimeout(1000);
       }
+      // success is try if no items in failedResults
       return { success: missingKeys.length === 0, missingKeys: missingKeys };
     } catch (error) {
       console.error(`Failed to check if all expected keys exist in the object: ${error.message}`);
@@ -508,6 +509,7 @@ export default class GoogleSearchPage {
           failedKeys.push(key);
         }
       });
+      // success is try if no items in failedResults
       return { success: failedKeys.length === 0, failedKeys: failedKeys };
     } catch (error) {
       console.error(`Failed to check if all storage values are not empty: ${error.message}`);

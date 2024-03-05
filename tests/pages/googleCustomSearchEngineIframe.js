@@ -83,7 +83,7 @@ export default class GoogleCustomSearchEnginePage {
           failedResults.push(resultText);
         }
       }
-
+      // success is try if no items in failedResults
       return { success: failedResults.length === 0, failedResultText: failedResults, failedQuery: query };
     } catch (error) {
       console.error(`Failed to check if all search results contain query: ${error.message}`);
