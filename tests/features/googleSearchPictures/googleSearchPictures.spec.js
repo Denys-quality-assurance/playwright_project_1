@@ -24,7 +24,7 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
     }
   );
 
-  test(`User can download picture from test results, User can search by picture @skip-for-webkit @only-desktop`, async ({}, testInfo) => {
+  test(`TEST-23: User can download picture from test results, User can search by picture @skip-for-webkit @only-desktop`, async ({}, testInfo) => {
     // Get description and picture link of the the 1st picture search result
     const { pictureDescription, imageUrl } = await googleSearchPicturesPage.get1stPictureDescriptionAndDownload();
     // Case insensitive regex for the query
@@ -59,7 +59,7 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
     ).toBe(true);
   });
 
-  test(`User can download picture from test results, User can search by picture @only-mobile`, async ({}, testInfo) => {
+  test(`TEST-24: User can download picture from test results, User can search by picture @only-mobile`, async ({}, testInfo) => {
     // Get description and picture link of the the 1st picture search result
     const { pictureDescription, imageUrl } = await googleSearchPicturesPage.get1stPictureDescriptionAndDownload();
     // Case insensitive regex for the query

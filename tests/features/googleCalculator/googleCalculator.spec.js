@@ -25,14 +25,14 @@ test.describe(`Google calculator`, () => {
     }
   );
 
-  test(`Google calculator is visiable on the Home page`, async () => {
+  test(`TEST-28: Google calculator is visiable on the Home page`, async () => {
     // Check if the Google calculator is visiable
     const calculatorLocator = page.locator(googleCalculatorPage.selectors.calculatorScreen);
     await expect(calculatorLocator).toBeVisible();
   });
 
   mathOperation.forEach((mathOperation) => {
-    test(`Perform "${mathOperation.operationName}" operation for ${mathOperation.firstNumber} and ${mathOperation.secondNumber} @only-desktop`, async () => {
+    test(`TEST-29: Perform "${mathOperation.operationName}" operation for ${mathOperation.firstNumber} and ${mathOperation.secondNumber} @only-desktop`, async () => {
       // Change to English if it's needed
       await googleCalculatorPage.changeToEnglishIfAsked();
       // Click or tap the 1st number

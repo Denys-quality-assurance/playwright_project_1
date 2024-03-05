@@ -24,7 +24,7 @@ test.describe(`Google Search results: Search results verification`, () => {
     }
   });
 
-  test(`User can apply video filter on the Empty results page (mocked) and get search results @only-desktop @mocked @results @filters`, async ({
+  test(`TEST-1: User can apply video filter on the Empty results page (mocked) and get search results @only-desktop @mocked @results @filters`, async ({
     sharedContext,
   }) => {
     // Mock the search response with Empty Results
@@ -44,7 +44,7 @@ test.describe(`Google Search results: Search results verification`, () => {
   });
 
   queryDataGeneral.forEach((queryData) => {
-    test(`Response body contains '${queryData.query}' query @results`, async () => {
+    test(`TEST-2: Response body contains '${queryData.query}' query @results`, async () => {
       // Start waiting for response
       const responsePromise = googleSearchPage.waitForSearchResponse();
       // Search for query
@@ -65,7 +65,7 @@ test.describe(`Google Search results: Search results verification`, () => {
   });
 
   queryDataGeneral.forEach((queryData) => {
-    test(`Google search results page contains '${queryData.query}' query @results`, async () => {
+    test(`TEST-3: Google search results page contains '${queryData.query}' query @results`, async () => {
       // Search for query
       await googleSearchPage.searchForQueryByEnter(queryData.query);
       // Check if each search result actually contains query in its text
@@ -82,7 +82,7 @@ test.describe(`Google Search results: Search results verification`, () => {
   });
 
   queryDataGeneral.forEach((queryData) => {
-    test(`Google search results page contains a message with the total number of results and the time taken to fetch the result for '${queryData.query}' query @only-desktop @results`, async () => {
+    test(`TEST-4: Google search results page contains a message with the total number of results and the time taken to fetch the result for '${queryData.query}' query @only-desktop @results`, async () => {
       test.setTimeout(10000);
       // Search for query
       await googleSearchPage.searchForQueryByEnter(queryData.query);
@@ -95,7 +95,7 @@ test.describe(`Google Search results: Search results verification`, () => {
   });
 
   queryDataGeneral.forEach((queryData) => {
-    test(`Web page description contains '${queryData.query}' query highlighted in Google search results @only-desktop @results @result_description`, async () => {
+    test(`TEST-5: Web page description contains '${queryData.query}' query highlighted in Google search results @only-desktop @results @result_description`, async () => {
       // Search for query
       await googleSearchPage.searchForQueryByEnter(queryData.query);
       // Check if each search result actually contains highlighted query in its text
@@ -114,7 +114,7 @@ test.describe(`Google Search results: Search results verification`, () => {
   });
 
   queryDataEmptyResults.forEach((queryData) => {
-    test(`Query '${queryData.query}' not having related result leads to 'did not match any documents' message @only-desktop @results`, async () => {
+    test(`TEST-6: Query '${queryData.query}' not having related result leads to 'did not match any documents' message @only-desktop @results`, async () => {
       // Search for query
       await googleSearchPage.searchForQueryByEnter(queryData.query);
       // Change to English if it's needed
@@ -125,7 +125,7 @@ test.describe(`Google Search results: Search results verification`, () => {
     });
   });
 
-  test(`Google search results page contains more than 1 result for '${query}' query @results`, async () => {
+  test(`TEST-7: Google search results page contains more than 1 result for '${query}' query @results`, async () => {
     // Search for query
     await googleSearchPage.searchForQueryByEnter(query);
     // Checking if the search results page contains more than 1 result for the query
@@ -136,7 +136,7 @@ test.describe(`Google Search results: Search results verification`, () => {
     ).toBeGreaterThan(1);
   });
 
-  test(`Clicking the search result leads to the corresponding web page for the '${query}' query @results @result_navigation`, async () => {
+  test(`TEST-8: Clicking the search result leads to the corresponding web page for the '${query}' query @results @result_navigation`, async () => {
     // Search for query
     await googleSearchPage.searchForQueryByEnter(query);
     // Get titles of the web pages in the search results
@@ -155,7 +155,7 @@ test.describe(`Google Search results: Search results verification`, () => {
     ).toContain(firstTitle);
   });
 
-  test(`User can get the same search results for the same '${query}' query by pressing enter or clicking on search button @only-desktop @query_submitting`, async ({
+  test(`TEST-9: User can get the same search results for the same '${query}' query by pressing enter or clicking on search button @only-desktop @query_submitting`, async ({
     sharedContext,
   }) => {
     // Create new page 1 in the same context, search for the query by pressing Enter and get the text content of the results
@@ -177,7 +177,7 @@ test.describe(`Google Search results: Search results verification`, () => {
   });
 
   queryDataCaseInsensitive.forEach((queryData) => {
-    test(`Search results are case insensitive to query case for the '${queryData.query}' query @results @case_insensitive`, async ({
+    test(`TEST-10: Search results are case insensitive to query case for the '${queryData.query}' query @results @case_insensitive`, async ({
       sharedContext,
     }) => {
       // Create new page 1 in the same context, search for the query in lower case and get the text content of the results
@@ -202,7 +202,7 @@ test.describe(`Google Search results: Search results verification`, () => {
   });
 
   queryDataGeneral.forEach((queryData) => {
-    test(`Page title contains '${queryData.query}' query @results @page_title`, async ({}) => {
+    test(`TEST-11: Page title contains '${queryData.query}' query @results @page_title`, async ({}) => {
       // Search for query
       await googleSearchPage.searchForQueryByEnter(queryData.query);
       const title = await googleSearchPage.getPageTitle();

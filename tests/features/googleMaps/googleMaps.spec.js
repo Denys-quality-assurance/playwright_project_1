@@ -24,7 +24,7 @@ test.describe('Geolocation Tests @skip-for-firefox', () => {
   );
 
   // Check that URL contains geolocation data
-  test(`Check that URL contains geolocation data`, async ({}) => {
+  test(`TEST-25: Check that URL contains geolocation data`, async ({}) => {
     // Go to My Place
     await googleMapsPage.goToMyLocation();
 

@@ -20,7 +20,7 @@ test.describe(`Google Custom Search Engine: Search results testing for '${query}
     }
   );
 
-  test(`Google CSE search results page contains '${query}' query`, async () => {
+  test(`TEST-26: Google CSE search results page contains '${query}' query`, async () => {
     await googleCSEPage.searchFor(query);
 
     // Check if each search result actually contains the query in its text
@@ -33,7 +33,7 @@ test.describe(`Google Custom Search Engine: Search results testing for '${query}
     expect(checkQueryResults.success, errorMessage).toBe(true);
   });
 
-  test(`Google search results page contains 10 results on 1 page for '${query}' query`, async () => {
+  test(`TEST-27: Google search results page contains 10 results on 1 page for '${query}' query`, async () => {
     await googleCSEPage.searchFor(query);
 
     // Checking if the search results page contains 10 results on 1 page for the query

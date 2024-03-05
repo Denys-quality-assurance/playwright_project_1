@@ -19,7 +19,7 @@ test.describe(`Google Search results: Auto-suggestion and Correction`, () => {
   });
 
   queryDataMisspelled.forEach((queryData) => {
-    test(`Google search results page contains the corrected '${queryData.correctedQuery}' query when the query '${queryData.query}' is misspelled @results @correction`, async () => {
+    test(`TEST-20: Google search results page contains the corrected '${queryData.correctedQuery}' query when the query '${queryData.query}' is misspelled @results @correction`, async () => {
       // Search for query
       await googleSearchPage.searchForQueryByEnter(queryData.query);
       // Check if the message "Showing results for <correcter query> contains the corrected query
@@ -43,7 +43,7 @@ test.describe(`Google Search results: Auto-suggestion and Correction`, () => {
   });
 
   queryDataAutoSuggestion.forEach((queryData) => {
-    test(`Auto-suggestion menu contains approptiate options for '${queryData.query}' query @autosuggestion`, async () => {
+    test(`TEST-21: Auto-suggestion menu contains approptiate options for '${queryData.query}' query @autosuggestion`, async () => {
       // Navigate to page and reject all Cookies if it's needed
       await googleSearchPage.navigateAndRejectCookies();
       // Type the query
@@ -64,7 +64,7 @@ test.describe(`Google Search results: Auto-suggestion and Correction`, () => {
   });
 
   queryDataAutoSuggestion.forEach((queryData) => {
-    test(`User can get the same search results for the same '${queryData.autoSuggestion}' query by pressing enter or clicking on auto-suggestion option @only-desktop @results @autosuggestion @query_submitting`, async ({
+    test(`TEST-22: User can get the same search results for the same '${queryData.autoSuggestion}' query by pressing enter or clicking on auto-suggestion option @only-desktop @results @autosuggestion @query_submitting`, async ({
       sharedContext,
     }) => {
       // Create new page 1 in the same context, search for the query in lower case and get the text content of the results

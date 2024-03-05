@@ -26,7 +26,7 @@ test.describe(`Google Search results: Cookies and storage`, () => {
     }
   });
 
-  test(`Check local storage content @results @storage`, async ({}) => {
+  test(`TEST-17: Check local storage content @results @storage`, async ({}) => {
     // Search for query
     await googleSearchPage.searchForQueryByEnter(query);
     // Check that all expected keys included to the Local storage
@@ -58,7 +58,7 @@ test.describe(`Google Search results: Cookies and storage`, () => {
     ).toBe(true);
   });
 
-  test(`Check session storage content @results @storage`, async ({}) => {
+  test(`TEST-18: Check session storage content @results @storage`, async ({}) => {
     // Search for query
     await googleSearchPage.searchForQueryByEnter(query);
     // Check that all expected keys included to the Session storage
@@ -97,7 +97,7 @@ test.describe(`Google Search results: Cookies and storage`, () => {
     ).toBe(true);
   });
 
-  test(`Check cookies content @results @cookies`, async ({}) => {
+  test(`TEST-19: Check cookies content @results @cookies`, async ({}) => {
     // Search for query
     await googleSearchPage.searchForQueryByEnter(query);
     // Check that all expected names included to the cookies

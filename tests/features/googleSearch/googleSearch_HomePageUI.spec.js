@@ -17,7 +17,7 @@ test.describe(`Google Home Page: User Interface`, () => {
     }
   });
 
-  test(`Google logo is visiable on the Home page @UI`, async ({ sharedContext }, testInfo) => {
+  test(`TEST-14: Google logo is visiable on the Home page @UI`, async ({ sharedContext }, testInfo) => {
     // Make and save a screenshot of the Google Logo
     const actualScreenshotPath = await googleSearchPage.saveGoogleLogoScreenshot(testInfo);
     // Compare the actual Logo against the expected baseline Logo, attach results to the report, delete temporary files
@@ -25,7 +25,7 @@ test.describe(`Google Home Page: User Interface`, () => {
     expect(mismatchedPixelsCount, `At least one pixel of the logo differs from the baseline`).toBe(0);
   });
 
-  test(`Google logo is centre aligned on the Home page @UI`, async () => {
+  test(`TEST-15: Google logo is centre aligned on the Home page @UI`, async () => {
     // Get horizontal centre of the logo
     const logoCentre = await googleSearchPage.getHorizontalCentreBySelector(googleSearchPage.selectors.googleLogo);
 
@@ -38,7 +38,7 @@ test.describe(`Google Home Page: User Interface`, () => {
     expect(logoCentre).toBeCloseTo(viewportCentre, 1);
   });
 
-  test(`Google search input area is centre aligned on the Home page @UI`, async () => {
+  test(`TEST-16: Google search input area is centre aligned on the Home page @UI`, async () => {
     // Get horizontal centre of the search input area
     const searchInputCentre = await googleSearchPage.getHorizontalCentreBySelector(
       googleSearchPage.selectors.searchInputBox

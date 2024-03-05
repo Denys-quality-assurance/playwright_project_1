@@ -18,7 +18,7 @@ test.describe(`Google Search results: Keyboard navigation`, () => {
     }
   });
 
-  test(`User can navigate via Tab, Shift+Tab and Enter @only-desktop @keyboard_navigation`, async ({}) => {
+  test(`TEST-13: User can navigate via Tab, Shift+Tab and Enter @only-desktop @keyboard_navigation`, async ({}) => {
     // Search for query
     await googleSearchPage.searchForQueryByEnter(query);
 

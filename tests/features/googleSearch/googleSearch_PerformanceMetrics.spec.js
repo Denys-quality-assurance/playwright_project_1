@@ -22,7 +22,7 @@ test.describe(`Google Search results: Performance metrics`, () => {
   });
 
   queryDataGeneral.forEach((queryData) => {
-    test(`Performance metrics for Search results for '${queryData.query}' query @results @performance`, async ({}, testInfo) => {
+    test(`TEST-12: Performance metrics for Search results for '${queryData.query}' query @results @performance`, async ({}, testInfo) => {
       // Get browser type
       const defaultBrowserType = testInfo.project.use.defaultBrowserType;
       // Get performance metrics for Search results
