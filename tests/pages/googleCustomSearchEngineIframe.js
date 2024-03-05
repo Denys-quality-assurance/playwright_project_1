@@ -69,21 +69,29 @@ export default class GoogleCustomSearchEnginePage {
   // Check if all search results contain query
   async checkIfAllSearchResultsContainQuery(searchResults, query) {
     try {
+      // Get all words from the query as an array
+      const queryWords = query.split(' ');
+
       for (let searchResult of searchResults) {
         // Get the text of each searchResult
         let resultText = await searchResult.innerText();
 
-        // Case insensitive regex for the query
-        let queryRegex = new RegExp(escapeRegexSpecialCharacters(query), 'i'); // 'i' flag for case insensitive
-
-        // Check if the text contains query
-        if (!queryRegex.test(resultText)) {
-          return false;
+        // Check if the search result contains any query word
+        const hasQueryWords = this.hasQueryWords(resultText, queryWords);
+        if (!hasQueryWords) {
+          return { success: false, failedResultText: resultText, failedQuery: query };
         }
       }
-      return true;
+
+      return true; // Passed all checks
     } catch (error) {
       console.error(`Failed to check if all search results contain query: ${error.message}`);
     }
   }
-}
+
+  // Check if the search result contains any query word
+  hasQueryWords(resultText, queryWords) {
+    if (queryWords.some((queryWord) => new RegExp(escapeRegexSpecialCharacters(queryWord), 'i').test(resultText))) {
+      return true;
+    } else return false;
+  }

@@ -25,11 +25,11 @@ test.describe(`Google Custom Search Engine: Search results testing for '${query}
 
     // Check if each search result actually contains the query in its text
     const searchResults = await googleCSEPage.getSearchResultElements();
-    const doesEachSearchResultContainQuery = await googleCSEPage.checkIfAllSearchResultsContainQuery(
-      searchResults,
-      query
-    );
-    expect(doesEachSearchResultContainQuery, `At least one search result does not contain the query`).toBe(true);
+    const checkQueryResults = await googleCSEPage.checkIfAllSearchResultsContainQuery(searchResults, query);
+    expect(
+      checkQueryResults.success,
+      `Search result text\n${checkQueryResults.failedResultText}\n\ndoes not contain the query\n'${checkQueryResults.failedQuery}'`
+    ).toBe(true);
   });
 
   test(`Google search results page contains 10 results on 1 page for '${query}' query`, async () => {
