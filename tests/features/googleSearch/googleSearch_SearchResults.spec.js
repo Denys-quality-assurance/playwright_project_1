@@ -35,11 +35,11 @@ test.describe(`Google Search results: Search results verification`, () => {
     await googleSearchPage.applyVideFilter();
     // Check if each search result actually contains query in its text
     const searchResults = await googleSearchPage.getSearchResultElements();
-    const doesEachSearchResultContainQuery = await googleSearchPage.checkIfAllSearchResultsContainQuery(
-      searchResults,
-      query
-    );
-    expect(doesEachSearchResultContainQuery).toBe(true, `At least one search result does not contain the query`);
+    const checkQueryResults = await googleSearchPage.checkIfAllSearchResultsContainQuery(searchResults, query);
+    expect(
+      checkQueryResults.success,
+      `Search result text\n${checkQueryResults.failedResultText}\n\ndoes not contain the query\n'${checkQueryResults.failedQuery}'`
+    ).toBe(true);
   });
 
   queryDataGeneral.forEach((queryData) => {
@@ -59,7 +59,7 @@ test.describe(`Google Search results: Search results verification`, () => {
 
       // Check if the body contains at least 1 instance of query
       const count = await googleSearchPage.countQueryInBody(queryData.query);
-      expect(count).toBeGreaterThanOrEqual(1, `The html body doesn't contains the query`);
+      expect(count, `The html body doesn't contains the query`).toBeGreaterThanOrEqual(1);
     });
   });
 
@@ -69,11 +69,14 @@ test.describe(`Google Search results: Search results verification`, () => {
       await googleSearchPage.searchForQueryByEnter(queryData.query);
       // Check if each search result actually contains query in its text
       const searchResults = await googleSearchPage.getSearchResultElements();
-      const doesEachSearchResultContainQuery = await googleSearchPage.checkIfAllSearchResultsContainQuery(
+      const checkQueryResults = await googleSearchPage.checkIfAllSearchResultsContainQuery(
         searchResults,
         queryData.query
       );
-      expect(doesEachSearchResultContainQuery).toBe(true, `At least one search result does not contain the query`);
+      expect(
+        checkQueryResults.success,
+        `Search result text\n${checkQueryResults.failedResultText}\n\ndoes not contain the query\n'${checkQueryResults.failedQuery}'`
+      ).toBe(true);
     });
   });
 
@@ -100,10 +103,10 @@ test.describe(`Google Search results: Search results verification`, () => {
         searchResultsDescriptions,
         queryData.query
       );
-      expect(doesEachSearchResultContainQuery).toBe(
-        true,
+      expect(
+        doesEachSearchResultContainQuery,
         `At least one web page description in search results does not contain the highlighted query`
-      );
+      ).toBe(true);
     });
   });
 
@@ -124,10 +127,10 @@ test.describe(`Google Search results: Search results verification`, () => {
     await googleSearchPage.searchForQueryByEnter(query);
     // Checking if the search results page contains more than 1 result for the query
     const searchResults = await googleSearchPage.getSearchResultElements();
-    expect(searchResults.length).toBeGreaterThan(
-      1,
+    expect(
+      searchResults.length,
       `Search results page doesn't contain more than 1 result for the query`
-    );
+    ).toBeGreaterThan(1);
   });
 
   test(`Clicking the search result leads to the corresponding web page for '${query}' query @results @result_navigation`, async () => {
@@ -143,10 +146,10 @@ test.describe(`Google Search results: Search results verification`, () => {
     await googleSearchPage.clickOrTap(firstUrl);
     // Check if the title of the linked page in the search results contains the name of the web page from the search results
     const openPageTitle = await googleSearchPage.getPageTitle();
-    expect(openPageTitle).toContain(
-      firstTitle,
+    expect(
+      openPageTitle,
       `The title of the linked page in the search results does not contain the name of the web page from the search results`
-    );
+    ).toContain(firstTitle);
   });
 
   test(`User can get the same search results for the same '${query}' query by pressing enter or clicking on search button @only-desktop @query_submitting`, async ({
@@ -165,9 +168,8 @@ test.describe(`Google Search results: Search results verification`, () => {
     );
 
     // Compare the search results from both pages
-    expect(searchResultsTexts1).toEqual(
-      searchResultsTexts2,
-      `Search results from two pages with the same query are not equal`
+    expect(searchResultsTexts1, `Search results from two pages with the same query are not equal`).toEqual(
+      searchResultsTexts2
     );
   });
 
@@ -189,7 +191,7 @@ test.describe(`Google Search results: Search results verification`, () => {
       );
 
       // Compare the search results from both pages
-      expect(searchResultsTexts1).toEqual(searchResultsTexts2, `Search results are not case insensitive to query case`);
+      expect(searchResultsTexts1, `Search results are not case insensitive to query case`).toEqual(searchResultsTexts2);
     });
   });
 
@@ -198,7 +200,7 @@ test.describe(`Google Search results: Search results verification`, () => {
       // Search for query
       await googleSearchPage.searchForQueryByEnter(queryData.query);
       const title = await googleSearchPage.getPageTitle();
-      expect(title).toContain(queryData.query, `Page title doesn't contain the query`);
+      expect(title, `Page title doesn't contain the query`).toContain(queryData.query);
     });
   });
 });

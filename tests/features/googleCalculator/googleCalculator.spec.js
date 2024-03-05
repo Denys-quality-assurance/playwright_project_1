@@ -52,7 +52,7 @@ test.describe(`Google calculator`, () => {
         mathOperation.expectedResult ||
         calculateExpectedResultText(mathOperation.firstNumber, mathOperation.secondNumber, mathOperation.operationName);
       // Check if the actual result of the mathematical operation is equal to the expected result
-      expect(resultAreaText).toBe(extectedResultText, `The actual result of the mathematical operation is unexpected`);
+      expect(resultAreaText, `The actual result of the mathematical operation is unexpected`).toBe(extectedResultText);
     });
   });
 });

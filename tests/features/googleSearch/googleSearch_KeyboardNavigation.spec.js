@@ -28,9 +28,8 @@ test.describe(`Google Search results: Keyboard navigation`, () => {
     // Get class of the active (focused) element
     let activeElementClass = await googleSearchPage.getActiveElementClass();
     // Check if the active element has the expected class
-    expect(activeElementClass).toBe(
-      googleSearchPage.classes.picturesSearchButton,
-      `The active element has an unexpected class`
+    expect(activeElementClass, `The active element has an unexpected class`).toBe(
+      googleSearchPage.classes.picturesSearchButton
     );
 
     // Navigate via Enter
@@ -46,9 +45,8 @@ test.describe(`Google Search results: Keyboard navigation`, () => {
     // Get class of the active (focused) element
     activeElementClass = await googleSearchPage.getActiveElementClass();
     // Check if the active element has the expected class
-    expect(activeElementClass).toBe(
-      googleSearchPage.classes.closeSearchByPictureModalButton,
-      `The active element has an unexpected class`
+    expect(activeElementClass, `The active element has an unexpected class`).toBe(
+      googleSearchPage.classes.closeSearchByPictureModalButton
     );
   });
 });

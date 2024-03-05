@@ -24,20 +24,20 @@ test.describe(`Google Search results: Auto-suggestion and Correction`, () => {
       await googleSearchPage.searchForQueryByEnter(queryData.query);
       // Check if the message "Showing results for <correcter query> contains the corrected query
       const correctedQueryElementText = await googleSearchPage.getCorrectedQueryFormMessageText();
-      expect(correctedQueryElementText).toContain(
-        queryData.correctedQuery,
+      expect(
+        correctedQueryElementText,
         `The message "Showing results for <correcter query>" doesn't contain the corrected query`
-      );
+      ).toContain(queryData.correctedQuery);
       // Check if each search result actually contains query in its text
       const searchResults = await googleSearchPage.getSearchResultElements();
-      const doesEachSearchResultContainQuery = await googleSearchPage.checkIfAllSearchResultsContainQuery(
+      const checkQueryResults = await googleSearchPage.checkIfAllSearchResultsContainQuery(
         searchResults,
         queryData.correctedQuery
       );
-      expect(doesEachSearchResultContainQuery).toBe(
-        true,
-        `At least one search result does not contain the corrected query`
-      );
+      expect(
+        checkQueryResults.success,
+        `Search result text\n${checkQueryResults.failedResultText}\n\ndoes not contain the query\n'${checkQueryResults.failedQuery}'`
+      ).toBe(true);
     });
   });
 
@@ -55,10 +55,10 @@ test.describe(`Google Search results: Auto-suggestion and Correction`, () => {
         searchAutoSuggestionOptionsText,
         queryData.autoSuggestion
       );
-      expect(doesAnyAutoSuggestionOptionContainQuery).toBe(
-        true,
+      expect(
+        doesAnyAutoSuggestionOptionContainQuery,
         `No auto-suggestion option contains the expected approptiate option`
-      );
+      ).toBe(true);
     });
   });
 
@@ -92,10 +92,10 @@ test.describe(`Google Search results: Auto-suggestion and Correction`, () => {
       const searchResultsTexts2 = await googleSearchPage2.getTextContent(searchResults2);
 
       // Compare the search results from both pages
-      expect(searchResultsTexts1).toEqual(
-        searchResultsTexts2,
+      expect(
+        searchResultsTexts1,
         `Search results are not the same for the same query submitted by pressing enter and selecting the auto-suggest option`
-      );
+      ).toEqual(searchResultsTexts2);
     });
   });
 });

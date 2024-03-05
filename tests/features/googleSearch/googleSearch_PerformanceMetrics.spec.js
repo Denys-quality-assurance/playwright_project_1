@@ -32,35 +32,32 @@ test.describe(`Google Search results: Performance metrics`, () => {
         defaultBrowserType
       );
       // API Performance.mark: Check if the duration of the action does not exceed limits
-      expect(actionDuration).toBeLessThanOrEqual(acceptableActionDutation, `The duration of the action exceeds limits`);
+      expect(actionDuration, `The duration of the action exceeds limits`).toBeLessThanOrEqual(acceptableActionDutation);
 
       // Performance.mark API: Check if marksInfoData collected
       const isMarksInfoFileCreated = checkFileExists(metrics.marksInfoDataPath);
-      expect(isMarksInfoFileCreated).toBe(
-        true,
-        `The trmarksInfoDataaces for the query are not saved in the file system`
+      expect(isMarksInfoFileCreated, `The trmarksInfoDataaces for the query are not saved in the file system`).toBe(
+        true
       );
       // Performance.mark API: Check if measuresInfoData collected
       const isMeasuresInfoFileCreated = checkFileExists(metrics.measuresInfoDataPath);
-      expect(isMeasuresInfoFileCreated).toBe(
-        true,
-        `The measuresInfoData for the query are not saved in the file system`
+      expect(isMeasuresInfoFileCreated, `The measuresInfoData for the query are not saved in the file system`).toBe(
+        true
       );
 
       // Additional metrics only for cromium browsers
       if (defaultBrowserType == 'chromium') {
         // Performance API: Check if the traices collected
         const isTraiceFileCreated = checkFileExists(metrics.tracesPath);
-        expect(isTraiceFileCreated).toBe(
-          true,
-          `The Performance API traces for the query are not saved in the file system`
+        expect(isTraiceFileCreated, `The Performance API traces for the query are not saved in the file system`).toBe(
+          true
         );
         // Chrome DevTool Protocol API: Check if Chrome DevTool Protocol metrics collected
         const isCDPDataFileCreated = checkFileExists(metrics.metricsDiffDataPath);
-        expect(isCDPDataFileCreated).toBe(
-          true,
+        expect(
+          isCDPDataFileCreated,
           `The Chrome DevTool Protocol metrics for the query are not saved in the file system`
-        );
+        ).toBe(true);
       }
 
       // Delete the temporaty files

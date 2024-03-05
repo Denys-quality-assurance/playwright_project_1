@@ -330,10 +330,9 @@ export default class GoogleSearchPage {
         let resultText = await searchResult.innerText();
 
         // Check if the search result contains any query word
-        if (this.hasQueryWords(resultText, queryWords)) {
-          continue;
-        } else {
-          return false;
+        const hasQueryWords = this.hasQueryWords(resultText, queryWords);
+        if (!hasQueryWords) {
+          return { success: false, failedResultText: resultText, failedQuery: query };
         }
       }
 

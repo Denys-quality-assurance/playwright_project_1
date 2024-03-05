@@ -22,7 +22,7 @@ test.describe(`Google Home Page: User Interface`, () => {
     const actualScreenshotPath = await googleSearchPage.saveGoogleLogoScreenshot(testInfo);
     // Compare the actual Logo against the expected baseline Logo, attach results to the report, delete temporary files
     const mismatchedPixelsCount = await getMismatchedPixelsCount(actualScreenshotPath, testInfo, sharedContext);
-    expect(mismatchedPixelsCount).toBe(0, `At least one pixel of the logo differs from the baseline`);
+    expect(mismatchedPixelsCount, `At least one pixel of the logo differs from the baseline`).toBe(0);
   });
 
   test(`Google logo is centre aligned on the Home page @UI`, async () => {

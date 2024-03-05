@@ -36,7 +36,7 @@ test.describe(`Google Search results: Cookies and storage`, () => {
       expectedLocalStorageKeys
     );
 
-    expect(localStorageHasKeys).toBe(true, `At least 1 key is not included in the local storage`);
+    expect(localStorageHasKeys, `At least 1 key is not included in the local storage`).toBe(true);
 
     // Check that all Local storage values are not empty
     let localStorageData = await googleSearchPage.getLocalStorageItemsByKeys(page, expectedLocalStorageKeys);
@@ -45,7 +45,7 @@ test.describe(`Google Search results: Cookies and storage`, () => {
       expectedLocalStorageKeys
     );
 
-    expect(localStorageValuesNotEmpty).toBe(true, `At least 1 local storage value is empty`);
+    expect(localStorageValuesNotEmpty, `At least 1 local storage value is empty`).toBe(true);
   });
 
   test(`Check session storage content @results @storage`, async ({}) => {
@@ -58,14 +58,14 @@ test.describe(`Google Search results: Cookies and storage`, () => {
       expectedSessionStorageKeys
     );
 
-    expect(sessionStorageHasKeys).toBe(true, `At least 1 key is not included in the session storage`);
+    expect(sessionStorageHasKeys, `At least 1 key is not included in the session storage`).toBe(true);
 
     // Check if the search request value stored in the session storage
     const sessionStorageData = await googleSearchPage.getSessionStorage();
     const searchRequest = '/search?q=' + query;
     const isSearchRequestStoredInSession = googleSearchPage.checkIfValueExists(sessionStorageData, searchRequest);
 
-    expect(isSearchRequestStoredInSession).toBe(true, `Search request value is not stored in the session storage`);
+    expect(isSearchRequestStoredInSession, `Search request value is not stored in the session storage`).toBe(true);
 
     // Check that all Session storage values are not empty
     const sessionStoragekeys = Object.keys(sessionStorageData);
@@ -74,7 +74,7 @@ test.describe(`Google Search results: Cookies and storage`, () => {
       expectedSessionStorageKeys
     );
 
-    expect(sessionStorageValuesNotEmpty).toBe(true, `At least 1 session storage value is empty`);
+    expect(sessionStorageValuesNotEmpty, `At least 1 session storage value is empty`).toBe(true);
   });
 
   test(`Check cookies content @results @cookies`, async ({}) => {
@@ -85,10 +85,10 @@ test.describe(`Google Search results: Cookies and storage`, () => {
     const cookieNames = cookies.map((cookie) => cookie.name);
     let cookiesIncludeAllNames = googleSearchPage.checkIfAllItemsInArray(cookieNames, expectedCookiesNames);
 
-    expect(cookiesIncludeAllNames).toBe(true, `At least 1 name is not included in the cookies`);
+    expect(cookiesIncludeAllNames, `At least 1 name is not included in the cookies`).toBe(true);
 
     // Check that all cookies have non-empty values
     const cookiesValuesNotEmpty = cookies.every((cookie) => cookie.value !== '');
-    expect(cookiesValuesNotEmpty).toBe(true, `At least 1 cookie value is empty`);
+    expect(cookiesValuesNotEmpty, `At least 1 cookie value is empty`).toBe(true);
   });
 });
