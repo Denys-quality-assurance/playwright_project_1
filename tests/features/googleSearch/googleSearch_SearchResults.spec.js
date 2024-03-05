@@ -36,10 +36,11 @@ test.describe(`Google Search results: Search results verification`, () => {
     // Check if each search result actually contains query in its text
     const searchResults = await googleSearchPage.getSearchResultElements();
     const checkQueryResults = await googleSearchPage.checkIfAllSearchResultsContainQuery(searchResults, query);
-    expect(
-      checkQueryResults.success,
-      `Search result text\n${checkQueryResults.failedResultText}\n\ndoes not contain the query\n'${checkQueryResults.failedQuery}'`
-    ).toBe(true);
+    const errorMessage = `Some search results do not contain the '${
+      checkQueryResults.failedQuery
+    }' query.\nText of the results:\n\n${checkQueryResults.failedResultText.join('\n----------------------\n\n')}'`;
+
+    expect(checkQueryResults.success, errorMessage).toBe(true);
   });
 
   queryDataGeneral.forEach((queryData) => {
@@ -73,10 +74,10 @@ test.describe(`Google Search results: Search results verification`, () => {
         searchResults,
         queryData.query
       );
-      expect(
-        checkQueryResults.success,
-        `Search result text\n${checkQueryResults.failedResultText}\n\ndoes not contain the query\n'${checkQueryResults.failedQuery}'`
-      ).toBe(true);
+      const errorMessage = `Some search results do not contain the '${
+        checkQueryResults.failedQuery
+      }' query.\nText of the results:\n\n${checkQueryResults.failedResultText.join('\n----------------------\n\n')}'`;
+      expect(checkQueryResults.success, errorMessage).toBe(true);
     });
   });
 
@@ -103,10 +104,12 @@ test.describe(`Google Search results: Search results verification`, () => {
         searchResultsDescriptions,
         queryData.query
       );
-      expect(
-        checkQueryResults.success,
-        `Search result html\n${checkQueryResults.failedDescriptionHTML}\n\ndoes not contain the highlighted query\n'${checkQueryResults.failedQuery}'`
-      ).toBe(true);
+      const errorMessage = `Some web page descriptions do not contain the '${
+        checkQueryResults.failedQuery
+      }' query.\nHTML of the results:\n\n${checkQueryResults.failedDescriptionHTML.join(
+        '\n----------------------\n\n'
+      )}'`;
+      expect(checkQueryResults.success, errorMessage).toBe(true);
     });
   });
 

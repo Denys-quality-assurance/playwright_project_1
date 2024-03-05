@@ -324,6 +324,7 @@ export default class GoogleSearchPage {
     try {
       // Get all words from the query as an array
       const queryWords = query.split(' ');
+      let failedResults = [];
 
       for (let searchResult of searchResults) {
         // Get the text of each searchResult
@@ -332,11 +333,11 @@ export default class GoogleSearchPage {
         // Check if the search result contains any query word
         const hasQueryWords = this.hasQueryWords(resultText, queryWords);
         if (!hasQueryWords) {
-          return { success: false, failedResultText: resultText, failedQuery: query };
+          failedResults.push(resultText);
         }
       }
 
-      return { success: true }; // Passed all checks
+      return { success: failedResults.length === 0, failedResultText: failedResults, failedQuery: query };
     } catch (error) {
       console.error(`Failed to check if all search results contain query: ${error.message}`);
     }
@@ -354,6 +355,7 @@ export default class GoogleSearchPage {
     try {
       // Get all words from the query as an array
       const queryWords = query.split(' ');
+      let failedResults = [];
 
       for (let description of searchResultsDescriptions) {
         // Get the text of each searchResult
@@ -362,11 +364,11 @@ export default class GoogleSearchPage {
         // Check if the description contains any query word highlighted
         const hasHighlightedWords = this.hasHighlightedWords(descriptionHTML, queryWords);
         if (!hasHighlightedWords) {
-          return { success: false, failedDescriptionHTML: descriptionHTML, failedQuery: query };
+          failedResults.push(resultText);
         }
       }
 
-      return { success: true }; // Passed all checks
+      return { success: failedResults.length === 0, failedDescriptionHTML: descriptionHTML, failedQuery: query };
     } catch (error) {
       console.error(
         `Failed to check if all search results contain highlighted query in descriptions of the web pages: ${error.message}`
@@ -480,21 +482,18 @@ export default class GoogleSearchPage {
   // Check if all expected keys exist in the object
   async checkIfAllKeysExist(getItemsByKeys, page, keys) {
     try {
-      let storageHasKeys = true;
+      let missingKeys = [];
       // Run loop until all keys are detected in the Storage
       for (let i = 0; i < 10; i++) {
         let storageData = await getItemsByKeys(page, keys);
-        keys.forEach((key) => {
-          if (storageData[key] === null) {
-            storageHasKeys = false;
-          }
-        });
-        if (storageHasKeys) break;
+        missingKeys = keys.filter((key) => storageData[key] === null);
+
+        if (missingKeys.length === 0) break;
 
         // Sleep for 1 second between retries
         await page.waitForTimeout(1000);
       }
-      return storageHasKeys;
+      return { success: missingKeys.length === 0, missingKeys: missingKeys };
     } catch (error) {
       console.error(`Failed to check if all expected keys exist in the object: ${error.message}`);
     }
@@ -503,13 +502,13 @@ export default class GoogleSearchPage {
   // Check if all storage values are not empty
   async checkIfAllStorageValuesNotEmpty(storageData, keys) {
     try {
-      let storageValuesNotEmpty = true;
+      let failedKeys = [];
       keys.forEach((key) => {
         if (storageData[key] === null || storageData[key] === '') {
-          storageValuesNotEmpty = false;
+          failedKeys.push(key);
         }
       });
-      return storageValuesNotEmpty;
+      return { success: failedKeys.length === 0, failedKeys: failedKeys };
     } catch (error) {
       console.error(`Failed to check if all storage values are not empty: ${error.message}`);
     }
@@ -537,7 +536,11 @@ export default class GoogleSearchPage {
   // Check if all expected items included to the array
   checkIfAllItemsInArray(array, expectedItems) {
     try {
-      return expectedItems.every((item) => array.includes(item));
+      const missingItems = expectedItems.filter((item) => !array.includes(item));
+      return {
+        hasAllItems: missingItems.length === 0,
+        missingItems: missingItems,
+      };
     } catch (error) {
       console.error(`Failed to check if all expected items included to the array: ${error.message}`);
     }

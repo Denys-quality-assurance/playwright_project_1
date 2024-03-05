@@ -26,10 +26,11 @@ test.describe(`Google Custom Search Engine: Search results testing for '${query}
     // Check if each search result actually contains the query in its text
     const searchResults = await googleCSEPage.getSearchResultElements();
     const checkQueryResults = await googleCSEPage.checkIfAllSearchResultsContainQuery(searchResults, query);
-    expect(
-      checkQueryResults.success,
-      `Search result text\n${checkQueryResults.failedResultText}\n\ndoes not contain the query\n'${checkQueryResults.failedQuery}'`
-    ).toBe(true);
+    const errorMessage = `Some search results do not contain the '${
+      checkQueryResults.failedQuery
+    }' query.\nText of the results:\n\n${checkQueryResults.failedResultText.join('\n----------------------\n\n')}'`;
+
+    expect(checkQueryResults.success, errorMessage).toBe(true);
   });
 
   test(`Google search results page contains 10 results on 1 page for '${query}' query`, async () => {

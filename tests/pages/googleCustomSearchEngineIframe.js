@@ -71,6 +71,7 @@ export default class GoogleCustomSearchEnginePage {
     try {
       // Get all words from the query as an array
       const queryWords = query.split(' ');
+      let failedResults = [];
 
       for (let searchResult of searchResults) {
         // Get the text of each searchResult
@@ -79,11 +80,11 @@ export default class GoogleCustomSearchEnginePage {
         // Check if the search result contains any query word
         const hasQueryWords = this.hasQueryWords(resultText, queryWords);
         if (!hasQueryWords) {
-          return { success: false, failedResultText: resultText, failedQuery: query };
+          failedResults.push(resultText);
         }
       }
 
-      return { success: true }; // Passed all checks
+      return { success: failedResults.length === 0, failedResultText: failedResults, failedQuery: query };
     } catch (error) {
       console.error(`Failed to check if all search results contain query: ${error.message}`);
     }

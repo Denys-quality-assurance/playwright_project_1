@@ -34,10 +34,11 @@ test.describe(`Google Search results: Auto-suggestion and Correction`, () => {
         searchResults,
         queryData.correctedQuery
       );
-      expect(
-        checkQueryResults.success,
-        `Search result text\n${checkQueryResults.failedResultText}\n\ndoes not contain the query\n'${checkQueryResults.failedQuery}'`
-      ).toBe(true);
+      const errorMessage = `Some search results do not contain the corrected '${
+        checkQueryResults.failedQuery
+      }' query.\nText of the results:\n\n${checkQueryResults.failedResultText.join('\n----------------------\n\n')}'`;
+
+      expect(checkQueryResults.success, errorMessage).toBe(true);
     });
   });
 

@@ -30,35 +30,50 @@ test.describe(`Google Search results: Cookies and storage`, () => {
     // Search for query
     await googleSearchPage.searchForQueryByEnter(query);
     // Check that all expected keys included to the Local storage
-    let localStorageHasKeys = await googleSearchPage.checkIfAllKeysExist(
+    let checkIfAllLocalStorageKeysExist = await googleSearchPage.checkIfAllKeysExist(
       googleSearchPage.getLocalStorageItemsByKeys,
       page,
       expectedLocalStorageKeys
     );
 
-    expect(localStorageHasKeys, `At least 1 key is not included in the local storage`).toBe(true);
+    expect(
+      checkIfAllLocalStorageKeysExist.success,
+      `Not all expected keys included to the Local storage. Missing: ${checkIfAllLocalStorageKeysExist.missingKeys.join(
+        ', '
+      )}`
+    ).toBe(true);
 
     // Check that all Local storage values are not empty
     let localStorageData = await googleSearchPage.getLocalStorageItemsByKeys(page, expectedLocalStorageKeys);
-    let localStorageValuesNotEmpty = await googleSearchPage.checkIfAllStorageValuesNotEmpty(
+    let checkIfAllLocalStorageValuesNotEmpty = await googleSearchPage.checkIfAllStorageValuesNotEmpty(
       localStorageData,
       expectedLocalStorageKeys
     );
 
-    expect(localStorageValuesNotEmpty, `At least 1 local storage value is empty`).toBe(true);
+    expect(
+      checkIfAllLocalStorageValuesNotEmpty.success,
+      `Not all Local storage values are not empty. Empty keys: ${checkIfAllLocalStorageValuesNotEmpty.failedKeys.join(
+        ', '
+      )}`
+    ).toBe(true);
   });
 
   test(`Check session storage content @results @storage`, async ({}) => {
     // Search for query
     await googleSearchPage.searchForQueryByEnter(query);
     // Check that all expected keys included to the Session storage
-    let sessionStorageHasKeys = await googleSearchPage.checkIfAllKeysExist(
+    let checkIfAllSessionStorageKeysExist = await googleSearchPage.checkIfAllKeysExist(
       googleSearchPage.getSessionStorageItemsByKeys,
       page,
       expectedSessionStorageKeys
     );
 
-    expect(sessionStorageHasKeys, `At least 1 key is not included in the session storage`).toBe(true);
+    expect(
+      checkIfAllSessionStorageKeysExist.success,
+      `Not all expected keys included to the Session storage. Missing: ${checkIfAllSessionStorageKeysExist.missingKeys.join(
+        ', '
+      )}`
+    ).toBe(true);
 
     // Check if the search request value stored in the session storage
     const sessionStorageData = await googleSearchPage.getSessionStorage();
@@ -69,12 +84,17 @@ test.describe(`Google Search results: Cookies and storage`, () => {
 
     // Check that all Session storage values are not empty
     const sessionStoragekeys = Object.keys(sessionStorageData);
-    let sessionStorageValuesNotEmpty = await googleSearchPage.checkIfAllStorageValuesNotEmpty(
+    let checkIfAllSessionStorageValuesNotEmpty = await googleSearchPage.checkIfAllStorageValuesNotEmpty(
       sessionStoragekeys,
       expectedSessionStorageKeys
     );
 
-    expect(sessionStorageValuesNotEmpty, `At least 1 session storage value is empty`).toBe(true);
+    expect(
+      checkIfAllSessionStorageValuesNotEmpty.success,
+      `Not all Session storage values are not empty. Empty keys: ${checkIfAllSessionStorageValuesNotEmpty.failedKeys.join(
+        ', '
+      )}`
+    ).toBe(true);
   });
 
   test(`Check cookies content @results @cookies`, async ({}) => {
@@ -83,9 +103,12 @@ test.describe(`Google Search results: Cookies and storage`, () => {
     // Check that all expected names included to the cookies
     const cookies = await googleSearchPage.getCookies();
     const cookieNames = cookies.map((cookie) => cookie.name);
-    let cookiesIncludeAllNames = googleSearchPage.checkIfAllItemsInArray(cookieNames, expectedCookiesNames);
+    let checkResult = googleSearchPage.checkIfAllItemsInArray(cookieNames, expectedCookiesNames);
 
-    expect(cookiesIncludeAllNames, `At least 1 name is not included in the cookies`).toBe(true);
+    expect(
+      checkResult.hasAllItems,
+      `Not all expected names found in the cookies array. Missing: ${checkResult.missingItems.join(', ')}`
+    ).toBe(true);
 
     // Check that all cookies have non-empty values
     const cookiesValuesNotEmpty = cookies.every((cookie) => cookie.value !== '');
