@@ -106,7 +106,7 @@ test.describe(`Google Search results: Search results verification`, () => {
       );
       const errorMessage = `Some web page descriptions do not contain the '${
         checkQueryResults.failedQuery
-      }' query.\nHTML of the results:\n\n${checkQueryResults.failedDescriptionHTML.join(
+      }' query highlighted.\nHTML of the results:\n\n${checkQueryResults.failedDescriptionHTML.join(
         '\n----------------------\n\n'
       )}'`;
       expect(checkQueryResults.success, errorMessage).toBe(true);
