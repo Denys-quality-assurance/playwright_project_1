@@ -2,7 +2,7 @@ module.exports = {
   arrowParens: 'always', // Include parens around a single arrow function parameter
   bracketSpacing: true, // Print spaces between brackets in object literals
   embeddedLanguageFormatting: 'auto', // Controls how Prettier formats embedded code
-  endOfLine: 'lf', // Enforce use of Linux end of line
+  endOfLine: 'auto', // Enforce use of Linux end of line
   htmlWhitespaceSensitivity: 'css', // Adjusts how HTML whitespace is handled
   printWidth: 80, // Specify the line length that the printer will wrap on
   proseWrap: 'preserve', // Controls how prose blocks should be wrapped in markdown
