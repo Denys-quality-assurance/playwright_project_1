@@ -58,7 +58,7 @@ test.describe(`Google Search results: Auto-suggestion and Correction`, () => {
       );
       expect(
         doesAnyAutoSuggestionOptionContainQuery,
-        `No auto-suggestion option contains the expected approptiate option`
+        `No auto-suggestion option contains the expected approptiate option '${queryData.autoSuggestion}`
       ).toBe(true);
     });
   });
