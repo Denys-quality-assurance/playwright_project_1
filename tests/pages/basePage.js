@@ -1,3 +1,5 @@
+import { escapeRegexSpecialCharacters } from '../../utilities/regexHelper';
+
 export default class basePage {
   constructor(page, isMobile) {
     this.page = page;
@@ -137,6 +139,7 @@ export default class basePage {
           failedResults.push(resultText);
         }
       }
+
       // success is try if no items in failedResults
       return { success: failedResults.length === 0, failedResultText: failedResults, failedQuery: query };
     } catch (error) {
