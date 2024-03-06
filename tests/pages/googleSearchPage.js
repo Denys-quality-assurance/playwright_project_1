@@ -209,37 +209,6 @@ export default class GoogleSearchPage extends basePage {
     }
   }
 
-  // Check if all search results contain query
-  async checkIfAllSearchResultsContainQuery(searchResults, query) {
-    try {
-      // Get all words from the query as an array
-      const queryWords = query.split(' ');
-      let failedResults = [];
-
-      for (let searchResult of searchResults) {
-        // Get the text of each searchResult
-        let resultText = await searchResult.innerText();
-
-        // Check if the search result contains any query word
-        const hasQueryWords = this.hasQueryWords(resultText, queryWords);
-        if (!hasQueryWords) {
-          failedResults.push(resultText);
-        }
-      }
-      // success is try if no items in failedResults
-      return { success: failedResults.length === 0, failedResultText: failedResults, failedQuery: query };
-    } catch (error) {
-      console.error(`Failed to check if all search results contain query: ${error.message}`);
-    }
-  }
-
-  // Check if the search result contains any query word
-  hasQueryWords(resultText, queryWords) {
-    if (queryWords.some((queryWord) => new RegExp(escapeRegexSpecialCharacters(queryWord), 'i').test(resultText))) {
-      return true;
-    } else return false;
-  }
-
   // Check if all search results contain highlighted query in descriptions of the web pages
   async checkIfAllSearchResultsContainHighlightedQuery(searchResultsDescriptions, query) {
     try {
