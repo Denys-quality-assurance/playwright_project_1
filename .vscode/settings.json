@@ -4,7 +4,7 @@
   "prettier.configPath": "prettier.config.js",
   "prettier.embeddedLanguageFormatting": "auto",
   "prettier.enable": true,
-  "prettier.endOfLine": "lf",
+  "prettier.endOfLine": "auto",
   "prettier.htmlWhitespaceSensitivity": "css",
   "prettier.ignorePath": ".prettierignore",
   "prettier.printWidth": 80,
@@ -18,5 +18,6 @@
   "prettier.singleQuote": true,
   "editor.formatOnPaste": true,
   "editor.formatOnSave": true,
-  "editor.formatOnType": true
+  "editor.formatOnType": true,
+  "eslint.codeActionsOnSave.mode": "all"
 }
