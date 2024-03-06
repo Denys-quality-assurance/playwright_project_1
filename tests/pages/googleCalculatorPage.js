@@ -16,28 +16,6 @@ export default class GoogleCalculatorPage extends basePage {
     };
   }
 
-  // Click or Tap
-  async clickOrTap(elementOrSelector) {
-    try {
-      if (typeof elementOrSelector === 'string') {
-        if (this.isMobile) {
-          await this.page.tap(elementOrSelector);
-        } else {
-          await this.page.click(elementOrSelector);
-        }
-      } else {
-        // elementOrSelector is an ElementHandle
-        if (this.isMobile) {
-          await elementOrSelector.tap();
-        } else {
-          await elementOrSelector.click();
-        }
-      }
-    } catch (error) {
-      console.error(`Failed to chose click or tap method: ${error.message}`);
-    }
-  }
-
   // Type numbers on the calculator
   async typeNumbers(digits) {
     try {
