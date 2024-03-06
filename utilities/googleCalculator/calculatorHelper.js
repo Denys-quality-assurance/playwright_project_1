@@ -13,11 +13,11 @@ export function getCharacterSequence(string) {
 export function getOperationAriaLabel(operation) {
   try {
     const operationMap = {
-      'divide': 'divide',
-      'multiply': 'multiply',
-      'minus': 'minus',
-      'plus': 'plus',
-      'equals': 'equals',
+      divide: 'divide',
+      multiply: 'multiply',
+      minus: 'minus',
+      plus: 'plus',
+      equals: 'equals',
       'left parenthesis': 'left parenthesis',
       'right parenthesis': 'right parenthesis',
       'X to the power of Y': `X to the power of Y`,
