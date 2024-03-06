@@ -1,6 +1,6 @@
 import basePage from './basePage';
 import { readFileSync, createUniqueFileName, getTempFilePath, writeFile } from '../../utilities/fileSystemHelper';
-import { escapeRegexSpecialCharacters } from '../../utilities/regexHelper';
+
 const responseBodyForEmptyResultsMockPath = './tests/test-data/googleSearch/mocks/responseBodyForEmptyResults.html';
 
 export default class GoogleSearchPage extends basePage {
@@ -16,7 +16,7 @@ export default class GoogleSearchPage extends basePage {
       resultsNumberAndTimeMessage: `.LHJvCe >> #result-stats`, // Message with text “About X results (Y.YY seconds) ”
       didNotMatchText: `text=" - did not match any documents."`, // Message with text “did not match any documents”
       correctedQuery: `.p64x9c.KDCVqf`, // The corrected query text for the misspelled query in the message "Showing results for <correcter query>"
-      searchResult: this.isMobile ? `.y0NFKc` : `.MjjYud >> .g`, // One search result for mobile and for desktop
+      searchResult: this.isMobile ? `.y0NFKc` : `.MjjYud >> .g.Ww4FFb`, // One search result for mobile and for desktop
       webPageTitle: this.isMobile ? `.v7jaNc` : `.LC20lb`, // One title of the web page in the search result for mobile and for desktop
       webPageUrl: this.isMobile ? `.cz3goc` : `[jsname="UWckNb"]`, // One URL of the web page in the search result for mobile and for desktop
       webPageDescription: `.VwiC3b`, // One description of the web page in the search result
@@ -101,7 +101,7 @@ export default class GoogleSearchPage extends basePage {
       }
       return false; // No option contains the query
     } catch (error) {
-      console.error(`Failed to if any auto-suggestion option contains the query: ${error.message}`);
+      console.error(`Failed to check if any auto-suggestion option contains the query: ${error.message}`);
     }
   }
 
