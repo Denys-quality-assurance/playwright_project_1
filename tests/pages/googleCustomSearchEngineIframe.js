@@ -1,8 +1,10 @@
+import basePage from './basePage';
 import { escapeRegexSpecialCharacters } from '../../utilities/regexHelper';
 
-export default class GoogleCustomSearchEnginePage {
-  constructor(page) {
-    this.page = page;
+export default class GoogleCustomSearchEnginePage extends basePage {
+  constructor(page, isMobile) {
+    super(page, isMobile);
+
     this.frame = null;
     this.selectors = {
       frameSelectors: [
@@ -15,7 +17,7 @@ export default class GoogleCustomSearchEnginePage {
     };
   }
 
-  // Navigate to Home page
+  // Select Frame
   async selectFrame() {
     try {
       await this.page.goto('/google-sites/how-to/insert-custom-code/google-custom-search-engine/');
@@ -41,30 +43,6 @@ export default class GoogleCustomSearchEnginePage {
       console.error(`Failed to retrieve the nested iframe: ${error.message}`);
     }
   };
-
-  // Search for query
-  async searchFor(query) {
-    try {
-      await this.frame.waitForSelector(this.selectors.searchInputTextArea);
-      await this.frame.fill(this.selectors.searchInputTextArea, query);
-      await this.frame.press(this.selectors.searchInputTextArea, 'Enter');
-      // Waiting for search result page to appear
-      await this.frame.waitForLoadState('networkidle');
-    } catch (error) {
-      console.error(`Failed to search: ${error.message}`);
-    }
-  }
-
-  // Get Search results
-  async getSearchResultElements() {
-    try {
-      await this.frame.waitForSelector(this.selectors.searchResult);
-      const searchResultElements = await this.frame.$$(this.selectors.searchResult);
-      return searchResultElements;
-    } catch (error) {
-      console.error(`Failed to get search results: ${error.message}`);
-    }
-  }
 
   // Check if all search results contain query
   async checkIfAllSearchResultsContainQuery(searchResults, query) {

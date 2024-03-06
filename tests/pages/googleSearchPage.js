@@ -1,20 +1,18 @@
+import basePage from './basePage';
 import { readFileSync, createUniqueFileName, getTempFilePath, writeFile } from '../../utilities/fileSystemHelper';
 import { escapeRegexSpecialCharacters } from '../../utilities/regexHelper';
 const responseBodyForEmptyResultsMockPath = './tests/test-data/googleSearch/mocks/responseBodyForEmptyResults.html';
 
-export default class GoogleSearchPage {
+export default class GoogleSearchPage extends basePage {
   constructor(page, isMobile) {
-    this.page = page;
-    this.isMobile = isMobile; // Type of device is mobile
+    super(page, isMobile);
+
     this.selectors = {
+      ...this.selectors,
+
       searchButton: `.FPdoLc >> .gNO89b[role="button"]`, // Search button on the Home page
-      cookiesModal: `#CXQnmb`, // Cookies consent modal
-      rejectAllCookiesButton: `button#W0wltc`, // Reject all cookies button
       searchInputBox: this.isMobile ? `div.zGVn2e` : `.RNNXgb[jsname="RNNXgb"]`, // // Search imput box for mobile and for desktop
-      searchInputTextArea: `textarea[name=q]`, // Text imput field of Search query imput area
       autoSuggestionOption: `[role="option"]`, // One search auto suggestion option
-      changeToEnglishModal: `#Rzn5id`, // Change to English modal
-      changeToEnglishButton: `text="Change to English"`, // Change to English button
       resultsNumberAndTimeMessage: `.LHJvCe >> #result-stats`, // Message with text “About X results (Y.YY seconds) ”
       didNotMatchText: `text=" - did not match any documents."`, // Message with text “did not match any documents”
       correctedQuery: `.p64x9c.KDCVqf`, // The corrected query text for the misspelled query in the message "Showing results for <correcter query>"
@@ -24,76 +22,11 @@ export default class GoogleSearchPage {
       webPageDescription: `.VwiC3b`, // One description of the web page in the search result
       googleLogo: this.isMobile ? `#hplogo` : `.lnXdpd[alt="Google"]`, // Google Logo for mobile and for desktop
       videoFilterButton: `.LatpMc[href*="tbm=vid"]`, // Video filter button under the main search query imput area
-      pictureUploadButton: `.DV7the[role="button"]`, // Picture upload button of search by picture modal
     };
     this.classes = {
       picturesSearchButton: `nDcEnd`, // Pictures Search button
       closeSearchByPictureModalButton: `BiKNf`, // Close button of the the search by picture modal
     };
-  }
-
-  // Click or Tap
-  async clickOrTap(elementOrSelector) {
-    try {
-      if (typeof elementOrSelector === 'string') {
-        if (this.isMobile) {
-          await this.page.tap(elementOrSelector);
-        } else {
-          await this.page.click(elementOrSelector);
-        }
-      } else {
-        // elementOrSelector is an ElementHandle
-        if (this.isMobile) {
-          await elementOrSelector.tap();
-        } else {
-          await elementOrSelector.click();
-        }
-      }
-    } catch (error) {
-      console.error(`Failed to chose click or tap method: ${error.message}`);
-    }
-  }
-
-  // Navigate to Home page
-  async navigateHome() {
-    try {
-      await this.page.goto('/');
-    } catch (error) {
-      console.error(`Failed to navigate to Home page: ${error.message}`);
-    }
-  }
-
-  // Reject all Cookies if it's needed
-  async rejectCookiesIfAsked() {
-    if (await this.page.isVisible(this.selectors.cookiesModal)) {
-      try {
-        await this.page.waitForSelector(this.selectors.rejectAllCookiesButton);
-        await this.clickOrTap(this.selectors.rejectAllCookiesButton);
-        await this.page.waitForSelector(this.selectors.cookiesModal, { state: 'hidden' });
-      } catch (error) {
-        console.error(`Failed to reject all Cookies: ${error.message}`);
-      }
-    }
-  }
-
-  // Navigate to page and reject all Cookies if it's needed
-  async navigateAndRejectCookies() {
-    try {
-      await this.navigateHome();
-      await this.rejectCookiesIfAsked();
-    } catch (error) {
-      console.error(`Failed to navigate to page and reject all Cookies: ${error.message}`);
-    }
-  }
-
-  // Fill Search imput with query
-  async fillSearchInput(query) {
-    try {
-      await this.page.waitForSelector(this.selectors.searchInputTextArea);
-      await this.page.fill(this.selectors.searchInputTextArea, query);
-    } catch (error) {
-      console.error(`Failed to fill Search imput with query: ${error.message}`);
-    }
   }
 
   // Get Search auto suggestions
@@ -172,20 +105,6 @@ export default class GoogleSearchPage {
     }
   }
 
-  // Search for query by pressing enter
-  async searchForQueryByEnter(query) {
-    try {
-      // Fill Search imput with query
-      await this.fillSearchInput(query);
-      // Submit the query by pressing enter
-      await this.page.press(this.selectors.searchInputTextArea, 'Enter');
-      // Waiting for search result page to appear
-      await this.page.waitForLoadState('networkidle');
-    } catch (error) {
-      console.error(`Failed to search for query by pressing enter: ${error.message}`);
-    }
-  }
-
   // Search for query by clicking on search button
   async searchForQueryBySearchButton(query) {
     try {
@@ -201,19 +120,6 @@ export default class GoogleSearchPage {
     }
   }
 
-  // Change to English if it's needed
-  async changeToEnglishIfAsked() {
-    if (await this.page.isVisible(this.selectors.changeToEnglishModal)) {
-      try {
-        await this.page.waitForSelector(this.selectors.changeToEnglishButton);
-        await this.clickOrTap(this.selectors.changeToEnglishButton);
-        await this.page.waitForSelector(this.selectors.changeToEnglishModal, { state: 'hidden' });
-      } catch (error) {
-        console.error(`Failed to change to English: ${error.message}`);
-      }
-    }
-  }
-
   // Navigate to page, reject all Cookies and search for query
   async navigateAndSearch(query) {
     try {
@@ -222,11 +128,6 @@ export default class GoogleSearchPage {
     } catch (error) {
       console.error(`Failed to navigate to page, reject all Cookies and search for query: ${error.message}`);
     }
-  }
-
-  // Wait for the search response
-  async waitForSearchResponse() {
-    return this.page.waitForResponse('/search?q=**');
   }
 
   // Get number of query instances in the page body
@@ -255,17 +156,6 @@ export default class GoogleSearchPage {
       });
     } catch (error) {
       console.error(`Failed to mock the search response with Empty Results: ${error.message}`);
-    }
-  }
-
-  // Get Search results
-  async getSearchResultElements() {
-    try {
-      await this.page.waitForSelector(this.selectors.searchResult);
-      const searchResultElements = await this.page.$$(this.selectors.searchResult);
-      return searchResultElements;
-    } catch (error) {
-      console.error(`Failed to get search results: ${error.message}`);
     }
   }
 

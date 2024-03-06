@@ -1,10 +1,12 @@
-export default class GoogleMapsPage {
+import basePage from './basePage';
+
+export default class GoogleMapsPage extends basePage {
   constructor(page, isMobile) {
-    this.page = page;
-    this.isMobile = isMobile; // type of device is mobile
+    super(page, isMobile);
+
     this.selectors = {
-      cookiesModal: `#CXQnmb`, // Cookies consent modal
-      rejectAllCookiesButton: `button#W0wltc`, // Reject all cookies button
+      ...this.selectors,
+
       navigationModal: `.OuM1Vb[role="dialog"]`, // navigation tracking modal
       rejectNavigationButton: `button.vrdm1c`, // Reject navigation tracking button
       myPlaceButton: this.isMobile ? `button.uWaeI` : `button#sVuEFc`, // My place button for mobile and for desktop
@@ -34,24 +36,12 @@ export default class GoogleMapsPage {
   }
 
   // Navigate to URL
-  async navigateHome(URL) {
+  async navigateURL(URL) {
     try {
       await this.page.goto(URL);
       await this.page.waitForLoadState('networkidle');
     } catch (error) {
       console.error(`Failed to navigate to URL: ${error.message}`);
-    }
-  }
-
-  // Reject all Cookies if it's needed
-  async rejectCookiesIfAsked() {
-    if (await this.page.isVisible(this.selectors.cookiesModal)) {
-      try {
-        await this.clickOrTap(this.selectors.rejectAllCookiesButton);
-        await this.page.waitForSelector(this.selectors.cookiesModal, { state: 'hidden' });
-      } catch (error) {
-        console.error(`Failed to reject all Cookies: ${error.message}`);
-      }
     }
   }
 
@@ -69,9 +59,9 @@ export default class GoogleMapsPage {
 
   // Navigate to Google Maps
   async openGoogleMaps() {
-    await this.navigateHome('/');
+    await this.navigateURL('/');
     await this.rejectCookiesIfAsked();
-    await this.navigateHome('/maps');
+    await this.navigateURL('/maps');
     await this.rejectNavigationIfAsked();
   }
 

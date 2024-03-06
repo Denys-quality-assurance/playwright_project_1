@@ -1,21 +1,20 @@
+import basePage from './basePage';
 import { escapeRegexSpecialCharacters } from '../../utilities/regexHelper';
 
-export default class GoogleSearchPicturesPage {
+export default class GoogleSearchPicturesPage extends basePage {
   constructor(page, isMobile) {
-    this.page = page;
-    this.isMobile = isMobile; // type of device is mobile
+    super(page, isMobile);
+
     this.selectors = {
-      cookiesModal: `#CXQnmb`, // Cookies consent modal
-      rejectAllCookiesButton: `button#W0wltc`, // Reject all cookies button
+      ...this.selectors,
+
       picturesSearchButton: this.isMobile
         ? `[href*="/webhp"]` // Pictures Search button for mobile
         : `[href*="/imghp"]`, // Pictures Search button for desktop
-      searchInputTextArea: `textarea[name=q]`, // Search query imput area
       firstSearchResult: `[data-ri="0"]`, // 1st result in the list of results
       firstSearchResultText: `[data-ri="0"] >> .bytUYc`, // Text of the 1st result in the list of results
       picturePriview: `[role="link"] img[src*="https"]`, // Preview of the picture in the result list
       searchByPictureButton: this.isMobile ? `.r5jQRd[role="link"]` : `.NGBa0b[role="button"]`, // Search by uploaded picture button for mobile and for desktop
-      pictureUploadButton: `.DV7the[role="button"]`, // Picture upload button of search by picture modal
       searchByPictureResults: `.UAiK1e[dir="ltr"]`, // List of results of search by picture
     };
   }
@@ -42,15 +41,6 @@ export default class GoogleSearchPicturesPage {
     }
   }
 
-  // Navigate to Home page
-  async navigateHome() {
-    try {
-      await this.page.goto('/');
-    } catch (error) {
-      console.error(`Failed to navigate to Home page: ${error.message}`);
-    }
-  }
-
   // Reject all Cookies if it's needed
   async rejectCookiesIfAsked() {
     if (await this.page.isVisible(this.selectors.cookiesModal)) {
@@ -63,29 +53,6 @@ export default class GoogleSearchPicturesPage {
     }
   }
 
-  // Navigate to page and reject all Cookies if it's needed
-  async navigateAndRejectCookies() {
-    try {
-      await this.navigateHome();
-      await this.rejectCookiesIfAsked();
-    } catch (error) {
-      console.error(`Failed to navigate to page and reject all Cookies: ${error.message}`);
-    }
-  }
-
-  // Search for query
-  async searchFor(query) {
-    try {
-      await this.page.waitForSelector(this.selectors.searchInputTextArea);
-      await this.page.fill(this.selectors.searchInputTextArea, query);
-      await this.page.press(this.selectors.searchInputTextArea, 'Enter');
-      // Waiting for search result page to appear
-      await this.page.waitForLoadState('networkidle');
-    } catch (error) {
-      console.error(`Failed to search: ${error.message}`);
-    }
-  }
-
   // Navigate to Home page, reject all Cookies, navigate to Pictures and search for query
   async navigateAndSearchPictures(query) {
     try {
@@ -93,7 +60,7 @@ export default class GoogleSearchPicturesPage {
       await this.page.waitForSelector(this.selectors.picturesSearchButton);
       await this.clickOrTap(this.selectors.picturesSearchButton);
       await this.page.waitForNavigation();
-      await this.searchFor(query);
+      await this.searchForQueryByEnter(query);
     } catch (error) {
       console.error(
         `Failed to navigate to Home page, reject all Cookies, navigate to Pictures and search for query: ${error.message}`
