@@ -1,5 +1,4 @@
 import basePage from './basePage';
-import { escapeRegexSpecialCharacters } from '../../utilities/regexHelper';
 
 export default class GoogleCustomSearchEnginePage extends basePage {
   constructor(page, isMobile) {
