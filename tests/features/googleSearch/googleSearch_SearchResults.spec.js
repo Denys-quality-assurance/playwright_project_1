@@ -8,21 +8,25 @@ import {
 } from '../../test-data/googleSearch/queryData';
 import { performSearchAndFetchResultsForNewPage } from '../../../utilities/pagesHelper';
 const query = queryDataGeneral[1].query;
-const expectedPatternOfNumberAndTimeMessageText = /\b\w+\b\s\b\d+(\.\d{3})*\b\s\b\w+\b\s\(\b\d+\,\d+\b\s\b\w+\b\)/; // Regex for the message with the total number of results and the time taken to fetch the result based on the template: <1 word> <Integer possibly with thousands as '.'> <1 space> <1 word> <space> (<floating point number with ','> <1 space> <1 word>): \b matches word boundary, \w+ matches matches one or more word character, \s matches whitespace, \d+ matches one or more digits, \,\d+ matches a comma followed by one or more digits, \b\d+(\.\d{3})*\bs\b matches an integer number that might have dot separators between thousands
+const expectedPatternOfNumberAndTimeMessageText =
+  /\b\w+\b\s\b\d+(\.\d{3})*\b\s\b\w+\b\s\(\b\d+\,\d+\b\s\b\w+\b\)/; // Regex for the message with the total number of results and the time taken to fetch the result based on the template: <1 word> <Integer possibly with thousands as '.'> <1 space> <1 word> <space> (<floating point number with ','> <1 space> <1 word>): \b matches word boundary, \w+ matches matches one or more word character, \s matches whitespace, \d+ matches one or more digits, \,\d+ matches a comma followed by one or more digits, \b\d+(\.\d{3})*\bs\b matches an integer number that might have dot separators between thousands
 
 test.describe(`Google Search results: Search results verification`, () => {
   let page; // Page instance
   let googleSearchPage; // Page object instance
 
   // Navigate to Home page and reject all Cookies
-  test.beforeEach('Navigate to Home page and reject all Cookies', async ({ sharedContext }, testInfo) => {
-    if (testInfo.expectedStatus !== 'skipped') {
-      page = await sharedContext.newPage();
-      const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
-      googleSearchPage = new GoogleSearchPage(page, isMobile);
-      await googleSearchPage.navigateAndRejectCookies();
+  test.beforeEach(
+    'Navigate to Home page and reject all Cookies',
+    async ({ sharedContext }, testInfo) => {
+      if (testInfo.expectedStatus !== 'skipped') {
+        page = await sharedContext.newPage();
+        const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
+        googleSearchPage = new GoogleSearchPage(page, isMobile);
+        await googleSearchPage.navigateAndRejectCookies();
+      }
     }
-  });
+  );
 
   test(`TEST-1: User can apply video filter on the Empty results page (mocked) and get search results @only-desktop @mocked @results @filters`, async ({
     sharedContext,
@@ -35,7 +39,11 @@ test.describe(`Google Search results: Search results verification`, () => {
     await googleSearchPage.applyVideFilter();
     // Check if each search result actually contains query in its text
     const searchResults = await googleSearchPage.getSearchResultElements();
-    const checkQueryResults = await googleSearchPage.checkIfAllSearchResultsContainQuery(searchResults, query);
+    const checkQueryResults =
+      await googleSearchPage.checkIfAllSearchResultsContainQuery(
+        searchResults,
+        query
+      );
     const errorMessage = `Some search results do not contain the '${
       checkQueryResults.failedQuery
     }' query.\nText of the results:\n\n${checkQueryResults.failedResultText.join('\n----------------------\n\n')}'`;
@@ -60,7 +68,10 @@ test.describe(`Google Search results: Search results verification`, () => {
 
       // Check if the body contains at least 1 instance of query
       const count = await googleSearchPage.countQueryInBody(queryData.query);
-      expect(count, `The html body doesn't contains the '${queryData.query}' query`).toBeGreaterThanOrEqual(1);
+      expect(
+        count,
+        `The html body doesn't contains the '${queryData.query}' query`
+      ).toBeGreaterThanOrEqual(1);
     });
   });
 
@@ -70,10 +81,11 @@ test.describe(`Google Search results: Search results verification`, () => {
       await googleSearchPage.searchForQueryByEnter(queryData.query);
       // Check if each search result actually contains query in its text
       const searchResults = await googleSearchPage.getSearchResultElements();
-      const checkQueryResults = await googleSearchPage.checkIfAllSearchResultsContainQuery(
-        searchResults,
-        queryData.query
-      );
+      const checkQueryResults =
+        await googleSearchPage.checkIfAllSearchResultsContainQuery(
+          searchResults,
+          queryData.query
+        );
       const errorMessage = `Some search results do not contain the '${
         checkQueryResults.failedQuery
       }' query.\nText of the results:\n\n${checkQueryResults.failedResultText.join('\n----------------------\n\n')}'`;
@@ -87,10 +99,13 @@ test.describe(`Google Search results: Search results verification`, () => {
       // Search for query
       await googleSearchPage.searchForQueryByEnter(queryData.query);
       // Get the text of the message with the total number of results and the time taken to fetch the result
-      const resultsNumberAndTimeMessageText = await googleSearchPage.getResultsNumberAndTimeMessageText();
+      const resultsNumberAndTimeMessageText =
+        await googleSearchPage.getResultsNumberAndTimeMessageText();
       // Check if the message is according according to the template:
       // < 1 word > <Integer possibly with thousands as '.' > < 1 space > < 1 word > <space> (<floating point number with ','> <1 space> <1 word>)
-      expect(resultsNumberAndTimeMessageText).toMatch(expectedPatternOfNumberAndTimeMessageText);
+      expect(resultsNumberAndTimeMessageText).toMatch(
+        expectedPatternOfNumberAndTimeMessageText
+      );
     });
   });
 
@@ -99,11 +114,13 @@ test.describe(`Google Search results: Search results verification`, () => {
       // Search for query
       await googleSearchPage.searchForQueryByEnter(queryData.query);
       // Check if each search result actually contains highlighted query in its text
-      const searchResultsDescriptions = await googleSearchPage.getSearchResultsDescriptionElements();
-      const checkQueryResults = await googleSearchPage.checkIfAllSearchResultsContainHighlightedQuery(
-        searchResultsDescriptions,
-        queryData.query
-      );
+      const searchResultsDescriptions =
+        await googleSearchPage.getSearchResultsDescriptionElements();
+      const checkQueryResults =
+        await googleSearchPage.checkIfAllSearchResultsContainHighlightedQuery(
+          searchResultsDescriptions,
+          queryData.query
+        );
       const errorMessage = `Some web page descriptions do not contain the '${
         checkQueryResults.failedQuery
       }' query highlighted.\nHTML of the results:\n\n${checkQueryResults.failedDescriptionHTML.join(
@@ -120,7 +137,9 @@ test.describe(`Google Search results: Search results verification`, () => {
       // Change to English if it's needed
       await googleSearchPage.changeToEnglishIfAsked();
       // Check if the message “did not match any documents” is visible
-      const didNotMatchText = page.locator(googleSearchPage.selectors.didNotMatchText);
+      const didNotMatchText = page.locator(
+        googleSearchPage.selectors.didNotMatchText
+      );
       await expect(didNotMatchText).toBeVisible();
     });
   });
@@ -140,10 +159,12 @@ test.describe(`Google Search results: Search results verification`, () => {
     // Search for query
     await googleSearchPage.searchForQueryByEnter(query);
     // Get titles of the web pages in the search results
-    const searchResultsWebPagesTitlesText = await googleSearchPage.getSearchResultsWebPagesTitles();
+    const searchResultsWebPagesTitlesText =
+      await googleSearchPage.getSearchResultsWebPagesTitles();
     const firstTitle = searchResultsWebPagesTitlesText[0];
     // Get elements with web pages URLs in the search results
-    const searchResultsWebPagesUrlElements = await googleSearchPage.getSearchResultsWebPagesUrlElements();
+    const searchResultsWebPagesUrlElements =
+      await googleSearchPage.getSearchResultsWebPagesUrlElements();
     const firstUrl = searchResultsWebPagesUrlElements[0];
     // Click or tap the 1st web link
     await googleSearchPage.clickOrTap(firstUrl);
@@ -159,7 +180,11 @@ test.describe(`Google Search results: Search results verification`, () => {
     sharedContext,
   }) => {
     // Create new page 1 in the same context, search for the query by pressing Enter and get the text content of the results
-    const searchResultsTexts1 = await performSearchAndFetchResultsForNewPage(sharedContext, query, GoogleSearchPage);
+    const searchResultsTexts1 = await performSearchAndFetchResultsForNewPage(
+      sharedContext,
+      query,
+      GoogleSearchPage
+    );
     // Create new page 2 in the same context, search for the query by clicking on search button and get the text content of the results
     const searchResultsTexts2 = await performSearchAndFetchResultsForNewPage(
       sharedContext,
@@ -171,9 +196,10 @@ test.describe(`Google Search results: Search results verification`, () => {
     );
 
     // Compare the search results from both pages
-    expect(searchResultsTexts1, `Search results from two pages with the same '${query}' query are not equal`).toEqual(
-      searchResultsTexts2
-    );
+    expect(
+      searchResultsTexts1,
+      `Search results from two pages with the same '${query}' query are not equal`
+    ).toEqual(searchResultsTexts2);
   });
 
   queryDataCaseInsensitive.forEach((queryData) => {
@@ -206,7 +232,10 @@ test.describe(`Google Search results: Search results verification`, () => {
       // Search for query
       await googleSearchPage.searchForQueryByEnter(queryData.query);
       const title = await googleSearchPage.getPageTitle();
-      expect(title, `Page title doesn't contain the '${queryData.query}' query`).toContain(queryData.query);
+      expect(
+        title,
+        `Page title doesn't contain the '${queryData.query}' query`
+      ).toContain(queryData.query);
     });
   });
 });

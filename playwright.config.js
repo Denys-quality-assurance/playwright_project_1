@@ -135,6 +135,14 @@ module.exports = {
     },
   ],
   reporter: process.env.CI
-    ? [['dot'], ['./tests/setup/customReporter.js'], ['html', { outputFolder: 'playwright-report' }]] // for CI: use concise 'dot' and 'html' reporters
-    : [['list'], ['./tests/setup/customReporter.js'], ['html', { outputFolder: 'playwright-report' }]], // fol local run: use default 'list' and 'html' reporters
+    ? [
+        ['dot'],
+        ['./tests/setup/customReporter.js'],
+        ['html', { outputFolder: 'playwright-report' }],
+      ] // for CI: use concise 'dot' and 'html' reporters
+    : [
+        ['list'],
+        ['./tests/setup/customReporter.js'],
+        ['html', { outputFolder: 'playwright-report' }],
+      ], // fol local run: use default 'list' and 'html' reporters
 };

@@ -14,7 +14,9 @@ export default class GoogleSearchPicturesPage extends basePage {
       firstSearchResult: `[data-ri="0"]`, // 1st result in the list of results
       firstSearchResultText: `[data-ri="0"] >> .bytUYc`, // Text of the 1st result in the list of results
       picturePriview: `[role="link"] img[src*="https"]`, // Preview of the picture in the result list
-      searchByPictureButton: this.isMobile ? `.r5jQRd[role="link"]` : `.NGBa0b[role="button"]`, // Search by uploaded picture button for mobile and for desktop
+      searchByPictureButton: this.isMobile
+        ? `.r5jQRd[role="link"]`
+        : `.NGBa0b[role="button"]`, // Search by uploaded picture button for mobile and for desktop
       searchByPictureResults: `.UAiK1e[dir="ltr"]`, // List of results of search by picture
     };
   }
@@ -50,10 +52,15 @@ export default class GoogleSearchPicturesPage extends basePage {
     try {
       // Get text from the 1st search result
       await this.page.waitForSelector(this.selectors.firstSearchResultText);
-      const pictureDescription = await this.page.$eval(this.selectors.firstSearchResultText, (el) => el.innerText);
+      const pictureDescription = await this.page.$eval(
+        this.selectors.firstSearchResultText,
+        (el) => el.innerText
+      );
 
       // Click on the 1st search result to open picture preview
-      const picturePriview = await this.openPicturePreview(this.selectors.firstSearchResult);
+      const picturePriview = await this.openPicturePreview(
+        this.selectors.firstSearchResult
+      );
 
       // Get picture link of the preview
       const imageUrl = await picturePriview.getAttribute('src');
@@ -82,7 +89,9 @@ export default class GoogleSearchPicturesPage extends basePage {
       // Click the button that opens the file chooser dialog
       await this.clickOrTap(this.selectors.pictureUploadButton);
     } catch (error) {
-      console.error(`Failed to open upload picture to search: ${error.message}`);
+      console.error(
+        `Failed to open upload picture to search: ${error.message}`
+      );
     }
   }
 
@@ -90,10 +99,14 @@ export default class GoogleSearchPicturesPage extends basePage {
   async getSearchByPictureResultElements() {
     try {
       await this.page.waitForSelector(this.selectors.searchByPictureResults);
-      const searchByPictureResultElements = await this.page.$$(this.selectors.searchByPictureResults);
+      const searchByPictureResultElements = await this.page.$$(
+        this.selectors.searchByPictureResults
+      );
       return searchByPictureResultElements;
     } catch (error) {
-      console.error(`Failed to get search by picture results: ${error.message}`);
+      console.error(
+        `Failed to get search by picture results: ${error.message}`
+      );
     }
   }
 
@@ -114,7 +127,9 @@ export default class GoogleSearchPicturesPage extends basePage {
       }
       return result;
     } catch (error) {
-      console.error(`Failed to validate search results contain query: ${error.message}`);
+      console.error(
+        `Failed to validate search results contain query: ${error.message}`
+      );
     }
   }
 }

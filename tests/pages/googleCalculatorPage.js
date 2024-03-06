@@ -29,7 +29,9 @@ export default class GoogleCalculatorPage extends basePage {
         await this.clickOrTapDigits(digitsArray);
       }
     } catch (error) {
-      console.error(`Failed to click or tap digit on the calculator: ${error.message}`);
+      console.error(
+        `Failed to click or tap digit on the calculator: ${error.message}`
+      );
     }
   }
 
@@ -46,7 +48,9 @@ export default class GoogleCalculatorPage extends basePage {
       // Close the parentheses
       await this.clickOrTapOperation('right parenthesis');
     } catch (error) {
-      console.error(`Failed to click or tap digit on the calculator: ${error.message}`);
+      console.error(
+        `Failed to click or tap digit on the calculator: ${error.message}`
+      );
     }
   }
 
@@ -61,7 +65,9 @@ export default class GoogleCalculatorPage extends basePage {
         await this.clickOrTap(digitLocator);
       }
     } catch (error) {
-      console.error(`Failed to click or tap digit on the calculator: ${error.message}`);
+      console.error(
+        `Failed to click or tap digit on the calculator: ${error.message}`
+      );
     }
   }
 
@@ -76,7 +82,9 @@ export default class GoogleCalculatorPage extends basePage {
       // Click or Tap the locator with the digit in text
       await this.clickOrTap(operationLocator);
     } catch (error) {
-      console.error(`Failed to click or tap operation on the calculator: ${error.message}`);
+      console.error(
+        `Failed to click or tap operation on the calculator: ${error.message}`
+      );
     }
   }
 

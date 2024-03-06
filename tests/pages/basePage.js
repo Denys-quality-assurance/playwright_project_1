@@ -52,7 +52,9 @@ export default class basePage {
       try {
         await this.page.waitForSelector(this.selectors.rejectAllCookiesButton);
         await this.clickOrTap(this.selectors.rejectAllCookiesButton);
-        await this.page.waitForSelector(this.selectors.cookiesModal, { state: 'hidden' });
+        await this.page.waitForSelector(this.selectors.cookiesModal, {
+          state: 'hidden',
+        });
       } catch (error) {
         console.error(`Failed to reject all Cookies: ${error.message}`);
       }
@@ -65,7 +67,9 @@ export default class basePage {
       await this.navigateHome();
       await this.rejectCookiesIfAsked();
     } catch (error) {
-      console.error(`Failed to navigate to page and reject all Cookies: ${error.message}`);
+      console.error(
+        `Failed to navigate to page and reject all Cookies: ${error.message}`
+      );
     }
   }
 
@@ -89,7 +93,9 @@ export default class basePage {
       // Waiting for search result page to appear
       await pageOrFrame.waitForLoadState('networkidle');
     } catch (error) {
-      console.error(`Failed to search for query by pressing enter: ${error.message}`);
+      console.error(
+        `Failed to search for query by pressing enter: ${error.message}`
+      );
     }
   }
 
@@ -99,7 +105,9 @@ export default class basePage {
       try {
         await this.page.waitForSelector(this.selectors.changeToEnglishButton);
         await this.clickOrTap(this.selectors.changeToEnglishButton);
-        await this.page.waitForSelector(this.selectors.changeToEnglishModal, { state: 'hidden' });
+        await this.page.waitForSelector(this.selectors.changeToEnglishModal, {
+          state: 'hidden',
+        });
       } catch (error) {
         console.error(`Failed to change to English: ${error.message}`);
       }
@@ -115,7 +123,9 @@ export default class basePage {
   async getSearchResultElements(pageOrFrame = this.page) {
     try {
       await pageOrFrame.waitForSelector(this.selectors.searchResult);
-      const searchResultElements = await pageOrFrame.$$(this.selectors.searchResult);
+      const searchResultElements = await pageOrFrame.$$(
+        this.selectors.searchResult
+      );
       return searchResultElements;
     } catch (error) {
       console.error(`Failed to get search results: ${error.message}`);
@@ -141,15 +151,27 @@ export default class basePage {
       }
 
       // success is try if no items in failedResults
-      return { success: failedResults.length === 0, failedResultText: failedResults, failedQuery: query };
+      return {
+        success: failedResults.length === 0,
+        failedResultText: failedResults,
+        failedQuery: query,
+      };
     } catch (error) {
-      console.error(`Failed to check if all search results contain query: ${error.message}`);
+      console.error(
+        `Failed to check if all search results contain query: ${error.message}`
+      );
     }
   }
 
   // Check if the search result contains any query word
   hasQueryWords(resultText, queryWords) {
-    if (queryWords.some((queryWord) => new RegExp(escapeRegexSpecialCharacters(queryWord), 'i').test(resultText))) {
+    if (
+      queryWords.some((queryWord) =>
+        new RegExp(escapeRegexSpecialCharacters(queryWord), 'i').test(
+          resultText
+        )
+      )
+    ) {
       return true;
     } else return false;
   }
@@ -164,7 +186,9 @@ export default class basePage {
       }
       return results;
     } catch (error) {
-      console.error(`Failed to get text content from array of objects: ${error.message}`);
+      console.error(
+        `Failed to get text content from array of objects: ${error.message}`
+      );
     }
   }
 }

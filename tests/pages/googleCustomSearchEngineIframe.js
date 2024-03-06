@@ -19,9 +19,14 @@ export default class GoogleCustomSearchEnginePage extends basePage {
   // Select Frame
   async selectFrame() {
     try {
-      await this.page.goto('/google-sites/how-to/insert-custom-code/google-custom-search-engine/');
+      await this.page.goto(
+        '/google-sites/how-to/insert-custom-code/google-custom-search-engine/'
+      );
       // Get nested iFrame
-      this.frame = await this.getNestedFrame(this.page, this.selectors.frameSelectors);
+      this.frame = await this.getNestedFrame(
+        this.page,
+        this.selectors.frameSelectors
+      );
     } catch (error) {
       console.error(`Failed to navigate to CSE iFrame: ${error.message}`);
     }

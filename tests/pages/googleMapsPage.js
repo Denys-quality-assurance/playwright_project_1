@@ -28,7 +28,9 @@ export default class GoogleMapsPage extends basePage {
     if (await this.page.isVisible(this.selectors.navigationModal)) {
       try {
         await this.clickOrTap(this.selectors.rejectNavigationButton);
-        await this.page.waitForSelector(this.selectors.navigationModal, { state: 'hidden' });
+        await this.page.waitForSelector(this.selectors.navigationModal, {
+          state: 'hidden',
+        });
       } catch (error) {
         console.error(`Failed to reject location tracking: ${error.message}`);
       }

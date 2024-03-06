@@ -3,7 +3,9 @@ export function getCharacterSequence(string) {
   try {
     return string.split('');
   } catch (error) {
-    console.error(`Failed to convert the number to a digit sequence: ${error.message}`);
+    console.error(
+      `Failed to convert the number to a digit sequence: ${error.message}`
+    );
   }
 }
 
@@ -11,23 +13,29 @@ export function getCharacterSequence(string) {
 export function getOperationAriaLabel(operation) {
   try {
     const operationMap = {
-      divide: 'divide',
-      multiply: 'multiply',
-      minus: 'minus',
-      plus: 'plus',
-      equals: 'equals',
+      'divide': 'divide',
+      'multiply': 'multiply',
+      'minus': 'minus',
+      'plus': 'plus',
+      'equals': 'equals',
       'left parenthesis': 'left parenthesis',
       'right parenthesis': 'right parenthesis',
       'X to the power of Y': `X to the power of Y`,
     };
     return operationMap[operation];
   } catch (error) {
-    console.error(`Failed while mapping between operation name and its button aria-label: ${error.message}`);
+    console.error(
+      `Failed while mapping between operation name and its button aria-label: ${error.message}`
+    );
   }
 }
 
 // Caclucate result of the math operation with the numbers
-export function calculateExpectedResultText(firstNumber, secondNumber, operation) {
+export function calculateExpectedResultText(
+  firstNumber,
+  secondNumber,
+  operation
+) {
   try {
     switch (operation) {
       case 'divide':
@@ -42,6 +50,8 @@ export function calculateExpectedResultText(firstNumber, secondNumber, operation
         return Math.pow(Number(firstNumber), Number(secondNumber)).toString();
     }
   } catch (error) {
-    console.error(`Failed to caclucate result of the math operation with the numbers: ${error.message}`);
+    console.error(
+      `Failed to caclucate result of the math operation with the numbers: ${error.message}`
+    );
   }
 }

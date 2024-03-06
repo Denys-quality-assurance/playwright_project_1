@@ -27,7 +27,9 @@ test.describe(`Google calculator`, () => {
 
   test(`TEST-28: Google calculator is visiable on the Home page`, async () => {
     // Check if the Google calculator is visiable
-    const calculatorLocator = page.locator(googleCalculatorPage.selectors.calculatorScreen);
+    const calculatorLocator = page.locator(
+      googleCalculatorPage.selectors.calculatorScreen
+    );
     await expect(calculatorLocator).toBeVisible();
   });
 
@@ -36,13 +38,21 @@ test.describe(`Google calculator`, () => {
       // Change to English if it's needed
       await googleCalculatorPage.changeToEnglishIfAsked();
       // Click or tap the 1st number
-      await googleCalculatorPage.typeNumbers(getCharacterSequence(mathOperation.firstNumber));
+      await googleCalculatorPage.typeNumbers(
+        getCharacterSequence(mathOperation.firstNumber)
+      );
       // Click or tap the orertion button
-      await googleCalculatorPage.clickOrTapOperation(mathOperation.operationName);
+      await googleCalculatorPage.clickOrTapOperation(
+        mathOperation.operationName
+      );
       // Click or tap the 2nd number
-      await googleCalculatorPage.typeNumbers(getCharacterSequence(mathOperation.secondNumber));
+      await googleCalculatorPage.typeNumbers(
+        getCharacterSequence(mathOperation.secondNumber)
+      );
       // Click or tap the "equals" button
-      await googleCalculatorPage.clickOrTap(googleCalculatorPage.selectors.equalsButton);
+      await googleCalculatorPage.clickOrTap(
+        googleCalculatorPage.selectors.equalsButton
+      );
       // Waiting for result to appear
       await page.waitForLoadState('networkidle');
       // Get the text of the result
@@ -50,9 +60,16 @@ test.describe(`Google calculator`, () => {
       // Caclucate result of the math operation with the numbers
       const extectedResultText =
         mathOperation.expectedResult ||
-        calculateExpectedResultText(mathOperation.firstNumber, mathOperation.secondNumber, mathOperation.operationName);
+        calculateExpectedResultText(
+          mathOperation.firstNumber,
+          mathOperation.secondNumber,
+          mathOperation.operationName
+        );
       // Check if the actual result of the mathematical operation is equal to the expected result
-      expect(resultAreaText, `The actual result of the mathematical operation is unexpected`).toBe(extectedResultText);
+      expect(
+        resultAreaText,
+        `The actual result of the mathematical operation is unexpected`
+      ).toBe(extectedResultText);
     });
   });
 });

@@ -11,7 +11,8 @@ export const FAILED_TESTS_WITHOUT_KNOWN_ISSUES_STR =
   'FAILED AND FLAKY TESTS WITHOUT KNOWN ISSUES (to determine the cause and link the bug)';
 export const FAILED_TESTS_WITH_KNOWN_FIXED_ISSUES_STR =
   'FAILED AND FLAKY TESTS WITH KNOWN FIXED ISSUES ON THE ENVIRONMENT (to determine the cause and link or reopen the bug)';
-export const NO_KNOWN_ISSUE_STR = '››› HAS NO KNOWN ISSUE - to determine the cause and link the bug';
+export const NO_KNOWN_ISSUE_STR =
+  '››› HAS NO KNOWN ISSUE - to determine the cause and link the bug';
 export const PASSED_TESTS_WITH_KNOWN_UNFIXED_ISSUES_STR =
   'PASSED (OR FLAKY) TESTS WITH KNOWN UNFIXED ISSUES ON THE ENVIRONMENT (to clarify and update the status of the linked bug)';
 
@@ -23,16 +24,25 @@ export function findRelatedBugsForTest(fileName, testTitle, knownBugs) {
     const currentTestTitle = testTitle;
 
     const relatedBugs = knownBugs.filter(
-      (bug) => bug.testFile === currentSpecFileName && bug.testTitle === currentTestTitle
+      (bug) =>
+        bug.testFile === currentSpecFileName &&
+        bug.testTitle === currentTestTitle
     );
     return relatedBugs;
   } catch (error) {
-    console.error(`Error while filtering known bugs for the current test: ${error.message}`);
+    console.error(
+      `Error while filtering known bugs for the current test: ${error.message}`
+    );
   }
 }
 
 // Find if the current test has known bugs unfixed in the current environment
-export function findRelatedUnfixedBugsForTest(fileName, testTitle, knownBugs, currentENV) {
+export function findRelatedUnfixedBugsForTest(
+  fileName,
+  testTitle,
+  knownBugs,
+  currentENV
+) {
   try {
     // Current spec file name, test title
     const currentSpecFileName = getFileName(fileName);
@@ -40,7 +50,9 @@ export function findRelatedUnfixedBugsForTest(fileName, testTitle, knownBugs, cu
 
     const relatedUnfixedBugs = knownBugs.filter(
       (bug) =>
-        bug.testFile === currentSpecFileName && bug.testTitle === currentTestTitle && bug.status[currentENV] !== 'FIXED'
+        bug.testFile === currentSpecFileName &&
+        bug.testTitle === currentTestTitle &&
+        bug.status[currentENV] !== 'FIXED'
     );
     return relatedUnfixedBugs;
   } catch (error) {
@@ -62,29 +74,53 @@ export function sortKnownIssues(
   try {
     // Add header to the List of the tests with known unfixed issues on the current environment
     let knownUnfixedIssues =
-      testStatus === 'passed' ? [`${PASSED_STR} ${currentTestPath}\n`] : [`${FAILED_STR} ${currentTestPath}\n`];
+      testStatus === 'passed'
+        ? [`${PASSED_STR} ${currentTestPath}\n`]
+        : [`${FAILED_STR} ${currentTestPath}\n`];
     // Add header to the List of the tests with known fixed issues on the current environment
     let knownFixedIssues =
-      testStatus === 'passed' ? [`${PASSED_STR} ${currentTestPath}\n`] : [`${FAILED_STR} ${currentTestPath}\n`];
+      testStatus === 'passed'
+        ? [`${PASSED_STR} ${currentTestPath}\n`]
+        : [`${FAILED_STR} ${currentTestPath}\n`];
 
     // Add the bug data to the list of known fixed and unfixed issues
-    const knownIssues = addBugData(relatedBugs, currentENV, knownUnfixedIssues, knownFixedIssues);
+    const knownIssues = addBugData(
+      relatedBugs,
+      currentENV,
+      knownUnfixedIssues,
+      knownFixedIssues
+    );
     knownUnfixedIssues = knownIssues.unfixedIssues;
     knownFixedIssues = knownIssues.fixedIssues;
 
     // List of the known unfixed issues for the test
-    let listKnownUnfixedIssues = [...finalListKnownUnfixedIssues, ...checkIfKnownIssuesEmpty(knownUnfixedIssues)];
+    let listKnownUnfixedIssues = [
+      ...finalListKnownUnfixedIssues,
+      ...checkIfKnownIssuesEmpty(knownUnfixedIssues),
+    ];
     // List of the known fixed issues for the test
     let listKnownFixedIssues =
-      testStatus !== 'passed' ? [...finalListKnownFixedIssues, ...checkIfKnownIssuesEmpty(knownFixedIssues)] : [];
+      testStatus !== 'passed'
+        ? [
+            ...finalListKnownFixedIssues,
+            ...checkIfKnownIssuesEmpty(knownFixedIssues),
+          ]
+        : [];
     return { listKnownUnfixedIssues, listKnownFixedIssues };
   } catch (error) {
-    console.error(`Error while collecting the list of the tests with known fixed and unfixed issues: ${error.message}`);
+    console.error(
+      `Error while collecting the list of the tests with known fixed and unfixed issues: ${error.message}`
+    );
   }
 }
 
 // Add the bug data to the list of known fixed and unfixed issues
-export function addBugData(relatedBugs, currentENV, knownUnfixedIssues, knownFixedIssues) {
+export function addBugData(
+  relatedBugs,
+  currentENV,
+  knownUnfixedIssues,
+  knownFixedIssues
+) {
   try {
     let unfixedIssues = knownUnfixedIssues;
     let fixedIssues = knownFixedIssues;
@@ -101,7 +137,9 @@ export function addBugData(relatedBugs, currentENV, knownUnfixedIssues, knownFix
     }
     return { unfixedIssues, fixedIssues };
   } catch (error) {
-    console.error(`Error while adding the bug data to the list of known fixed and unfixed issues: ${error.message}`);
+    console.error(
+      `Error while adding the bug data to the list of known fixed and unfixed issues: ${error.message}`
+    );
   }
 }
 
@@ -134,6 +172,8 @@ export function checkIfKnownIssuesEmpty(knownIssues) {
     }
     return allKnownIssues;
   } catch (error) {
-    console.error(`Error while updating the list of the tests with known issues: ${error.message}`);
+    console.error(
+      `Error while updating the list of the tests with known issues: ${error.message}`
+    );
   }
 }

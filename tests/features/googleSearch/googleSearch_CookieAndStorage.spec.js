@@ -16,25 +16,31 @@ test.describe(`Google Search results: Cookies and storage`, () => {
   let googleSearchPage; // Page object instance
 
   // Navigate to Home page and reject all Cookies
-  test.beforeEach('Navigate to Home page and reject all Cookies', async ({ sharedContext }, testInfo) => {
-    if (testInfo.expectedStatus !== 'skipped') {
-      page = await sharedContext.newPage();
-      const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
-      expectedLocalStorageKeys = isMobile ? expectedLocalStorageKeysData.mobile : expectedLocalStorageKeysData.desktop; // expectedLocalStorageKeys for mobile and for desktop
-      googleSearchPage = new GoogleSearchPage(page, isMobile);
-      await googleSearchPage.navigateAndRejectCookies();
+  test.beforeEach(
+    'Navigate to Home page and reject all Cookies',
+    async ({ sharedContext }, testInfo) => {
+      if (testInfo.expectedStatus !== 'skipped') {
+        page = await sharedContext.newPage();
+        const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
+        expectedLocalStorageKeys = isMobile
+          ? expectedLocalStorageKeysData.mobile
+          : expectedLocalStorageKeysData.desktop; // expectedLocalStorageKeys for mobile and for desktop
+        googleSearchPage = new GoogleSearchPage(page, isMobile);
+        await googleSearchPage.navigateAndRejectCookies();
+      }
     }
-  });
+  );
 
   test(`TEST-17: Check local storage content @results @storage`, async ({}) => {
     // Search for query
     await googleSearchPage.searchForQueryByEnter(query);
     // Check that all expected keys included to the Local storage
-    let checkIfAllLocalStorageKeysExist = await googleSearchPage.checkIfAllKeysExist(
-      googleSearchPage.getLocalStorageItemsByKeys,
-      page,
-      expectedLocalStorageKeys
-    );
+    let checkIfAllLocalStorageKeysExist =
+      await googleSearchPage.checkIfAllKeysExist(
+        googleSearchPage.getLocalStorageItemsByKeys,
+        page,
+        expectedLocalStorageKeys
+      );
 
     expect(
       checkIfAllLocalStorageKeysExist.success,
@@ -44,11 +50,15 @@ test.describe(`Google Search results: Cookies and storage`, () => {
     ).toBe(true);
 
     // Check that all Local storage values are not empty
-    let localStorageData = await googleSearchPage.getLocalStorageItemsByKeys(page, expectedLocalStorageKeys);
-    let checkIfAllLocalStorageValuesNotEmpty = await googleSearchPage.checkIfAllStorageValuesNotEmpty(
-      localStorageData,
+    let localStorageData = await googleSearchPage.getLocalStorageItemsByKeys(
+      page,
       expectedLocalStorageKeys
     );
+    let checkIfAllLocalStorageValuesNotEmpty =
+      await googleSearchPage.checkIfAllStorageValuesNotEmpty(
+        localStorageData,
+        expectedLocalStorageKeys
+      );
 
     expect(
       checkIfAllLocalStorageValuesNotEmpty.success,
@@ -62,11 +72,12 @@ test.describe(`Google Search results: Cookies and storage`, () => {
     // Search for query
     await googleSearchPage.searchForQueryByEnter(query);
     // Check that all expected keys included to the Session storage
-    let checkIfAllSessionStorageKeysExist = await googleSearchPage.checkIfAllKeysExist(
-      googleSearchPage.getSessionStorageItemsByKeys,
-      page,
-      expectedSessionStorageKeys
-    );
+    let checkIfAllSessionStorageKeysExist =
+      await googleSearchPage.checkIfAllKeysExist(
+        googleSearchPage.getSessionStorageItemsByKeys,
+        page,
+        expectedSessionStorageKeys
+      );
 
     expect(
       checkIfAllSessionStorageKeysExist.success,
@@ -78,16 +89,23 @@ test.describe(`Google Search results: Cookies and storage`, () => {
     // Check if the search request value stored in the session storage
     const sessionStorageData = await googleSearchPage.getSessionStorage();
     const searchRequest = '/search?q=' + query;
-    const isSearchRequestStoredInSession = googleSearchPage.checkIfValueExists(sessionStorageData, searchRequest);
+    const isSearchRequestStoredInSession = googleSearchPage.checkIfValueExists(
+      sessionStorageData,
+      searchRequest
+    );
 
-    expect(isSearchRequestStoredInSession, `Search request value is not stored in the session storage`).toBe(true);
+    expect(
+      isSearchRequestStoredInSession,
+      `Search request value is not stored in the session storage`
+    ).toBe(true);
 
     // Check that all Session storage values are not empty
     const sessionStoragekeys = Object.keys(sessionStorageData);
-    let checkIfAllSessionStorageValuesNotEmpty = await googleSearchPage.checkIfAllStorageValuesNotEmpty(
-      sessionStoragekeys,
-      expectedSessionStorageKeys
-    );
+    let checkIfAllSessionStorageValuesNotEmpty =
+      await googleSearchPage.checkIfAllStorageValuesNotEmpty(
+        sessionStoragekeys,
+        expectedSessionStorageKeys
+      );
 
     expect(
       checkIfAllSessionStorageValuesNotEmpty.success,
@@ -103,7 +121,10 @@ test.describe(`Google Search results: Cookies and storage`, () => {
     // Check that all expected names included to the cookies
     const cookies = await googleSearchPage.getCookies();
     const cookieNames = cookies.map((cookie) => cookie.name);
-    let checkResult = googleSearchPage.checkIfAllItemsInArray(cookieNames, expectedCookiesNames);
+    let checkResult = googleSearchPage.checkIfAllItemsInArray(
+      cookieNames,
+      expectedCookiesNames
+    );
 
     expect(
       checkResult.hasAllItems,
@@ -111,7 +132,11 @@ test.describe(`Google Search results: Cookies and storage`, () => {
     ).toBe(true);
 
     // Check that all cookies have non-empty values
-    const cookiesValuesNotEmpty = cookies.every((cookie) => cookie.value !== '');
-    expect(cookiesValuesNotEmpty, `At least 1 cookie value is empty`).toBe(true);
+    const cookiesValuesNotEmpty = cookies.every(
+      (cookie) => cookie.value !== ''
+    );
+    expect(cookiesValuesNotEmpty, `At least 1 cookie value is empty`).toBe(
+      true
+    );
   });
 });

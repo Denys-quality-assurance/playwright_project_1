@@ -25,8 +25,14 @@ test.describe(`Google Custom Search Engine: Search results testing for '${query}
     await googleCSEPage.searchForQueryByEnter(query, googleCSEPage.frame);
 
     // Check if each search result actually contains the query in its text
-    const searchResults = await googleCSEPage.getSearchResultElements(googleCSEPage.frame);
-    const checkQueryResults = await googleCSEPage.checkIfAllSearchResultsContainQuery(searchResults, query);
+    const searchResults = await googleCSEPage.getSearchResultElements(
+      googleCSEPage.frame
+    );
+    const checkQueryResults =
+      await googleCSEPage.checkIfAllSearchResultsContainQuery(
+        searchResults,
+        query
+      );
     const errorMessage = `Some search results do not contain the '${
       checkQueryResults.failedQuery
     }' query.\nText of the results:\n\n${checkQueryResults.failedResultText.join('\n----------------------\n\n')}'`;
@@ -38,9 +44,12 @@ test.describe(`Google Custom Search Engine: Search results testing for '${query}
     await googleCSEPage.searchForQueryByEnter(query, googleCSEPage.frame);
 
     // Checking if the search results page contains 10 results on 1 page for the query
-    const searchResults = await googleCSEPage.getSearchResultElements(googleCSEPage.frame);
-    expect(searchResults.length, `Search results page doesn't contain 10 results on 1 page for '${query}' query`).toBe(
-      10
+    const searchResults = await googleCSEPage.getSearchResultElements(
+      googleCSEPage.frame
     );
+    expect(
+      searchResults.length,
+      `Search results page doesn't contain 10 results on 1 page for '${query}' query`
+    ).toBe(10);
   });
 });

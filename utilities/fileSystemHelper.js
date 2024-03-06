@@ -57,7 +57,9 @@ export function getTempDirPath() {
     const tmpDir = os.tmpdir();
     return tmpDir;
   } catch (error) {
-    console.error(`Error while getting the path to the temporaty directory: ${error.message}`);
+    console.error(
+      `Error while getting the path to the temporaty directory: ${error.message}`
+    );
   }
 }
 
@@ -70,7 +72,9 @@ export function getTempFilePath(fileName) {
     const filePath = path.join(tmpDir, fileName);
     return filePath;
   } catch (error) {
-    console.error(`Error while getting the path to the temporaty file: ${error.message}`);
+    console.error(
+      `Error while getting the path to the temporaty file: ${error.message}`
+    );
   }
 }
 
@@ -84,11 +88,18 @@ export async function downloadImageFromUrlToTempDir(url, testInfo) {
           response.statusCode >= 300 ||
           !/^image\//.test(response.headers['content-type'])
         ) {
-          reject(new Error(`Failed to download image from ${url}, status code: ${response.statusCode}`));
+          reject(
+            new Error(
+              `Failed to download image from ${url}, status code: ${response.statusCode}`
+            )
+          );
           return;
         }
         // Path to a new temp file
-        const fileName = createUniqueFileName(testInfo, 'downloaded_picture.jpg');
+        const fileName = createUniqueFileName(
+          testInfo,
+          'downloaded_picture.jpg'
+        );
         const filePath = getTempFilePath(fileName);
 
         const fileStream = fs.createWriteStream(filePath);
@@ -96,7 +107,9 @@ export async function downloadImageFromUrlToTempDir(url, testInfo) {
         // Cleanup function to delete file and reject promise
         function cleanupAndReject(error) {
           fs.unlink(filePath, () => {}); // deletes the file if any error occurs
-          console.error(`Error while deleting file after a previous error: ${error.message}`);
+          console.error(
+            `Error while deleting file after a previous error: ${error.message}`
+          );
           reject(error); // Promise is rejected
         }
 
@@ -150,7 +163,9 @@ export async function readFile(filePath) {
     const fileBuffer = await readFilePromise(filePath);
     return fileBuffer;
   } catch (error) {
-    console.error(`Error while reading the file asynchronously: ${error.message}`);
+    console.error(
+      `Error while reading the file asynchronously: ${error.message}`
+    );
   }
 }
 
@@ -159,7 +174,9 @@ export function readFileSync(filePath) {
   try {
     return fs.readFileSync(filePath);
   } catch (error) {
-    console.error(`Error while reading the file synchronously: ${error.message}`);
+    console.error(
+      `Error while reading the file synchronously: ${error.message}`
+    );
   }
 }
 
@@ -174,7 +191,11 @@ export async function writeFile(filePath, data) {
 }
 
 // Compare the actual screenshot against the expected baseline Logo, attach results to the report, delete temporary files
-export async function getMismatchedPixelsCount(actualScreenshotPath, testInfo, sharedContext) {
+export async function getMismatchedPixelsCount(
+  actualScreenshotPath,
+  testInfo,
+  sharedContext
+) {
   try {
     // Get browser type
     const defaultBrowserType = testInfo.project.use.defaultBrowserType;
@@ -185,12 +206,17 @@ export async function getMismatchedPixelsCount(actualScreenshotPath, testInfo, s
       var expectedBaselinePath =
         './tests/test-data/googleSearch/baseline-images/baseline_homepage_logo_Webkit_Mobile.png';
     } else {
-      var expectedBaselinePath = './tests/test-data/googleSearch/baseline-images/baseline_homepage_logo.png';
+      var expectedBaselinePath =
+        './tests/test-data/googleSearch/baseline-images/baseline_homepage_logo.png';
     }
 
     // Convert binaris into Buffers, transform Buffers into pixel data for direct comparison
-    const expectedBaseline = PNG.sync.read(fs.readFileSync(expectedBaselinePath));
-    const actualScreenshotOriginalSize = PNG.sync.read(fs.readFileSync(actualScreenshotPath));
+    const expectedBaseline = PNG.sync.read(
+      fs.readFileSync(expectedBaselinePath)
+    );
+    const actualScreenshotOriginalSize = PNG.sync.read(
+      fs.readFileSync(actualScreenshotPath)
+    );
 
     // Resize the screenshot if needed
     let actualScreenshot;
@@ -199,8 +225,11 @@ export async function getMismatchedPixelsCount(actualScreenshotPath, testInfo, s
       expectedBaseline.height !== actualScreenshotOriginalSize.height
     ) {
       // The sizes don't match. Resize the screenshot buffer.
-      const actualScreenshotOriginalBuffer = fs.readFileSync(actualScreenshotPath);
-      const resizedScreenshotBuffer = await sharp(actualScreenshotOriginalBuffer)
+      const actualScreenshotOriginalBuffer =
+        fs.readFileSync(actualScreenshotPath);
+      const resizedScreenshotBuffer = await sharp(
+        actualScreenshotOriginalBuffer
+      )
         .resize(expectedBaseline.width, expectedBaseline.height) // Resize to expectedBaseline dimensions
         .png()
         .toBuffer();
@@ -227,8 +256,14 @@ export async function getMismatchedPixelsCount(actualScreenshotPath, testInfo, s
       }
     );
     if (mismatchedPixelsCount > 0) {
-      const diffImageName = createUniqueFileName(testInfo, 'difference_between_basaline_and_actual_screenshot.png');
-      const diffImagePath = writeDataToFile(mismatchedPixelsDiff, diffImageName);
+      const diffImageName = createUniqueFileName(
+        testInfo,
+        'difference_between_basaline_and_actual_screenshot.png'
+      );
+      const diffImagePath = writeDataToFile(
+        mismatchedPixelsDiff,
+        diffImageName
+      );
 
       // Attach images to test report
       Promise.all([
@@ -244,7 +279,9 @@ export async function getMismatchedPixelsCount(actualScreenshotPath, testInfo, s
     deleteTempFile(actualScreenshotPath);
     return mismatchedPixelsCount;
   } catch (error) {
-    console.error(`Error while comparing actual screenshot against a baseline screenshot: ${error.message}`);
+    console.error(
+      `Error while comparing actual screenshot against a baseline screenshot: ${error.message}`
+    );
   }
 }
 
@@ -255,7 +292,9 @@ export function writeDataToFile(data, fileName) {
     data.pack().pipe(fs.createWriteStream(filePath));
     return filePath;
   } catch (error) {
-    console.error(`Error while writing the data into new file via stream: ${error.message}`);
+    console.error(
+      `Error while writing the data into new file via stream: ${error.message}`
+    );
   }
 }
 
@@ -267,7 +306,9 @@ export async function attachImage(testInfo, imagePath) {
       contentType: 'image/png',
     });
   } catch (error) {
-    console.error(`Error while attaching image to test report: ${error.message}`);
+    console.error(
+      `Error while attaching image to test report: ${error.message}`
+    );
   }
 }
 
@@ -276,6 +317,8 @@ export function getFileName(filePath) {
   try {
     return path.basename(filePath);
   } catch (error) {
-    console.error(`Error while getting the file name from the file path: ${error.message}`);
+    console.error(
+      `Error while getting the file name from the file path: ${error.message}`
+    );
   }
 }

@@ -1,7 +1,13 @@
 import basePage from './basePage';
-import { readFileSync, createUniqueFileName, getTempFilePath, writeFile } from '../../utilities/fileSystemHelper';
+import {
+  readFileSync,
+  createUniqueFileName,
+  getTempFilePath,
+  writeFile,
+} from '../../utilities/fileSystemHelper';
 
-const responseBodyForEmptyResultsMockPath = './tests/test-data/googleSearch/mocks/responseBodyForEmptyResults.html';
+const responseBodyForEmptyResultsMockPath =
+  './tests/test-data/googleSearch/mocks/responseBodyForEmptyResults.html';
 
 export default class GoogleSearchPage extends basePage {
   constructor(page, isMobile) {
@@ -33,19 +39,26 @@ export default class GoogleSearchPage extends basePage {
   async getSearchAutoSuggestionOptionElements() {
     try {
       await this.page.waitForSelector(this.selectors.autoSuggestionOption);
-      const searchAutoSuggestionOptionElements = await this.page.$$(this.selectors.autoSuggestionOption);
+      const searchAutoSuggestionOptionElements = await this.page.$$(
+        this.selectors.autoSuggestionOption
+      );
       return searchAutoSuggestionOptionElements;
     } catch (error) {
-      console.error(`Failed to get search auto suggestion options elements: ${error.message}`);
+      console.error(
+        `Failed to get search auto suggestion options elements: ${error.message}`
+      );
     }
   }
 
   // Get Search auto suggestions text
   async getSearchAutoSuggestionOptions() {
     try {
-      const searchAutoSuggestionOptionElements = await this.getSearchAutoSuggestionOptionElements();
+      const searchAutoSuggestionOptionElements =
+        await this.getSearchAutoSuggestionOptionElements();
       // Get text content from searchAutoSuggestionOptions
-      const searchAutoSuggestionOptionsText = await this.getTextContent(searchAutoSuggestionOptionElements);
+      const searchAutoSuggestionOptionsText = await this.getTextContent(
+        searchAutoSuggestionOptionElements
+      );
       return searchAutoSuggestionOptionsText;
     } catch (error) {
       console.error(`Failed to get search auto suggestions: ${error.message}`);
@@ -55,10 +68,15 @@ export default class GoogleSearchPage extends basePage {
   // Get the text of the message with the total number of results and the time taken to fetch the result
   async getResultsNumberAndTimeMessageText() {
     try {
-      await this.page.waitForSelector(this.selectors.resultsNumberAndTimeMessage);
-      const resultsNumberAndTimeMessageElement = await this.page.$(this.selectors.resultsNumberAndTimeMessage);
+      await this.page.waitForSelector(
+        this.selectors.resultsNumberAndTimeMessage
+      );
+      const resultsNumberAndTimeMessageElement = await this.page.$(
+        this.selectors.resultsNumberAndTimeMessage
+      );
       // Get text content from resultsNumberAndTimeMessageElement
-      const resultsNumberAndTimeMessageText = await resultsNumberAndTimeMessageElement.innerText();
+      const resultsNumberAndTimeMessageText =
+        await resultsNumberAndTimeMessageElement.innerText();
       return resultsNumberAndTimeMessageText;
     } catch (error) {
       console.error(
@@ -83,12 +101,17 @@ export default class GoogleSearchPage extends basePage {
       // return null if no matching element was found
       return null;
     } catch (error) {
-      console.error(`Failed to the 1st  element with expected query: ${error.message}`);
+      console.error(
+        `Failed to the 1st  element with expected query: ${error.message}`
+      );
     }
   }
 
   // Check if any auto-suggestion contains the expected approptiate option
-  async checkIfAnyAutoSuggestionOptionContainQuery(searchAutoSuggestionOptionsText, query) {
+  async checkIfAnyAutoSuggestionOptionContainQuery(
+    searchAutoSuggestionOptionsText,
+    query
+  ) {
     try {
       // Get all words from the query as an array
       const queryWords = query.split(' ');
@@ -101,7 +124,9 @@ export default class GoogleSearchPage extends basePage {
       }
       return false; // No option contains the query
     } catch (error) {
-      console.error(`Failed to check if any auto-suggestion option contains the query: ${error.message}`);
+      console.error(
+        `Failed to check if any auto-suggestion option contains the query: ${error.message}`
+      );
     }
   }
 
@@ -116,7 +141,9 @@ export default class GoogleSearchPage extends basePage {
       // Waiting for search result page to appear
       await this.page.waitForLoadState('networkidle');
     } catch (error) {
-      console.error(`Failed to search for query by clicking on search button: ${error.message}`);
+      console.error(
+        `Failed to search for query by clicking on search button: ${error.message}`
+      );
     }
   }
 
@@ -126,7 +153,9 @@ export default class GoogleSearchPage extends basePage {
       await this.navigateAndRejectCookies();
       await this.searchForQueryByEnter(query);
     } catch (error) {
-      console.error(`Failed to navigate to page, reject all Cookies and search for query: ${error.message}`);
+      console.error(
+        `Failed to navigate to page, reject all Cookies and search for query: ${error.message}`
+      );
     }
   }
 
@@ -134,19 +163,27 @@ export default class GoogleSearchPage extends basePage {
   async countQueryInBody(query) {
     try {
       const bodyText = await this.page.textContent('body');
-      return (bodyText.match(new RegExp(escapeRegexSpecialCharacters(query), 'g')) || []).length;
+      return (
+        bodyText.match(new RegExp(escapeRegexSpecialCharacters(query), 'g')) ||
+        []
+      ).length;
     } catch (error) {
-      console.error(`Failed to get the number of query instances in the page body: ${error.message}`);
+      console.error(
+        `Failed to get the number of query instances in the page body: ${error.message}`
+      );
     }
   }
 
   // Mock the search response with Empty Results
   async mockResponseWithEmptyResults(sharedContext, query) {
     try {
-      let responseBodyForEmptyResults = readFileSync(responseBodyForEmptyResultsMockPath);
+      let responseBodyForEmptyResults = readFileSync(
+        responseBodyForEmptyResultsMockPath
+      );
       // Replace 'Query' with the current query globally in the HTML
       responseBodyForEmptyResults = responseBodyForEmptyResults.toString();
-      const responseBodyForEmptyResultsCurrentQuery = responseBodyForEmptyResults.replace(/Query/g, query);
+      const responseBodyForEmptyResultsCurrentQuery =
+        responseBodyForEmptyResults.replace(/Query/g, query);
       await sharedContext.route('/search?q=**', (route, request) => {
         route.fulfill({
           status: 200,
@@ -155,7 +192,9 @@ export default class GoogleSearchPage extends basePage {
         });
       });
     } catch (error) {
-      console.error(`Failed to mock the search response with Empty Results: ${error.message}`);
+      console.error(
+        `Failed to mock the search response with Empty Results: ${error.message}`
+      );
     }
   }
 
@@ -163,10 +202,14 @@ export default class GoogleSearchPage extends basePage {
   async getSearchResultsDescriptionElements() {
     try {
       await this.page.waitForSelector(this.selectors.webPageDescription);
-      const searchResultsDescriptionElements = await this.page.$$(this.selectors.webPageDescription);
+      const searchResultsDescriptionElements = await this.page.$$(
+        this.selectors.webPageDescription
+      );
       return searchResultsDescriptionElements;
     } catch (error) {
-      console.error(`Failed to get search results descriptions: ${error.message}`);
+      console.error(
+        `Failed to get search results descriptions: ${error.message}`
+      );
     }
   }
 
@@ -174,12 +217,18 @@ export default class GoogleSearchPage extends basePage {
   async getSearchResultsWebPagesTitles() {
     try {
       await this.page.waitForSelector(this.selectors.webPageTitle);
-      const searchResultsWebPagesTitles = await this.page.$$(this.selectors.webPageTitle);
+      const searchResultsWebPagesTitles = await this.page.$$(
+        this.selectors.webPageTitle
+      );
       // Get text content from searchResultsWebPagesTitles
-      const searchResultsWebPagesTitlesText = await this.getTextContent(searchResultsWebPagesTitles);
+      const searchResultsWebPagesTitlesText = await this.getTextContent(
+        searchResultsWebPagesTitles
+      );
       return searchResultsWebPagesTitlesText;
     } catch (error) {
-      console.error(`Failed to get titles of the web pagep in the search results: ${error.message}`);
+      console.error(
+        `Failed to get titles of the web pagep in the search results: ${error.message}`
+      );
     }
   }
 
@@ -187,7 +236,9 @@ export default class GoogleSearchPage extends basePage {
   async getCorrectedQueryFormMessageText() {
     try {
       await this.page.waitForSelector(this.selectors.correctedQuery);
-      const correctedQueryElement = await this.page.$(this.selectors.correctedQuery);
+      const correctedQueryElement = await this.page.$(
+        this.selectors.correctedQuery
+      );
       // Get text content from correctedQueryElement
       const correctedQueryElementText = await correctedQueryElement.innerText();
       return correctedQueryElementText;
@@ -202,15 +253,22 @@ export default class GoogleSearchPage extends basePage {
   async getSearchResultsWebPagesUrlElements() {
     try {
       await this.page.waitForSelector(this.selectors.webPageUrl);
-      const searchResultsWebPagesUrlElements = await this.page.$$(this.selectors.webPageUrl);
+      const searchResultsWebPagesUrlElements = await this.page.$$(
+        this.selectors.webPageUrl
+      );
       return searchResultsWebPagesUrlElements;
     } catch (error) {
-      console.error(`Failed to get URLs of the web pagep in the search results: ${error.message}`);
+      console.error(
+        `Failed to get URLs of the web pagep in the search results: ${error.message}`
+      );
     }
   }
 
   // Check if all search results contain highlighted query in descriptions of the web pages
-  async checkIfAllSearchResultsContainHighlightedQuery(searchResultsDescriptions, query) {
+  async checkIfAllSearchResultsContainHighlightedQuery(
+    searchResultsDescriptions,
+    query
+  ) {
     try {
       // Get all words from the query as an array
       const queryWords = query.split(' ');
@@ -221,13 +279,20 @@ export default class GoogleSearchPage extends basePage {
         const descriptionHTML = await description.innerHTML();
 
         // Check if the description contains any query word highlighted
-        const hasHighlightedWords = this.hasHighlightedWords(descriptionHTML, queryWords);
+        const hasHighlightedWords = this.hasHighlightedWords(
+          descriptionHTML,
+          queryWords
+        );
         if (!hasHighlightedWords) {
           failedResults.push(descriptionHTML);
         }
       }
       // success is try if no items in failedResults
-      return { success: failedResults.length === 0, failedDescriptionHTML: failedResults, failedQuery: query };
+      return {
+        success: failedResults.length === 0,
+        failedDescriptionHTML: failedResults,
+        failedQuery: query,
+      };
     } catch (error) {
       console.error(
         `Failed to check if all search results contain highlighted query in descriptions of the web pages: ${error.message}`
@@ -249,7 +314,9 @@ export default class GoogleSearchPage extends basePage {
 
       if (
         highlightedParts.some((part) =>
-          queryWords.some((queryWord) => new RegExp(escapeRegexSpecialCharacters(queryWord), 'i').test(part))
+          queryWords.some((queryWord) =>
+            new RegExp(escapeRegexSpecialCharacters(queryWord), 'i').test(part)
+          )
         )
       ) {
         return true;
@@ -268,7 +335,9 @@ export default class GoogleSearchPage extends basePage {
       }
       return results;
     } catch (error) {
-      console.error(`Failed to get href attributes from array of objects: ${error.message}`);
+      console.error(
+        `Failed to get href attributes from array of objects: ${error.message}`
+      );
     }
   }
 
@@ -294,14 +363,18 @@ export default class GoogleSearchPage extends basePage {
       }, keys);
       return localStorageItemsByKeys;
     } catch (error) {
-      console.error(`Failed to get local storage items by keys: ${error.message}`);
+      console.error(
+        `Failed to get local storage items by keys: ${error.message}`
+      );
     }
   }
 
   // Get session storage
   async getSessionStorage() {
     try {
-      const sessionStorageData = await this.page.evaluate(() => window.sessionStorage);
+      const sessionStorageData = await this.page.evaluate(
+        () => window.sessionStorage
+      );
       return sessionStorageData;
     } catch (error) {
       console.error(`Failed to get session storage: ${error.message}`);
@@ -320,7 +393,9 @@ export default class GoogleSearchPage extends basePage {
       }, keys);
       return sessionStorageItemsByKeys;
     } catch (error) {
-      console.error(`Failed to get session storage items by keys: ${error.message}`);
+      console.error(
+        `Failed to get session storage items by keys: ${error.message}`
+      );
     }
   }
 
@@ -341,7 +416,9 @@ export default class GoogleSearchPage extends basePage {
       // success is try if no items in failedResults
       return { success: missingKeys.length === 0, missingKeys: missingKeys };
     } catch (error) {
-      console.error(`Failed to check if all expected keys exist in the object: ${error.message}`);
+      console.error(
+        `Failed to check if all expected keys exist in the object: ${error.message}`
+      );
     }
   }
 
@@ -357,7 +434,9 @@ export default class GoogleSearchPage extends basePage {
       // success is try if no items in failedResults
       return { success: failedKeys.length === 0, failedKeys: failedKeys };
     } catch (error) {
-      console.error(`Failed to check if all storage values are not empty: ${error.message}`);
+      console.error(
+        `Failed to check if all storage values are not empty: ${error.message}`
+      );
     }
   }
 
@@ -365,9 +444,13 @@ export default class GoogleSearchPage extends basePage {
   checkIfValueExists(object, part) {
     try {
       const values = Object.values(object);
-      return values.some((value) => new RegExp(escapeRegexSpecialCharacters(part), 'i').test(value));
+      return values.some((value) =>
+        new RegExp(escapeRegexSpecialCharacters(part), 'i').test(value)
+      );
     } catch (error) {
-      console.error(`Failed to check if the object includes the part among its values: ${error.message}`);
+      console.error(
+        `Failed to check if the object includes the part among its values: ${error.message}`
+      );
     }
   }
 
@@ -383,13 +466,17 @@ export default class GoogleSearchPage extends basePage {
   // Check if all expected items included to the array
   checkIfAllItemsInArray(array, expectedItems) {
     try {
-      const missingItems = expectedItems.filter((item) => !array.includes(item));
+      const missingItems = expectedItems.filter(
+        (item) => !array.includes(item)
+      );
       return {
         hasAllItems: missingItems.length === 0,
         missingItems: missingItems,
       };
     } catch (error) {
-      console.error(`Failed to check if all expected items included to the array: ${error.message}`);
+      console.error(
+        `Failed to check if all expected items included to the array: ${error.message}`
+      );
     }
   }
 
@@ -426,23 +513,37 @@ export default class GoogleSearchPage extends basePage {
       await this.page.waitForSelector(this.selectors.googleLogo);
       const elementHandle = await this.page.$(this.selectors.googleLogo);
       const screenshotBuffer = await elementHandle.screenshot();
-      const screenshotPath = getTempFilePath(createUniqueFileName(testInfo, `logo_screenshot.png`));
+      const screenshotPath = getTempFilePath(
+        createUniqueFileName(testInfo, `logo_screenshot.png`)
+      );
       await writeFile(screenshotPath, screenshotBuffer);
       return screenshotPath;
     } catch (error) {
-      console.error(`Failed to make and save a screenshot of the Google Logo: ${error.message}`);
+      console.error(
+        `Failed to make and save a screenshot of the Google Logo: ${error.message}`
+      );
     }
   }
 
   // Get performance metrics for Search results
-  async getPerformanceMetricsForSearchResults(query, testInfo, defaultBrowserType) {
+  async getPerformanceMetricsForSearchResults(
+    query,
+    testInfo,
+    defaultBrowserType
+  ) {
     try {
       if (defaultBrowserType == 'chromium') {
         // Performance API: Start performance tracing
         var currentBrowser = this.page.context().browser();
-        var tracesName = createUniqueFileName(testInfo, `${query}_perfTraces.json`);
+        var tracesName = createUniqueFileName(
+          testInfo,
+          `${query}_perfTraces.json`
+        );
         var tracesPath = getTempFilePath(tracesName);
-        await currentBrowser.startTracing(this.page, { path: tracesPath, screenshots: true });
+        await currentBrowser.startTracing(this.page, {
+          path: tracesPath,
+          screenshots: true,
+        });
       }
 
       // Make Search action
@@ -462,7 +563,9 @@ export default class GoogleSearchPage extends basePage {
       }
 
       // Wait for search Results are visible
-      await this.page.waitForSelector(this.selectors.searchResult, { state: 'visible' });
+      await this.page.waitForSelector(this.selectors.searchResult, {
+        state: 'visible',
+      });
 
       //Performance.mark API: Stop performance tracking
       await this.page.evaluate(() => window.performance.mark('Perf:Ended'));
@@ -486,7 +589,9 @@ export default class GoogleSearchPage extends basePage {
 
         for (let metricBefore of metricsBefore.metrics) {
           // find corresponding metricAfter
-          const metricAfter = metricsAfter.metrics.find((metric) => metric.name === metricBefore.name);
+          const metricAfter = metricsAfter.metrics.find(
+            (metric) => metric.name === metricBefore.name
+          );
 
           // prepare a new object
           if (metricAfter) {
@@ -512,21 +617,35 @@ export default class GoogleSearchPage extends basePage {
         }
 
         // Chrome DevTool Protocol API: Attach metricsDiff to the test report
-        var metricsDiffDataPath = await this.attachJSONToTest(testInfo, metricsDiff, `${query}_metricsDiffDataName`);
+        var metricsDiffDataPath = await this.attachJSONToTest(
+          testInfo,
+          metricsDiff,
+          `${query}_metricsDiffDataName`
+        );
       }
 
       // Metrics calculation
       // Performance.mark API: Performance measure
-      await this.page.evaluate(() => window.performance.measure('action', 'Perf:Started', 'Perf:Ended'));
+      await this.page.evaluate(() =>
+        window.performance.measure('action', 'Perf:Started', 'Perf:Ended')
+      );
 
       // To get all performance marks
-      const allMarksInfo = await this.page.evaluate(() => window.performance.getEntriesByType('mark'));
+      const allMarksInfo = await this.page.evaluate(() =>
+        window.performance.getEntriesByType('mark')
+      );
 
       // Performance.mark API: Attach allMarksInfo to the test report
-      const marksInfoDataPath = await this.attachJSONToTest(testInfo, allMarksInfo, `${query}_marksInfoDataName`);
+      const marksInfoDataPath = await this.attachJSONToTest(
+        testInfo,
+        allMarksInfo,
+        `${query}_marksInfoDataName`
+      );
 
       // Performance.mark API: To get all performance measures
-      const allMeasuresInfo = await this.page.evaluate(() => window.performance.getEntriesByName('action'));
+      const allMeasuresInfo = await this.page.evaluate(() =>
+        window.performance.getEntriesByName('action')
+      );
 
       // Performance.mark API: Duration of the action
       const actionDuration = allMeasuresInfo[0]['duration'];
@@ -554,7 +673,9 @@ export default class GoogleSearchPage extends basePage {
 
       return { metrics, actionDuration };
     } catch (error) {
-      console.error(`Failed to get performance metrics for Search results: ${error.message}`);
+      console.error(
+        `Failed to get performance metrics for Search results: ${error.message}`
+      );
     }
   }
 
@@ -575,7 +696,9 @@ export default class GoogleSearchPage extends basePage {
         await this.page.keyboard.press('Tab'); // Move focus to the next focusable element
       }
     } catch (error) {
-      console.error(`Failed to navigate via Tab to select the item number N: ${error.message}`);
+      console.error(
+        `Failed to navigate via Tab to select the item number N: ${error.message}`
+      );
     }
   }
 
@@ -586,7 +709,9 @@ export default class GoogleSearchPage extends basePage {
         await this.page.keyboard.press('Tab'); // Move focus to the next focusable element
       }
     } catch (error) {
-      console.error(`Failed to navigate via Tab to select the item number N: ${error.message}`);
+      console.error(
+        `Failed to navigate via Tab to select the item number N: ${error.message}`
+      );
     }
   }
 
@@ -597,7 +722,9 @@ export default class GoogleSearchPage extends basePage {
         await this.page.keyboard.press('Shift+Tab'); // Move focus to the next focusable element
       }
     } catch (error) {
-      console.error(`Failed to navigate via Shift+Tab to select the item number N: ${error.message}`);
+      console.error(
+        `Failed to navigate via Shift+Tab to select the item number N: ${error.message}`
+      );
     }
   }
 
@@ -607,7 +734,9 @@ export default class GoogleSearchPage extends basePage {
       // Fetch the class of the active element
       return await this.page.evaluate(() => document.activeElement.className);
     } catch (error) {
-      console.error(`Failed to get class of the active (focused) element: ${error.message}`);
+      console.error(
+        `Failed to get class of the active (focused) element: ${error.message}`
+      );
     }
   }
 
@@ -620,7 +749,9 @@ export default class GoogleSearchPage extends basePage {
       const elementCentre = elementBox.x + elementBox.width / 2;
       return elementCentre;
     } catch (error) {
-      console.error(`Failed to horizontal centre of the element by the selector: ${error.message}`);
+      console.error(
+        `Failed to horizontal centre of the element by the selector: ${error.message}`
+      );
     }
   }
 }
