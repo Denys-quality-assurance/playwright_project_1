@@ -258,20 +258,6 @@ export default class GoogleSearchPage extends basePage {
     return false;
   }
 
-  // Get text content from array of objects
-  async getTextContent(objects) {
-    try {
-      let results = [];
-      for (let element of objects) {
-        const text = await element.innerText();
-        results.push(text);
-      }
-      return results;
-    } catch (error) {
-      console.error(`Failed to get text content from array of objects: ${error.message}`);
-    }
-  }
-
   // Get href attributes from array of objects
   async getHrefAttribute(objects) {
     try {

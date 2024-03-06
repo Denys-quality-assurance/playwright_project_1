@@ -19,18 +19,6 @@ export default class GoogleSearchPicturesPage extends basePage {
     };
   }
 
-  // Reject all Cookies if it's needed
-  async rejectCookiesIfAsked() {
-    if (await this.page.isVisible(this.selectors.cookiesModal)) {
-      try {
-        await this.clickOrTap(this.selectors.rejectAllCookiesButton);
-        await this.page.waitForSelector(this.selectors.cookiesModal, { state: 'hidden' });
-      } catch (error) {
-        console.error(`Failed to reject all Cookies: ${error.message}`);
-      }
-    }
-  }
-
   // Navigate to Home page, reject all Cookies, navigate to Pictures and search for query
   async navigateAndSearchPictures(query) {
     try {
@@ -106,20 +94,6 @@ export default class GoogleSearchPicturesPage extends basePage {
       return searchByPictureResultElements;
     } catch (error) {
       console.error(`Failed to get search by picture results: ${error.message}`);
-    }
-  }
-
-  // Get text content from array of objects
-  async getTextContent(objects) {
-    try {
-      let results = [];
-      for (let i = 0; i < objects.length; i++) {
-        const text = await objects[i].innerText();
-        results.push(text);
-      }
-      return results;
-    } catch (error) {
-      console.error(`Failed to get text content from array of objects: ${error.message}`);
     }
   }
 
