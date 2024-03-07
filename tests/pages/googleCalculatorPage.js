@@ -94,9 +94,10 @@ export default class GoogleCalculatorPage extends basePage {
     try {
       await this.page.waitForSelector(this.selectors.enteredDataArea);
       await this.page.waitForSelector(this.selectors.resultArea);
-      const resultAreaElement = await this.page.$(this.selectors.resultArea);
       // Get text content from resultArea
-      const resultAreaText = await resultAreaElement.innerText();
+      const resultAreaText = await this.page
+        .locator(this.selectors.resultArea)
+        .innerText();
       return resultAreaText;
     } catch (error) {
       console.error(`Failed to get the text of the result: ${error.message}`);
