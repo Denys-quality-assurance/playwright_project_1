@@ -13,6 +13,7 @@ export default class GoogleCalculatorPage extends basePage {
       equalsButton: `.XRsWPe.UUhRt[role="button"][aria-label="equals"]`, // "Equals" button of the calculator
       digitsAndDotButtons: `.XRsWPe.AOvabd[role="button"]`, // One of digits or dot buttons of the calculator
       resultArea: `#cwos`, // Area of the operations result of the calculator
+      enteredDataArea: `.XH1CIc .vUGUtc`, // Area of the entered data
     };
   }
 
@@ -91,6 +92,7 @@ export default class GoogleCalculatorPage extends basePage {
   // Get the text of the result
   async getResultText() {
     try {
+      await this.page.waitForSelector(this.selectors.enteredDataArea);
       await this.page.waitForSelector(this.selectors.resultArea);
       const resultAreaElement = await this.page.$(this.selectors.resultArea);
       // Get text content from resultArea
