@@ -91,7 +91,7 @@ export default class basePage {
       // Submit the query by pressing enter
       await pageOrFrame.press(this.selectors.searchInputTextArea, 'Enter');
       // Waiting for search result page to appear
-      await pageOrFrame.waitForLoadState('networkidle');
+      await pageOrFrame.waitForNavigation();
     } catch (error) {
       console.error(
         `Failed to search for query by pressing enter: ${error.message}`
