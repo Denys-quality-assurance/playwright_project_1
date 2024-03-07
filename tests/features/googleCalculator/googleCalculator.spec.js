@@ -53,8 +53,6 @@ test.describe(`Google calculator`, () => {
       await googleCalculatorPage.clickOrTap(
         googleCalculatorPage.selectors.equalsButton
       );
-      // Waiting for result to appear
-      await page.waitForLoadState('networkidle');
       // Get the text of the result
       const resultAreaText = await googleCalculatorPage.getResultText();
       // Caclucate result of the math operation with the numbers
