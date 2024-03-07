@@ -56,8 +56,8 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
     await googleSearchPicturesPage.uploadPictureToSearch(imagePath);
 
     // Get search results
-    const searchResults =
-      await googleSearchPicturesPage.getSearchByPictureResultElements();
+    const searchResultsLocator =
+      await googleSearchPicturesPage.getSearchByPictureResultsLocator();
 
     // Delete the picture from PC
     deleteTempFile(imagePath);
@@ -65,7 +65,7 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
     // Check if any search result description contains the downloaded picture query
     const doesAnySearchResultContainsPictureQuery =
       await googleSearchPicturesPage.checkIfAnySearchResultContainsQuery(
-        searchResults,
+        searchResultsLocator,
         query
       );
     expect(

@@ -61,8 +61,6 @@ export default class GoogleSearchPicturesPage extends basePage {
         .locator(this.selectors.firstSearchResultText)
         .innerText();
 
-      console.log('pictureDescription', pictureDescription);
-
       // Click on the 1st search result to open picture preview
       const picturePreview = await this.openPicturePreview(
         this.selectors.firstSearchResult
@@ -102,13 +100,10 @@ export default class GoogleSearchPicturesPage extends basePage {
   }
 
   // Get Search by picture results
-  async getSearchByPictureResultElements() {
+  async getSearchByPictureResultsLocator() {
     try {
       await this.page.waitForSelector(this.selectors.searchByPictureResults);
-      const searchByPictureResultElements = await this.page.$$(
-        this.selectors.searchByPictureResults
-      );
-      return searchByPictureResultElements;
+      return this.page.locator(this.selectors.searchByPictureResults);
     } catch (error) {
       console.error(
         `Failed to get search by picture results: ${error.message}`
@@ -117,21 +112,24 @@ export default class GoogleSearchPicturesPage extends basePage {
   }
 
   // Check if any search result contains query
-  async checkIfAnySearchResultContainsQuery(searchResults, query) {
+  async checkIfAnySearchResultContainsQuery(searchResultsLocator, query) {
     try {
-      let result = false;
-      for (let searchResult of searchResults) {
+      // Collect all elements of search results
+      const allSearchResultElements = await searchResultsLocator.all();
+      // Case insensitive regex for the query
+      let queryRegex = new RegExp(escapeRegexSpecialCharacters(query), 'i'); // 'i' flag for case insensitive
+
+      for (let searchResult of allSearchResultElements) {
         // Get the text of each searchResult
         let resultText = await searchResult.innerText();
-        // Case insensitive regex for the query
-        let queryRegex = new RegExp(escapeRegexSpecialCharacters(query), 'i'); // 'i' flag for case insensitive
 
         // Check if the text contains query
         if (queryRegex.test(resultText)) {
-          result = true;
+          // Stop iteration if we found a match
+          return true;
         }
       }
-      return result;
+      return false;
     } catch (error) {
       console.error(
         `Failed to validate search results contain query: ${error.message}`
