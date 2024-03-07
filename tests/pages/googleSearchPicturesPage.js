@@ -11,9 +11,15 @@ export default class GoogleSearchPicturesPage extends basePage {
       picturesSearchButton: this.isMobile
         ? `[href*="/webhp"]` // Pictures Search button for mobile
         : `[href*="/imghp"]`, // Pictures Search button for desktop
-      firstSearchResult: `[data-ri="0"]`, // 1st result in the list of results
-      firstSearchResultText: `[data-ri="0"] >> .bytUYc`, // Text of the 1st result in the list of results
-      picturePriview: `[role="link"] img[src*="https"]`, // Preview of the picture in the result list
+      firstSearchResult: this.isMobile
+        ? `div.kb0PBd:first-of-type`
+        : `[data-ri="0"]`, // 1st result in the list of results
+      firstSearchResultText: this.isMobile
+        ? `div.kb0PBd:first-of-type >> .Q6A6Dc`
+        : `[data-ri="0"] >> .bytUYc`, // Text of the 1st result in the list of results
+      picturePreview: this.isMobile
+        ? `img.iPVvYb[src*="https"][role="button"]`
+        : `[role="link"] img[src*="https"]`, // Preview of the picture in the result list
       searchByPictureButton: this.isMobile
         ? `.r5jQRd[role="link"]`
         : `.NGBa0b[role="button"]`, // Search by uploaded picture button for mobile and for desktop
@@ -40,8 +46,8 @@ export default class GoogleSearchPicturesPage extends basePage {
   async openPicturePreview(picture) {
     try {
       await this.clickOrTap(picture);
-      await this.page.waitForSelector(this.selectors.picturePriview);
-      return this.page.$(this.selectors.picturePriview);
+      await this.page.waitForSelector(this.selectors.picturePreview);
+      return this.page.locator(this.selectors.picturePreview);
     } catch (error) {
       console.error(`Failed to open picture preview: ${error.message}`);
     }
@@ -51,19 +57,19 @@ export default class GoogleSearchPicturesPage extends basePage {
   async get1stPictureDescriptionAndDownload() {
     try {
       // Get text from the 1st search result
-      await this.page.waitForSelector(this.selectors.firstSearchResultText);
-      const pictureDescription = await this.page.$eval(
-        this.selectors.firstSearchResultText,
-        (el) => el.innerText
-      );
+      const pictureDescription = await this.page
+        .locator(this.selectors.firstSearchResultText)
+        .innerText();
+
+      console.log('pictureDescription', pictureDescription);
 
       // Click on the 1st search result to open picture preview
-      const picturePriview = await this.openPicturePreview(
+      const picturePreview = await this.openPicturePreview(
         this.selectors.firstSearchResult
       );
 
       // Get picture link of the preview
-      const imageUrl = await picturePriview.getAttribute('src');
+      const imageUrl = await picturePreview.getAttribute('src');
       return { pictureDescription, imageUrl };
     } catch (error) {
       console.error(
