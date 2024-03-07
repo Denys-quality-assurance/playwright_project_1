@@ -140,7 +140,7 @@ export default class GoogleSearchPage extends basePage {
       await this.page.waitForSelector(this.selectors.searchButton);
       await this.clickOrTap(this.selectors.searchButton);
       // Waiting for search result page to appear
-      await this.page.waitForLoadState('networkidle');
+      await this.page.waitForNavigation();
     } catch (error) {
       console.error(
         `Failed to search for query by clicking on search button: ${error.message}`
