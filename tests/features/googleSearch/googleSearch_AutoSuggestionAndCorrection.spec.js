@@ -99,12 +99,12 @@ test.describe(`Google Search results: Auto-suggestion and Correction`, () => {
       // Fill Search imput
       await googleSearchPage2.fillSearchInput(queryData.query);
       // Get Search auto suggestions
-      const autoSuggestionOptionElements =
-        await googleSearchPage2.getSearchAutoSuggestionOptionElements();
+      const autoSuggestionOptionsLocator =
+        await googleSearchPage2.getSearchAutoSuggestionOptionsLocator();
       // Get the 1st option element with expected query
       const elementsWithQuery =
         await googleSearchPage2.getFirstElementWithQuery(
-          autoSuggestionOptionElements,
+          autoSuggestionOptionsLocator,
           queryData.autoSuggestion
         );
       // Click or tap the auto-suggestion option and get search results

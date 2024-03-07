@@ -214,6 +214,11 @@ function createSharedContextTest(contextOptions) {
     }
   );
 
+  // Ensure the context always gets closed at the end.
+  test.afterEach('Close Browser Context', async ({ sharedContext }) => {
+    await sharedContext.close();
+  });
+
   return test;
 }
 

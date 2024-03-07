@@ -101,7 +101,7 @@ export default class GoogleSearchPicturesPage extends basePage {
     }
   }
 
-  // Get Search by picture results
+  // Get Locator object of Search by picture results
   async getSearchByPictureResultsLocator() {
     try {
       await this.page.waitForSelector(this.selectors.searchByPictureResults);

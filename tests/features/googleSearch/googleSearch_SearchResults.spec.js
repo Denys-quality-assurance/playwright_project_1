@@ -118,11 +118,11 @@ test.describe(`Google Search results: Search results verification`, () => {
       // Search for query
       await googleSearchPage.searchForQueryByEnter(queryData.query);
       // Check if each search result actually contains highlighted query in its text
-      const searchResultsDescriptions =
-        await googleSearchPage.getSearchResultsDescriptionElements();
+      const searchResultsDescriptionLocator =
+        await googleSearchPage.getSearchResultsDescriptionLocator();
       const checkQueryResults =
         await googleSearchPage.checkIfAllSearchResultsContainHighlightedQuery(
-          searchResultsDescriptions,
+          searchResultsDescriptionLocator,
           queryData.query
         );
       const errorMessage = `Some web page descriptions do not contain the '${
@@ -168,9 +168,11 @@ test.describe(`Google Search results: Search results verification`, () => {
       await googleSearchPage.getSearchResultsWebPagesTitles();
     const firstTitle = searchResultsWebPagesTitlesText[0];
     // Get elements with web pages URLs in the search results
-    const searchResultsWebPagesUrlElements =
-      await googleSearchPage.getSearchResultsWebPagesUrlElements();
-    const firstUrl = searchResultsWebPagesUrlElements[0];
+    const searchResultsWebPagesUrlsLocator =
+      await googleSearchPage.getSearchResultsWebPagesUrlsLocator();
+    const searchResultsWebPagesUrlsArray =
+      searchResultsWebPagesUrlsLocator.all();
+    const firstUrl = searchResultsWebPagesUrlsArray[0];
     // Click or tap the 1st web link
     await googleSearchPage.clickOrTap(firstUrl);
     // Check if the title of the linked page in the search results contains the name of the web page from the search results

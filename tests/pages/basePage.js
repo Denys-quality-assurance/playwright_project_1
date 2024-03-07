@@ -122,7 +122,7 @@ export default class basePage {
     return this.page.waitForResponse('/search?q=**');
   }
 
-  // Get Search results
+  // Get Locator object of Search results
   async getSearchResultsLocator(pageOrFrame = this.page) {
     try {
       await pageOrFrame.waitForSelector(this.selectors.searchResult);

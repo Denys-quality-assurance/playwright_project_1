@@ -35,14 +35,11 @@ export default class GoogleSearchPage extends basePage {
     };
   }
 
-  // Get Search auto suggestions
-  async getSearchAutoSuggestionOptionElements() {
+  // Get Locator object of Search auto suggestions
+  async getSearchAutoSuggestionOptionsLocator() {
     try {
       await this.page.waitForSelector(this.selectors.autoSuggestionOption);
-      const searchAutoSuggestionOptionElements = await this.page.$$(
-        this.selectors.autoSuggestionOption
-      );
-      return searchAutoSuggestionOptionElements;
+      return this.page.locator(this.selectors.autoSuggestionOption);
     } catch (error) {
       console.error(
         `Failed to get search auto suggestion options elements: ${error.message}`
@@ -53,11 +50,11 @@ export default class GoogleSearchPage extends basePage {
   // Get Search auto suggestions text
   async getSearchAutoSuggestionOptions() {
     try {
-      const searchAutoSuggestionOptionElements =
-        await this.getSearchAutoSuggestionOptionElements();
+      const searchAutoSuggestionOptionsLocator =
+        await this.getSearchAutoSuggestionOptionsLocator();
       // Get text content from searchAutoSuggestionOptions
       const searchAutoSuggestionOptionsText = await this.getTextContent(
-        searchAutoSuggestionOptionElements
+        searchAutoSuggestionOptionsLocator
       );
       return searchAutoSuggestionOptionsText;
     } catch (error) {
@@ -84,8 +81,10 @@ export default class GoogleSearchPage extends basePage {
   }
 
   // Get the 1st element with expected query
-  async getFirstElementWithQuery(elements, query) {
+  async getFirstElementWithQuery(locator, query) {
     try {
+      // // Collect all elements of locator
+      const elements = await locator.all();
       for (const element of elements) {
         // get the text content of the element
         const textContent = await element.innerText();
@@ -198,14 +197,11 @@ export default class GoogleSearchPage extends basePage {
     }
   }
 
-  // Get Search results descriptions
-  async getSearchResultsDescriptionElements() {
+  // Get Locator object of Search results descriptions
+  async getSearchResultsDescriptionLocator() {
     try {
       await this.page.waitForSelector(this.selectors.webPageDescription);
-      const searchResultsDescriptionElements = await this.page.$$(
-        this.selectors.webPageDescription
-      );
-      return searchResultsDescriptionElements;
+      return this.page.locator(this.selectors.webPageDescription);
     } catch (error) {
       console.error(
         `Failed to get search results descriptions: ${error.message}`
@@ -217,12 +213,12 @@ export default class GoogleSearchPage extends basePage {
   async getSearchResultsWebPagesTitles() {
     try {
       await this.page.waitForSelector(this.selectors.webPageTitle);
-      const searchResultsWebPagesTitles = await this.page.$$(
+      const searchResultsWebPagesTitlesLocator = this.page.locator(
         this.selectors.webPageTitle
       );
       // Get text content from searchResultsWebPagesTitles
       const searchResultsWebPagesTitlesText = await this.getTextContent(
-        searchResultsWebPagesTitles
+        searchResultsWebPagesTitlesLocator
       );
       return searchResultsWebPagesTitlesText;
     } catch (error) {
@@ -248,14 +244,11 @@ export default class GoogleSearchPage extends basePage {
     }
   }
 
-  // Get elements with web pages URLs in the search results
-  async getSearchResultsWebPagesUrlElements() {
+  // Get Locator object of elements with web pages URLs in the search results
+  async getSearchResultsWebPagesUrlsLocator() {
     try {
       await this.page.waitForSelector(this.selectors.webPageUrl);
-      const searchResultsWebPagesUrlElements = await this.page.$$(
-        this.selectors.webPageUrl
-      );
-      return searchResultsWebPagesUrlElements;
+      return this.page.locator(this.selectors.webPageUrl);
     } catch (error) {
       console.error(
         `Failed to get URLs of the web pagep in the search results: ${error.message}`
@@ -265,12 +258,14 @@ export default class GoogleSearchPage extends basePage {
 
   // Check if all search results contain highlighted query in descriptions of the web pages
   async checkIfAllSearchResultsContainHighlightedQuery(
-    searchResultsDescriptions,
+    searchResultsDescriptionLocator,
     query
   ) {
     try {
       // Get all words from the query as an array
       const queryWords = query.split(' ');
+      const searchResultsDescriptions =
+        await searchResultsDescriptionLocator.all();
       let failedResults = [];
 
       for (let description of searchResultsDescriptions) {
