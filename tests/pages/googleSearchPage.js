@@ -71,13 +71,11 @@ export default class GoogleSearchPage extends basePage {
       await this.page.waitForSelector(
         this.selectors.resultsNumberAndTimeMessage
       );
-      const resultsNumberAndTimeMessageElement = await this.page.$(
+      const resultsNumberAndTimeMessageElement = this.page.locator(
         this.selectors.resultsNumberAndTimeMessage
       );
       // Get text content from resultsNumberAndTimeMessageElement
-      const resultsNumberAndTimeMessageText =
-        await resultsNumberAndTimeMessageElement.innerText();
-      return resultsNumberAndTimeMessageText;
+      return await resultsNumberAndTimeMessageElement.innerText();
     } catch (error) {
       console.error(
         `Failed to get the text of the message with the total number of results and the time taken to fetch the result: ${error.message}`
@@ -238,12 +236,11 @@ export default class GoogleSearchPage extends basePage {
   async getCorrectedQueryFormMessageText() {
     try {
       await this.page.waitForSelector(this.selectors.correctedQuery);
-      const correctedQueryElement = await this.page.$(
+      const correctedQueryElement = this.page.locator(
         this.selectors.correctedQuery
       );
       // Get text content from correctedQueryElement
-      const correctedQueryElementText = await correctedQueryElement.innerText();
-      return correctedQueryElementText;
+      return await correctedQueryElement.innerText();
     } catch (error) {
       console.error(
         `Failed to get corrected query text for the misspelled query in the message "Showing results for <correcter query>": ${error.message}`
@@ -539,8 +536,8 @@ export default class GoogleSearchPage extends basePage {
   async saveGoogleLogoScreenshot(testInfo) {
     try {
       await this.page.waitForSelector(this.selectors.googleLogo);
-      const elementHandle = await this.page.$(this.selectors.googleLogo);
-      const screenshotBuffer = await elementHandle.screenshot();
+      const element = this.page.locator(this.selectors.googleLogo);
+      const screenshotBuffer = await element.screenshot();
       const screenshotPath = getTempFilePath(
         createUniqueFileName(testInfo, `logo_screenshot.png`)
       );
@@ -760,7 +757,7 @@ export default class GoogleSearchPage extends basePage {
   async getHorizontalCentreBySelector(selector) {
     try {
       await this.page.waitForSelector(selector);
-      const element = await this.page.$(selector);
+      const element = this.page.locator(selector);
       const elementBox = await element.boundingBox();
       const elementCentre = elementBox.x + elementBox.width / 2;
       return elementCentre;
