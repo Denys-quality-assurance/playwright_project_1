@@ -22,6 +22,12 @@ module.exports = {
         endOfLine: 'auto',
       },
     ],
+    'no-console': [
+      'warn',
+      {
+        allow: ['warn', 'error'],
+      },
+    ],
     'playwright/no-conditional-in-test': 'off',
     'playwright/no-conditional-expect': 'off',
     'playwright/no-wait-for-selector': 'off',
