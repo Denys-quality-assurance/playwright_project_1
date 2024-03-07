@@ -5,6 +5,7 @@ import {
   getTempFilePath,
   writeFile,
 } from '../../utilities/fileSystemHelper';
+import { escapeRegexSpecialCharacters } from '../../utilities/regexHelper';
 
 const responseBodyForEmptyResultsMockPath =
   './tests/test-data/googleSearch/mocks/responseBodyForEmptyResults.html';
@@ -184,7 +185,7 @@ export default class GoogleSearchPage extends basePage {
       responseBodyForEmptyResults = responseBodyForEmptyResults.toString();
       const responseBodyForEmptyResultsCurrentQuery =
         responseBodyForEmptyResults.replace(/Query/g, query);
-      await sharedContext.route('/search?q=**', (route, request) => {
+      await sharedContext.route('/search?q=**', (route) => {
         route.fulfill({
           status: 200,
           contentType: 'text/html; charset=UTF-8',
@@ -656,16 +657,16 @@ export default class GoogleSearchPage extends basePage {
         allMeasuresInfo,
         `${query}_measuresInfoDataName`
       );
-
+      let metrics;
       if (defaultBrowserType == 'chromium') {
-        var metrics = {
+        metrics = {
           tracesPath,
           marksInfoDataPath,
           measuresInfoDataPath,
           metricsDiffDataPath,
         };
       } else {
-        var metrics = {
+        metrics = {
           marksInfoDataPath,
           measuresInfoDataPath,
         };
@@ -686,19 +687,6 @@ export default class GoogleSearchPage extends basePage {
       await this.clickOrTap(this.selectors.videoFilterButton);
     } catch (error) {
       console.error(`Failed to apply video filter: ${error.message}`);
-    }
-  }
-
-  // Navigate via Tab to select the item number N
-  async selectElementNViaTab(elementNumber) {
-    try {
-      for (let i = 0; i < elementNumber; i++) {
-        await this.page.keyboard.press('Tab'); // Move focus to the next focusable element
-      }
-    } catch (error) {
-      console.error(
-        `Failed to navigate via Tab to select the item number N: ${error.message}`
-      );
     }
   }
 

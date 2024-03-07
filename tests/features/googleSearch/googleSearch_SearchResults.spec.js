@@ -9,7 +9,7 @@ import {
 import { performSearchAndFetchResultsForNewPage } from '../../../utilities/pagesHelper';
 const query = queryDataGeneral[1].query;
 const expectedPatternOfNumberAndTimeMessageText =
-  /\b\w+\b\s\b\d+(\.\d{3})*\b\s\b\w+\b\s\(\b\d+\,\d+\b\s\b\w+\b\)/; // Regex for the message with the total number of results and the time taken to fetch the result based on the template: <1 word> <Integer possibly with thousands as '.'> <1 space> <1 word> <space> (<floating point number with ','> <1 space> <1 word>): \b matches word boundary, \w+ matches matches one or more word character, \s matches whitespace, \d+ matches one or more digits, \,\d+ matches a comma followed by one or more digits, \b\d+(\.\d{3})*\bs\b matches an integer number that might have dot separators between thousands
+  /\b\w+\b\s\b\d+(\.\d{3})*\b\s\b\w+\b\s\(\b\d+,\d+\b\s\b\w+\b\)/; // Regex for the message with the total number of results and the time taken to fetch the result based on the template: <1 word> <Integer possibly with thousands as '.'> <1 space> <1 word> <space> (<floating point number with ','> <1 space> <1 word>): \b matches word boundary, \w+ matches matches one or more word character, \s matches whitespace, \d+ matches one or more digits, \,\d+ matches a comma followed by one or more digits, \b\d+(\.\d{3})*\bs\b matches an integer number that might have dot separators between thousands
 
 test.describe(`Google Search results: Search results verification`, () => {
   let page; // Page instance

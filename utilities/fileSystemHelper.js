@@ -197,16 +197,17 @@ export async function getMismatchedPixelsCount(
   sharedContext
 ) {
   try {
+    let expectedBaselinePath;
     // Get browser type
     const defaultBrowserType = testInfo.project.use.defaultBrowserType;
     // Get device type
     const isMobile = sharedContext._options.isMobile || false;
     // Path of the expected Baseline Logo image
     if (isMobile && defaultBrowserType == 'webkit') {
-      var expectedBaselinePath =
+      expectedBaselinePath =
         './tests/test-data/googleSearch/baseline-images/baseline_homepage_logo_Webkit_Mobile.png';
     } else {
-      var expectedBaselinePath =
+      expectedBaselinePath =
         './tests/test-data/googleSearch/baseline-images/baseline_homepage_logo.png';
     }
 

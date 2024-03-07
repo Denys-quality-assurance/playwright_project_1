@@ -92,7 +92,7 @@ test.describe(`Google Search results: Auto-suggestion and Correction`, () => {
         GoogleSearchPage
       );
       // Create new page 2 in the same context, navigate to Home page and reject all Cookies if it's needed
-      const { newPage: page2, googleSearchPage: googleSearchPage2 } =
+      const { googleSearchPage: googleSearchPage2 } =
         await navigateHomeForNewPage(sharedContext, GoogleSearchPage);
       // Fill Search imput
       await googleSearchPage2.fillSearchInput(queryData.query);
