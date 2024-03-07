@@ -31,6 +31,7 @@ test.describe(`Google Search results: Auto-suggestion and Correction`, () => {
     test(`TEST-20: Google search results page contains the corrected '${queryData.correctedQuery}' query when the query '${queryData.query}' is misspelled @results @correction`, async () => {
       // Search for query
       await googleSearchPage.searchForQueryByEnter(queryData.query);
+      await page.waitForSelector(googleSearchPage.selectors.searchResult);
       // Check if the message "Showing results for <correcter query> contains the corrected query
       const correctedQueryElementText =
         await googleSearchPage.getCorrectedQueryFormMessageText();
@@ -39,10 +40,11 @@ test.describe(`Google Search results: Auto-suggestion and Correction`, () => {
         `The message "Showing results for <correcter query>" doesn't contain the corrected '${queryData.correctedQuery}' query`
       ).toContain(queryData.correctedQuery);
       // Check if each search result actually contains query in its text
-      const searchResults = await googleSearchPage.getSearchResultElements();
+      const searchResultsLocator =
+        await googleSearchPage.getSearchResultsLocator();
       const checkQueryResults =
         await googleSearchPage.checkIfAllSearchResultsContainQuery(
-          searchResults,
+          searchResultsLocator,
           queryData.correctedQuery
         );
       const errorMessage = `Some search results do not contain the corrected '${
@@ -107,9 +109,11 @@ test.describe(`Google Search results: Auto-suggestion and Correction`, () => {
         );
       // Click or tap the auto-suggestion option and get search results
       await googleSearchPage2.clickOrTap(elementsWithQuery);
-      const searchResults2 = await googleSearchPage2.getSearchResultElements();
-      const searchResultsTexts2 =
-        await googleSearchPage2.getTextContent(searchResults2);
+      const searchResultsLocator2 =
+        await googleSearchPage2.getSearchResultsLocator();
+      const searchResultsTexts2 = await googleSearchPage2.getTextContent(
+        searchResultsLocator2
+      );
 
       // Compare the search results from both pages
       expect(

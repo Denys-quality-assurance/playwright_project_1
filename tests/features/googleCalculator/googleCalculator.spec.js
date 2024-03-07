@@ -21,6 +21,7 @@ test.describe(`Google calculator`, () => {
         googleCalculatorPage = new GoogleCalculatorPage(page, isMobile);
         await googleCalculatorPage.navigateAndRejectCookies();
         await googleCalculatorPage.searchForQueryByEnter('calculator');
+        await page.waitForSelector(googleCalculatorPage.selectors.searchResult);
       }
     }
   );

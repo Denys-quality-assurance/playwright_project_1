@@ -23,7 +23,6 @@ export default class GoogleSearchPage extends basePage {
       resultsNumberAndTimeMessage: `.LHJvCe >> #result-stats`, // Message with text “About X results (Y.YY seconds) ”
       didNotMatchText: `text=" - did not match any documents."`, // Message with text “did not match any documents”
       correctedQuery: `.p64x9c.KDCVqf`, // The corrected query text for the misspelled query in the message "Showing results for <correcter query>"
-      searchResult: this.isMobile ? `.y0NFKc` : `.MjjYud >> .g.Ww4FFb`, // One search result for mobile and for desktop
       webPageTitle: this.isMobile ? `.v7jaNc` : `.LC20lb`, // One title of the web page in the search result for mobile and for desktop
       webPageUrl: this.isMobile ? `.cz3goc` : `[jsname="UWckNb"]`, // One URL of the web page in the search result for mobile and for desktop
       webPageDescription: `.VwiC3b`, // One description of the web page in the search result
@@ -140,7 +139,9 @@ export default class GoogleSearchPage extends basePage {
       await this.page.waitForSelector(this.selectors.searchButton);
       await this.clickOrTap(this.selectors.searchButton);
       // Waiting for search result page to appear
-      await this.page.waitForNavigation();
+      await this.page.waitForNavigation({
+        url: (url) => url.includes('/search?q='),
+      });
     } catch (error) {
       console.error(
         `Failed to search for query by clicking on search button: ${error.message}`
@@ -412,7 +413,7 @@ export default class GoogleSearchPage extends basePage {
         if (missingKeys.length === 0) break;
 
         // Sleep for 1 second between retries
-        await page.waitForTimeout(1000);
+        await page.waitForTimeout(200);
       }
       // success is try if no items in failedResults
       return { success: missingKeys.length === 0, missingKeys: missingKeys };
@@ -424,14 +425,27 @@ export default class GoogleSearchPage extends basePage {
   }
 
   // Check if all storage values are not empty
-  async checkIfAllStorageValuesNotEmpty(storageData, keys) {
+  async checkIfAllStorageValuesNotEmpty(keys, storageData) {
     try {
-      let failedKeys = [];
-      keys.forEach((key) => {
-        if (storageData[key] === null || storageData[key] === '') {
-          failedKeys.push(key);
-        }
-      });
+      // Run loop until all keys are detected in the Storage
+      for (let i = 0; i < 10; i++) {
+        var failedKeys = [];
+        const sessionStorageData = storageData
+          ? storageData
+          : await this.getSessionStorage();
+        keys.forEach((key) => {
+          if (
+            sessionStorageData[key] === null ||
+            sessionStorageData[key] === ''
+          ) {
+            failedKeys.push(key);
+          }
+        });
+        if (failedKeys.length === 0) break;
+
+        // Sleep for 1 second between retries
+        await this.page.waitForTimeout(200);
+      }
       // success is try if no items in failedResults
       return { success: failedKeys.length === 0, failedKeys: failedKeys };
     } catch (error) {
@@ -441,13 +455,26 @@ export default class GoogleSearchPage extends basePage {
     }
   }
 
-  // Check if the object includes the part among its values
-  checkIfValueExists(object, part) {
+  // Check if the object includes the expectedValue among its values
+  async checkIfValueExists(expectedValue) {
     try {
-      const values = Object.values(object);
-      return values.some((value) =>
-        new RegExp(escapeRegexSpecialCharacters(part), 'i').test(value)
-      );
+      // Run loop until all keys are detected in the Storage
+      for (let i = 0; i < 10; i++) {
+        const sessionStorageData = await this.getSessionStorage();
+        const values = Object.values(sessionStorageData);
+        const isExpectedValueIncluded = values.some((value) =>
+          new RegExp(escapeRegexSpecialCharacters(expectedValue), 'i').test(
+            value
+          )
+        );
+        if (isExpectedValueIncluded) {
+          return true;
+        }
+
+        // Sleep for 1 second between retries
+        await this.page.waitForTimeout(200);
+      }
+      return false;
     } catch (error) {
       console.error(
         `Failed to check if the object includes the part among its values: ${error.message}`
@@ -695,6 +722,7 @@ export default class GoogleSearchPage extends basePage {
     try {
       for (let i = 0; i < elementNumber; i++) {
         await this.page.keyboard.press('Tab'); // Move focus to the next focusable element
+        await this.page.waitForTimeout(10);
       }
     } catch (error) {
       console.error(

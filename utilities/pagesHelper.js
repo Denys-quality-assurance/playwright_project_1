@@ -29,9 +29,9 @@ export async function performSearchAndFetchResultsForNewPage(
     await googleSearchPage.searchForQueryByEnter(query);
   }
 
-  const searchResults = await googleSearchPage.getSearchResultElements();
+  const searchResultsLocator = await googleSearchPage.getSearchResultsLocator();
   const searchResultsTexts =
-    await googleSearchPage.getTextContent(searchResults);
+    await googleSearchPage.getTextContent(searchResultsLocator);
 
   return searchResultsTexts;
 }

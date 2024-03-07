@@ -24,10 +24,10 @@ test.describe(`Google Search results: Keyboard navigation`, () => {
   test(`TEST-13: User can navigate via Tab, Shift+Tab and Enter @only-desktop @keyboard_navigation`, async ({}) => {
     // Search for query
     await googleSearchPage.searchForQueryByEnter(query);
-
+    await page.waitForSelector(googleSearchPage.selectors.searchResult);
     // Navigate via Tab
     // Navigate via Tab to select the pictures search button (item number N=11)
-    await googleSearchPage.selectElementNViaTab(11);
+    await googleSearchPage.selectElementNViaTab(10);
     // Get class of the active (focused) element
     let activeElementClass = await googleSearchPage.getActiveElementClass();
     // Check if the active element has the expected class

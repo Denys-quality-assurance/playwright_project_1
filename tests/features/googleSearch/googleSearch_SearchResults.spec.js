@@ -38,10 +38,11 @@ test.describe(`Google Search results: Search results verification`, () => {
     // Apply video filter
     await googleSearchPage.applyVideFilter();
     // Check if each search result actually contains query in its text
-    const searchResults = await googleSearchPage.getSearchResultElements();
+    const searchResultsLocator =
+      await googleSearchPage.getSearchResultsLocator();
     const checkQueryResults =
       await googleSearchPage.checkIfAllSearchResultsContainQuery(
-        searchResults,
+        searchResultsLocator,
         query
       );
     const errorMessage = `Some search results do not contain the '${
@@ -57,6 +58,7 @@ test.describe(`Google Search results: Search results verification`, () => {
       const responsePromise = googleSearchPage.waitForSearchResponse();
       // Search for query
       await googleSearchPage.searchForQueryByEnter(queryData.query);
+      await page.waitForSelector(googleSearchPage.selectors.searchResult);
       const response = await responsePromise;
 
       // Check if status is 200
@@ -80,10 +82,11 @@ test.describe(`Google Search results: Search results verification`, () => {
       // Search for query
       await googleSearchPage.searchForQueryByEnter(queryData.query);
       // Check if each search result actually contains query in its text
-      const searchResults = await googleSearchPage.getSearchResultElements();
+      const searchResultsLocator =
+        await googleSearchPage.getSearchResultsLocator();
       const checkQueryResults =
         await googleSearchPage.checkIfAllSearchResultsContainQuery(
-          searchResults,
+          searchResultsLocator,
           queryData.query
         );
       const errorMessage = `Some search results do not contain the '${
@@ -98,6 +101,7 @@ test.describe(`Google Search results: Search results verification`, () => {
       test.setTimeout(10000);
       // Search for query
       await googleSearchPage.searchForQueryByEnter(queryData.query);
+      await page.waitForSelector(googleSearchPage.selectors.searchResult);
       // Get the text of the message with the total number of results and the time taken to fetch the result
       const resultsNumberAndTimeMessageText =
         await googleSearchPage.getResultsNumberAndTimeMessageText();
@@ -148,9 +152,10 @@ test.describe(`Google Search results: Search results verification`, () => {
     // Search for query
     await googleSearchPage.searchForQueryByEnter(query);
     // Checking if the search results page contains more than 1 result for the query
-    const searchResults = await googleSearchPage.getSearchResultElements();
+    const searchResultsLocator =
+      await googleSearchPage.getSearchResultsLocator();
     expect(
-      searchResults.length,
+      await searchResultsLocator.count(),
       `Search results page doesn't contain more than 1 result for the '${query}' query`
     ).toBeGreaterThan(1);
   });
@@ -231,6 +236,7 @@ test.describe(`Google Search results: Search results verification`, () => {
     test(`TEST-11: Page title contains '${queryData.query}' query @results @page_title`, async ({}) => {
       // Search for query
       await googleSearchPage.searchForQueryByEnter(queryData.query);
+      await page.waitForSelector(googleSearchPage.selectors.searchResult);
       const title = await googleSearchPage.getPageTitle();
       expect(
         title,

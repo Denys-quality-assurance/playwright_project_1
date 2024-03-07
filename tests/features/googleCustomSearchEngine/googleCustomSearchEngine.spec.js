@@ -23,14 +23,13 @@ test.describe(`Google Custom Search Engine: Search results testing for '${query}
 
   test(`TEST-26: Google CSE search results page contains '${query}' query`, async () => {
     await googleCSEPage.searchForQueryByEnter(query, googleCSEPage.frame);
-
     // Check if each search result actually contains the query in its text
-    const searchResults = await googleCSEPage.getSearchResultElements(
+    const searchResultsLocator = await googleCSEPage.getSearchResultsLocator(
       googleCSEPage.frame
     );
     const checkQueryResults =
       await googleCSEPage.checkIfAllSearchResultsContainQuery(
-        searchResults,
+        searchResultsLocator,
         query
       );
     const errorMessage = `Some search results do not contain the '${
@@ -42,13 +41,12 @@ test.describe(`Google Custom Search Engine: Search results testing for '${query}
 
   test(`TEST-27: Google search results page contains 10 results on 1 page for '${query}' query`, async () => {
     await googleCSEPage.searchForQueryByEnter(query, googleCSEPage.frame);
-
     // Checking if the search results page contains 10 results on 1 page for the query
-    const searchResults = await googleCSEPage.getSearchResultElements(
+    const searchResultsLocator = await googleCSEPage.getSearchResultsLocator(
       googleCSEPage.frame
     );
     expect(
-      searchResults.length,
+      await searchResultsLocator.count(),
       `Search results page doesn't contain 10 results on 1 page for '${query}' query`
     ).toBe(10);
   });

@@ -33,7 +33,9 @@ export default class GoogleSearchPicturesPage extends basePage {
       await this.navigateAndRejectCookies();
       await this.page.waitForSelector(this.selectors.picturesSearchButton);
       await this.clickOrTap(this.selectors.picturesSearchButton);
-      await this.page.waitForNavigation();
+      await this.page.waitForNavigation({
+        url: (url) => url.includes('/search?sca_esv='),
+      });
       await this.searchForQueryByEnter(query);
     } catch (error) {
       console.error(
