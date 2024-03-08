@@ -34,14 +34,15 @@ function createSharedContextTest(contextOptions) {
       );
       // Number of the related unfixed bugs
       const numberOfRelatedUnfixedBugs = relatedUnfixedBugs.length;
+      const hasUnfixedBugs = numberOfRelatedUnfixedBugs > 0;
       // Test is marked as "should fail" when the condition is true: there is at least 1 related bug
       testInfo.fail(
-        numberOfRelatedUnfixedBugs > 0,
+        hasUnfixedBugs,
         `Test marked as "should fail" due to the presence of ${numberOfRelatedUnfixedBugs} unfixed bug(s)`
       );
       // Test is skipped when the condition is true: flag skipKnownBugs is 'true' and there is at least 1 unfixed bug
       testInfo.skip(
-        skipKnownBugs && numberOfRelatedUnfixedBugs > 0,
+        skipKnownBugs && hasUnfixedBugs,
         `Test skipped due to the presence of ${numberOfRelatedUnfixedBugs} unfixed bug(s)`
       );
     }
@@ -61,7 +62,7 @@ function createSharedContextTest(contextOptions) {
           // Get the current test path
           const projectName = testInfo.project.name;
           const currentTitlePath = testInfo.titlePath;
-          const currentTestPath = `[${projectName}] › ${currentTitlePath[0]} › ${currentTitlePath[1]} › ${currentTitlePath[2]}}`;
+          const currentTestPath = `[${projectName}] › ${currentTitlePath.join(' › ')}`;
           const timestamp = Date.now();
 
           // Add screenshots as attachments to HTML report
