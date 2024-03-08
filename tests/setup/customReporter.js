@@ -33,7 +33,7 @@ export default class CustomReporter {
       if (result.status !== 'skipped' && result.status !== 'interrupted') {
         // Current test path
         const currentTitlePath = test.titlePath();
-        const currentTestPath = `[${currentTitlePath[1]}] › ${currentTitlePath[2]} › ${currentTitlePath[3]} › ${currentTitlePath[4]}`;
+        const currentTestPath = `[${currentTitlePath[1]}] › ${currentTitlePath.slice(2).join(' › ')}`;
         // Environment for current test project
         this.currentENV = test.parent.project().metadata.currentENV;
 
