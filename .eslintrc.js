@@ -1,3 +1,20 @@
+/*
+ * This configuration file establishes the rules for the ESLint tool, which
+ * is used to enforce code style and promote best practices in the codebase.
+ *
+ * The file configures:
+ * - The execution environment of the scripts
+ * - The base configurations and plugins that we extend and use
+ * - The JavaScript parser options that define the JS language features
+ * - Specific ESLint rules that either override or extend the rules from the base configurations.
+ *
+ * Key best practices enforced by this config include:
+ * - Use of the Playwright testing library following best practices ('plugin:playwright/recommended')
+ * - Use of ES2021 JavaScript features ('env.es2021: true')
+ * - Use of the Prettier code formatter for consistent encoding styles ('prettier/prettier')
+ *
+ */
+
 module.exports = {
   env: {
     browser: true, // Sets the environment to browser. This enables browser global variables.
