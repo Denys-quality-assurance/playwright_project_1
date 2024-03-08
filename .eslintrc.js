@@ -12,7 +12,6 @@
  * - Use of the Playwright testing library following best practices ('plugin:playwright/recommended')
  * - Use of ES2021 JavaScript features ('env.es2021: true')
  * - Use of the Prettier code formatter for consistent encoding styles ('prettier/prettier')
- *
  */
 
 module.exports = {
