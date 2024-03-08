@@ -1,0 +1,23 @@
+{
+  "prettier.arrowParens": "always",
+  "prettier.bracketSpacing": true,
+  "prettier.configPath": "prettier.config.js",
+  "prettier.embeddedLanguageFormatting": "auto",
+  "prettier.enable": true,
+  "prettier.endOfLine": "auto",
+  "prettier.htmlWhitespaceSensitivity": "css",
+  "prettier.ignorePath": ".prettierignore",
+  "prettier.printWidth": 80,
+  "prettier.proseWrap": "preserve",
+  "prettier.quoteProps": "as-needed",
+  "prettier.semi": true,
+  "prettier.tabWidth": 2,
+  "prettier.trailingComma": "es5",
+  "prettier.useEditorConfig": false,
+  "prettier.requireConfig": false,
+  "prettier.singleQuote": true,
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "editor.formatOnType": true,
+  "eslint.codeActionsOnSave.mode": "all"
+}

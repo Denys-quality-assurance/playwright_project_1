@@ -1,30 +1,33 @@
-import { readFileSync, createUniqueFileName, getTempFilePath, writeFile } from '../../utilities/fileSystemHelper';
+import basePage from './basePage';
+import {
+  readFileSync,
+  createUniqueFileName,
+  getTempFilePath,
+  writeFile,
+} from '../../utilities/fileSystemHelper';
 import { escapeRegexSpecialCharacters } from '../../utilities/regexHelper';
-const responseBodyForEmptyResultsMockPath = './tests/test-data/googleSearch/mocks/responseBodyForEmptyResults.html';
 
-export default class GoogleSearchPage {
+const responseBodyForEmptyResultsMockPath =
+  './tests/test-data/googleSearch/mocks/responseBodyForEmptyResults.html';
+
+export default class GoogleSearchPage extends basePage {
   constructor(page, isMobile) {
-    this.page = page;
-    this.isMobile = isMobile; // Type of device is mobile
+    super(page, isMobile);
+
     this.selectors = {
+      ...this.selectors,
+
       searchButton: `.FPdoLc >> .gNO89b[role="button"]`, // Search button on the Home page
-      cookiesModal: `#CXQnmb`, // Cookies consent modal
-      rejectAllCookiesButton: `button#W0wltc`, // Reject all cookies button
       searchInputBox: this.isMobile ? `div.zGVn2e` : `.RNNXgb[jsname="RNNXgb"]`, // // Search imput box for mobile and for desktop
-      searchInputTextArea: `textarea[name=q]`, // Text imput field of Search query imput area
       autoSuggestionOption: `[role="option"]`, // One search auto suggestion option
-      changeToEnglishModal: `#Rzn5id`, // Change to English modal
-      changeToEnglishButton: `text="Change to English"`, // Change to English button
       resultsNumberAndTimeMessage: `.LHJvCe >> #result-stats`, // Message with text “About X results (Y.YY seconds) ”
       didNotMatchText: `text=" - did not match any documents."`, // Message with text “did not match any documents”
       correctedQuery: `.p64x9c.KDCVqf`, // The corrected query text for the misspelled query in the message "Showing results for <correcter query>"
-      searchResult: this.isMobile ? `.y0NFKc` : `.MjjYud >> .g`, // One search result for mobile and for desktop
       webPageTitle: this.isMobile ? `.v7jaNc` : `.LC20lb`, // One title of the web page in the search result for mobile and for desktop
       webPageUrl: this.isMobile ? `.cz3goc` : `[jsname="UWckNb"]`, // One URL of the web page in the search result for mobile and for desktop
       webPageDescription: `.VwiC3b`, // One description of the web page in the search result
       googleLogo: this.isMobile ? `#hplogo` : `.lnXdpd[alt="Google"]`, // Google Logo for mobile and for desktop
       videoFilterButton: `.LatpMc[href*="tbm=vid"]`, // Video filter button under the main search query imput area
-      pictureUploadButton: `.DV7the[role="button"]`, // Picture upload button of search by picture modal
     };
     this.classes = {
       picturesSearchButton: `nDcEnd`, // Pictures Search button
@@ -32,87 +35,27 @@ export default class GoogleSearchPage {
     };
   }
 
-  // Click or Tap
-  async clickOrTap(elementOrSelector) {
-    try {
-      if (typeof elementOrSelector === 'string') {
-        if (this.isMobile) {
-          await this.page.tap(elementOrSelector);
-        } else {
-          await this.page.click(elementOrSelector);
-        }
-      } else {
-        // elementOrSelector is an ElementHandle
-        if (this.isMobile) {
-          await elementOrSelector.tap();
-        } else {
-          await elementOrSelector.click();
-        }
-      }
-    } catch (error) {
-      console.error(`Failed to chose click or tap method: ${error.message}`);
-    }
-  }
-
-  // Navigate to Home page
-  async navigateHome() {
-    try {
-      await this.page.goto('/');
-    } catch (error) {
-      console.error(`Failed to navigate to Home page: ${error.message}`);
-    }
-  }
-
-  // Reject all Cookies if it's needed
-  async rejectCookiesIfAsked() {
-    if (await this.page.isVisible(this.selectors.cookiesModal)) {
-      try {
-        await this.page.waitForSelector(this.selectors.rejectAllCookiesButton);
-        await this.clickOrTap(this.selectors.rejectAllCookiesButton);
-        await this.page.waitForSelector(this.selectors.cookiesModal, { state: 'hidden' });
-      } catch (error) {
-        console.error(`Failed to reject all Cookies: ${error.message}`);
-      }
-    }
-  }
-
-  // Navigate to page and reject all Cookies if it's needed
-  async navigateAndRejectCookies() {
-    try {
-      await this.navigateHome();
-      await this.rejectCookiesIfAsked();
-    } catch (error) {
-      console.error(`Failed to navigate to page and reject all Cookies: ${error.message}`);
-    }
-  }
-
-  // Fill Search imput with query
-  async fillSearchInput(query) {
-    try {
-      await this.page.waitForSelector(this.selectors.searchInputTextArea);
-      await this.page.fill(this.selectors.searchInputTextArea, query);
-    } catch (error) {
-      console.error(`Failed to fill Search imput with query: ${error.message}`);
-    }
-  }
-
-  // Get Search auto suggestions
-  async getSearchAutoSuggestionOptionElements() {
+  // Get Locator object of Search auto suggestions
+  async getSearchAutoSuggestionOptionsLocator() {
     try {
       await this.page.waitForSelector(this.selectors.autoSuggestionOption);
-      const searchAutoSuggestionOptionElements = await this.page.$$(this.selectors.autoSuggestionOption);
-      return searchAutoSuggestionOptionElements;
+      return this.page.locator(this.selectors.autoSuggestionOption);
     } catch (error) {
-      console.error(`Failed to get search auto suggestion options elements: ${error.message}`);
+      console.error(
+        `Failed to get search auto suggestion options elements: ${error.message}`
+      );
     }
   }
 
   // Get Search auto suggestions text
   async getSearchAutoSuggestionOptions() {
     try {
-      const searchAutoSuggestionOptionElements = await this.getSearchAutoSuggestionOptionElements();
+      const searchAutoSuggestionOptionsLocator =
+        await this.getSearchAutoSuggestionOptionsLocator();
       // Get text content from searchAutoSuggestionOptions
-      const searchAutoSuggestionOptionsText = await this.getTextContent(searchAutoSuggestionOptionElements);
+      const searchAutoSuggestionOptionsText = await this.getTextContent(
+        searchAutoSuggestionOptionsLocator
+      );
       return searchAutoSuggestionOptionsText;
     } catch (error) {
       console.error(`Failed to get search auto suggestions: ${error.message}`);
@@ -122,11 +65,14 @@ export default class GoogleSearchPage {
   // Get the text of the message with the total number of results and the time taken to fetch the result
   async getResultsNumberAndTimeMessageText() {
     try {
-      await this.page.waitForSelector(this.selectors.resultsNumberAndTimeMessage);
-      const resultsNumberAndTimeMessageElement = await this.page.$(this.selectors.resultsNumberAndTimeMessage);
+      await this.page.waitForSelector(
+        this.selectors.resultsNumberAndTimeMessage
+      );
+      const resultsNumberAndTimeMessageElement = this.page.locator(
+        this.selectors.resultsNumberAndTimeMessage
+      );
       // Get text content from resultsNumberAndTimeMessageElement
-      const resultsNumberAndTimeMessageText = await resultsNumberAndTimeMessageElement.innerText();
-      return resultsNumberAndTimeMessageText;
+      return await resultsNumberAndTimeMessageElement.innerText();
     } catch (error) {
       console.error(
         `Failed to get the text of the message with the total number of results and the time taken to fetch the result: ${error.message}`
@@ -135,8 +81,10 @@ export default class GoogleSearchPage {
   }
 
   // Get the 1st element with expected query
-  async getFirstElementWithQuery(elements, query) {
+  async getFirstElementWithQuery(locator, query) {
     try {
+      // // Collect all elements of locator
+      const elements = await locator.all();
       for (const element of elements) {
         // get the text content of the element
         const textContent = await element.innerText();
@@ -150,12 +98,17 @@ export default class GoogleSearchPage {
       // return null if no matching element was found
       return null;
     } catch (error) {
-      console.error(`Failed to the 1st  element with expected query: ${error.message}`);
+      console.error(
+        `Failed to the 1st  element with expected query: ${error.message}`
+      );
     }
   }
 
   // Check if any auto-suggestion contains the expected approptiate option
-  async checkIfAnyAutoSuggestionOptionContainQuery(searchAutoSuggestionOptionsText, query) {
+  async checkIfAnyAutoSuggestionOptionContainQuery(
+    searchAutoSuggestionOptionsText,
+    query
+  ) {
     try {
       // Get all words from the query as an array
       const queryWords = query.split(' ');
@@ -168,21 +121,9 @@ export default class GoogleSearchPage {
       }
       return false; // No option contains the query
     } catch (error) {
-      console.error(`Failed to if any auto-suggestion option contains the query: ${error.message}`);
-    }
-  }
-
-  // Search for query by pressing enter
-  async searchForQueryByEnter(query) {
-    try {
-      // Fill Search imput with query
-      await this.fillSearchInput(query);
-      // Submit the query by pressing enter
-      await this.page.press(this.selectors.searchInputTextArea, 'Enter');
-      // Waiting for search result page to appear
-      await this.page.waitForLoadState('networkidle');
-    } catch (error) {
-      console.error(`Failed to search for query by pressing enter: ${error.message}`);
+      console.error(
+        `Failed to check if any auto-suggestion option contains the query: ${error.message}`
+      );
     }
   }
 
@@ -195,22 +136,13 @@ export default class GoogleSearchPage {
       await this.page.waitForSelector(this.selectors.searchButton);
       await this.clickOrTap(this.selectors.searchButton);
       // Waiting for search result page to appear
-      await this.page.waitForLoadState('networkidle');
+      await this.page.waitForNavigation({
+        url: (url) => url.includes('/search?q='),
+      });
     } catch (error) {
-      console.error(`Failed to search for query by clicking on search button: ${error.message}`);
-    }
-  }
-
-  // Change to English if it's needed
-  async changeToEnglishIfAsked() {
-    if (await this.page.isVisible(this.selectors.changeToEnglishModal)) {
-      try {
-        await this.page.waitForSelector(this.selectors.changeToEnglishButton);
-        await this.clickOrTap(this.selectors.changeToEnglishButton);
-        await this.page.waitForSelector(this.selectors.changeToEnglishModal, { state: 'hidden' });
-      } catch (error) {
-        console.error(`Failed to change to English: ${error.message}`);
-      }
+      console.error(
+        `Failed to search for query by clicking on search button: ${error.message}`
+      );
     }
   }
 
@@ -220,33 +152,38 @@ export default class GoogleSearchPage {
       await this.navigateAndRejectCookies();
       await this.searchForQueryByEnter(query);
     } catch (error) {
-      console.error(`Failed to navigate to page, reject all Cookies and search for query: ${error.message}`);
+      console.error(
+        `Failed to navigate to page, reject all Cookies and search for query: ${error.message}`
+      );
     }
-  }
-
-  // Wait for the search response
-  async waitForSearchResponse() {
-    return this.page.waitForResponse('/search?q=**');
   }
 
   // Get number of query instances in the page body
   async countQueryInBody(query) {
     try {
       const bodyText = await this.page.textContent('body');
-      return (bodyText.match(new RegExp(escapeRegexSpecialCharacters(query), 'g')) || []).length;
+      return (
+        bodyText.match(new RegExp(escapeRegexSpecialCharacters(query), 'g')) ||
+        []
+      ).length;
     } catch (error) {
-      console.error(`Failed to get the number of query instances in the page body: ${error.message}`);
+      console.error(
+        `Failed to get the number of query instances in the page body: ${error.message}`
+      );
     }
   }
 
   // Mock the search response with Empty Results
   async mockResponseWithEmptyResults(sharedContext, query) {
     try {
-      let responseBodyForEmptyResults = readFileSync(responseBodyForEmptyResultsMockPath);
+      let responseBodyForEmptyResults = readFileSync(
+        responseBodyForEmptyResultsMockPath
+      );
       // Replace 'Query' with the current query globally in the HTML
       responseBodyForEmptyResults = responseBodyForEmptyResults.toString();
-      const responseBodyForEmptyResultsCurrentQuery = responseBodyForEmptyResults.replace(/Query/g, query);
-      await sharedContext.route('/search?q=**', (route, request) => {
+      const responseBodyForEmptyResultsCurrentQuery =
+        responseBodyForEmptyResults.replace(/Query/g, query);
+      await sharedContext.route('/search?q=**', (route) => {
         route.fulfill({
           status: 200,
           contentType: 'text/html; charset=UTF-8',
@@ -254,29 +191,21 @@ export default class GoogleSearchPage {
         });
       });
     } catch (error) {
-      console.error(`Failed to mock the search response with Empty Results: ${error.message}`);
+      console.error(
+        `Failed to mock the search response with Empty Results: ${error.message}`
+      );
     }
   }
 
-  // Get Search results
-  async getSearchResultElements() {
-    try {
-      await this.page.waitForSelector(this.selectors.searchResult);
-      const searchResultElements = await this.page.$$(this.selectors.searchResult);
-      return searchResultElements;
-    } catch (error) {
-      console.error(`Failed to get search results: ${error.message}`);
-    }
-  }
-
-  // Get Search results descriptions
-  async getSearchResultsDescriptionElements() {
+  // Get Locator object of Search results descriptions
+  async getSearchResultsDescriptionLocator() {
     try {
       await this.page.waitForSelector(this.selectors.webPageDescription);
-      const searchResultsDescriptionElements = await this.page.$$(this.selectors.webPageDescription);
-      return searchResultsDescriptionElements;
+      return this.page.locator(this.selectors.webPageDescription);
     } catch (error) {
-      console.error(`Failed to get search results descriptions: ${error.message}`);
+      console.error(
+        `Failed to get search results descriptions: ${error.message}`
+      );
     }
   }
 
@@ -284,12 +213,18 @@ export default class GoogleSearchPage {
   async getSearchResultsWebPagesTitles() {
     try {
       await this.page.waitForSelector(this.selectors.webPageTitle);
-      const searchResultsWebPagesTitles = await this.page.$$(this.selectors.webPageTitle);
+      const searchResultsWebPagesTitlesLocator = this.page.locator(
+        this.selectors.webPageTitle
+      );
       // Get text content from searchResultsWebPagesTitles
-      const searchResultsWebPagesTitlesText = await this.getTextContent(searchResultsWebPagesTitles);
+      const searchResultsWebPagesTitlesText = await this.getTextContent(
+        searchResultsWebPagesTitlesLocator
+      );
       return searchResultsWebPagesTitlesText;
     } catch (error) {
-      console.error(`Failed to get titles of the web pagep in the search results: ${error.message}`);
+      console.error(
+        `Failed to get titles of the web pagep in the search results: ${error.message}`
+      );
     }
   }
 
@@ -297,10 +232,11 @@ export default class GoogleSearchPage {
   async getCorrectedQueryFormMessageText() {
     try {
       await this.page.waitForSelector(this.selectors.correctedQuery);
-      const correctedQueryElement = await this.page.$(this.selectors.correctedQuery);
+      const correctedQueryElement = this.page.locator(
+        this.selectors.correctedQuery
+      );
       // Get text content from correctedQueryElement
-      const correctedQueryElementText = await correctedQueryElement.innerText();
-      return correctedQueryElementText;
+      return await correctedQueryElement.innerText();
     } catch (error) {
       console.error(
         `Failed to get corrected query text for the misspelled query in the message "Showing results for <correcter query>": ${error.message}`
@@ -308,67 +244,49 @@ export default class GoogleSearchPage {
     }
   }
 
-  // Get elements with web pages URLs in the search results
-  async getSearchResultsWebPagesUrlElements() {
+  // Get Locator object of elements with web pages URLs in the search results
+  async getSearchResultsWebPagesUrlsLocator() {
     try {
       await this.page.waitForSelector(this.selectors.webPageUrl);
-      const searchResultsWebPagesUrlElements = await this.page.$$(this.selectors.webPageUrl);
-      return searchResultsWebPagesUrlElements;
+      return this.page.locator(this.selectors.webPageUrl);
     } catch (error) {
-      console.error(`Failed to get URLs of the web pagep in the search results: ${error.message}`);
+      console.error(
+        `Failed to get URLs of the web pagep in the search results: ${error.message}`
+      );
     }
-  }
-
-  // Check if all search results contain query
-  async checkIfAllSearchResultsContainQuery(searchResults, query) {
-    try {
-      // Get all words from the query as an array
-      const queryWords = query.split(' ');
-
-      for (let searchResult of searchResults) {
-        // Get the text of each searchResult
-        let resultText = await searchResult.innerText();
-
-        // Check if the search result contains any query word
-        if (this.hasQueryWords(resultText, queryWords)) {
-          continue;
-        } else {
-          return false;
-        }
-      }
-
-      return true; // Passed all checks
-    } catch (error) {
-      console.error(`Failed to check if all search results contain query: ${error.message}`);
-    }
-  }
-
-  // Check if the search result contains any query word
-  hasQueryWords(resultText, queryWords) {
-    if (queryWords.some((queryWord) => new RegExp(escapeRegexSpecialCharacters(queryWord), 'i').test(resultText))) {
-      return true;
-    } else return false;
   }
 
   // Check if all search results contain highlighted query in descriptions of the web pages
-  async checkIfAllSearchResultsContainHighlightedQuery(searchResultsDescriptions, query) {
+  async checkIfAllSearchResultsContainHighlightedQuery(
+    searchResultsDescriptionLocator,
+    query
+  ) {
     try {
       // Get all words from the query as an array
       const queryWords = query.split(' ');
+      const searchResultsDescriptions =
+        await searchResultsDescriptionLocator.all();
+      let failedResults = [];
 
       for (let description of searchResultsDescriptions) {
         // Get the text of each searchResult
         const descriptionHTML = await description.innerHTML();
 
         // Check if the description contains any query word highlighted
-        if (this.hasHighlightedWords(descriptionHTML, queryWords)) {
-          continue;
-        } else {
-          return false;
+        const hasHighlightedWords = this.hasHighlightedWords(
+          descriptionHTML,
+          queryWords
+        );
+        if (!hasHighlightedWords) {
+          failedResults.push(descriptionHTML);
         }
       }
-
-      return true; // Passed all checks
+      // success is try if no items in failedResults
+      return {
+        success: failedResults.length === 0,
+        failedDescriptionHTML: failedResults,
+        failedQuery: query,
+      };
     } catch (error) {
       console.error(
         `Failed to check if all search results contain highlighted query in descriptions of the web pages: ${error.message}`
@@ -390,27 +308,15 @@ export default class GoogleSearchPage {
 
       if (
         highlightedParts.some((part) =>
-          queryWords.some((queryWord) => new RegExp(escapeRegexSpecialCharacters(queryWord), 'i').test(part))
+          queryWords.some((queryWord) =>
+            new RegExp(escapeRegexSpecialCharacters(queryWord), 'i').test(part)
+          )
         )
       ) {
         return true;
       }
     }
     return false;
-  }
-
-  // Get text content from array of objects
-  async getTextContent(objects) {
-    try {
-      let results = [];
-      for (let element of objects) {
-        const text = await element.innerText();
-        results.push(text);
-      }
-      return results;
-    } catch (error) {
-      console.error(`Failed to get text content from array of objects: ${error.message}`);
-    }
   }
 
   // Get href attributes from array of objects
@@ -423,7 +329,9 @@ export default class GoogleSearchPage {
       }
       return results;
     } catch (error) {
-      console.error(`Failed to get href attributes from array of objects: ${error.message}`);
+      console.error(
+        `Failed to get href attributes from array of objects: ${error.message}`
+      );
     }
   }
 
@@ -449,14 +357,18 @@ export default class GoogleSearchPage {
       }, keys);
       return localStorageItemsByKeys;
     } catch (error) {
-      console.error(`Failed to get local storage items by keys: ${error.message}`);
+      console.error(
+        `Failed to get local storage items by keys: ${error.message}`
+      );
     }
   }
 
   // Get session storage
   async getSessionStorage() {
     try {
-      const sessionStorageData = await this.page.evaluate(() => window.sessionStorage);
+      const sessionStorageData = await this.page.evaluate(
+        () => window.sessionStorage
+      );
       return sessionStorageData;
     } catch (error) {
       console.error(`Failed to get session storage: ${error.message}`);
@@ -475,55 +387,90 @@ export default class GoogleSearchPage {
       }, keys);
       return sessionStorageItemsByKeys;
     } catch (error) {
-      console.error(`Failed to get session storage items by keys: ${error.message}`);
+      console.error(
+        `Failed to get session storage items by keys: ${error.message}`
+      );
     }
   }
 
   // Check if all expected keys exist in the object
   async checkIfAllKeysExist(getItemsByKeys, page, keys) {
     try {
-      let storageHasKeys = true;
+      let missingKeys = [];
       // Run loop until all keys are detected in the Storage
       for (let i = 0; i < 10; i++) {
         let storageData = await getItemsByKeys(page, keys);
-        keys.forEach((key) => {
-          if (storageData[key] === null) {
-            storageHasKeys = false;
-          }
-        });
-        if (storageHasKeys) break;
+        missingKeys = keys.filter((key) => storageData[key] === null);
+
+        if (missingKeys.length === 0) break;
 
         // Sleep for 1 second between retries
-        await page.waitForTimeout(1000);
+        await page.waitForTimeout(200);
       }
-      return storageHasKeys;
+      // success is try if no items in failedResults
+      return { success: missingKeys.length === 0, missingKeys: missingKeys };
     } catch (error) {
-      console.error(`Failed to check if all expected keys exist in the object: ${error.message}`);
+      console.error(
+        `Failed to check if all expected keys exist in the object: ${error.message}`
+      );
     }
   }
 
   // Check if all storage values are not empty
-  async checkIfAllStorageValuesNotEmpty(storageData, keys) {
+  async checkIfAllStorageValuesNotEmpty(keys, storageData) {
     try {
-      let storageValuesNotEmpty = true;
-      keys.forEach((key) => {
-        if (storageData[key] === null || storageData[key] === '') {
-          storageValuesNotEmpty = false;
-        }
-      });
-      return storageValuesNotEmpty;
+      // Run loop until all keys are detected in the Storage
+      for (let i = 0; i < 10; i++) {
+        var failedKeys = [];
+        const sessionStorageData = storageData
+          ? storageData
+          : await this.getSessionStorage();
+        keys.forEach((key) => {
+          if (
+            sessionStorageData[key] === null ||
+            sessionStorageData[key] === ''
+          ) {
+            failedKeys.push(key);
+          }
+        });
+        if (failedKeys.length === 0) break;
+
+        // Sleep for 1 second between retries
+        await this.page.waitForTimeout(200);
+      }
+      // success is try if no items in failedResults
+      return { success: failedKeys.length === 0, failedKeys: failedKeys };
     } catch (error) {
-      console.error(`Failed to check if all storage values are not empty: ${error.message}`);
+      console.error(
+        `Failed to check if all storage values are not empty: ${error.message}`
+      );
     }
   }
 
-  // Check if the object includes the part among its values
-  checkIfValueExists(object, part) {
+  // Check if the object includes the expectedValue among its values
+  async checkIfValueExists(expectedValue) {
     try {
-      const values = Object.values(object);
-      return values.some((value) => new RegExp(escapeRegexSpecialCharacters(part), 'i').test(value));
+      // Run loop until all keys are detected in the Storage
+      for (let i = 0; i < 10; i++) {
+        const sessionStorageData = await this.getSessionStorage();
+        const values = Object.values(sessionStorageData);
+        const isExpectedValueIncluded = values.some((value) =>
+          new RegExp(escapeRegexSpecialCharacters(expectedValue), 'i').test(
+            value
+          )
+        );
+        if (isExpectedValueIncluded) {
+          return true;
+        }
+
+        // Sleep for 1 second between retries
+        await this.page.waitForTimeout(200);
+      }
+      return false;
     } catch (error) {
-      console.error(`Failed to check if the object includes the part among its values: ${error.message}`);
+      console.error(
+        `Failed to check if the object includes the part among its values: ${error.message}`
+      );
     }
   }
 
@@ -539,9 +486,17 @@ export default class GoogleSearchPage {
   // Check if all expected items included to the array
   checkIfAllItemsInArray(array, expectedItems) {
     try {
-      return expectedItems.every((item) => array.includes(item));
+      const missingItems = expectedItems.filter(
+        (item) => !array.includes(item)
+      );
+      return {
+        hasAllItems: missingItems.length === 0,
+        missingItems: missingItems,
+      };
     } catch (error) {
-      console.error(`Failed to check if all expected items included to the array: ${error.message}`);
+      console.error(
+        `Failed to check if all expected items included to the array: ${error.message}`
+      );
     }
   }
 
@@ -576,25 +531,39 @@ export default class GoogleSearchPage {
   async saveGoogleLogoScreenshot(testInfo) {
     try {
       await this.page.waitForSelector(this.selectors.googleLogo);
-      const elementHandle = await this.page.$(this.selectors.googleLogo);
-      const screenshotBuffer = await elementHandle.screenshot();
-      const screenshotPath = getTempFilePath(createUniqueFileName(testInfo, `logo_screenshot.png`));
+      const element = this.page.locator(this.selectors.googleLogo);
+      const screenshotBuffer = await element.screenshot();
+      const screenshotPath = getTempFilePath(
+        createUniqueFileName(testInfo, `logo_screenshot.png`)
+      );
       await writeFile(screenshotPath, screenshotBuffer);
       return screenshotPath;
     } catch (error) {
-      console.error(`Failed to make and save a screenshot of the Google Logo: ${error.message}`);
+      console.error(
+        `Failed to make and save a screenshot of the Google Logo: ${error.message}`
+      );
     }
   }
 
   // Get performance metrics for Search results
-  async getPerformanceMetricsForSearchResults(query, testInfo, defaultBrowserType) {
+  async getPerformanceMetricsForSearchResults(
+    query,
+    testInfo,
+    defaultBrowserType
+  ) {
     try {
       if (defaultBrowserType == 'chromium') {
         // Performance API: Start performance tracing
         var currentBrowser = this.page.context().browser();
-        var tracesName = createUniqueFileName(testInfo, `${query}_perfTraces.json`);
+        var tracesName = createUniqueFileName(
+          testInfo,
+          `${query}_perfTraces.json`
+        );
         var tracesPath = getTempFilePath(tracesName);
-        await currentBrowser.startTracing(this.page, { path: tracesPath, screenshots: true });
+        await currentBrowser.startTracing(this.page, {
+          path: tracesPath,
+          screenshots: true,
+        });
       }
 
       // Make Search action
@@ -614,7 +583,9 @@ export default class GoogleSearchPage {
       }
 
       // Wait for search Results are visible
-      await this.page.waitForSelector(this.selectors.searchResult, { state: 'visible' });
+      await this.page.waitForSelector(this.selectors.searchResult, {
+        state: 'visible',
+      });
 
       //Performance.mark API: Stop performance tracking
       await this.page.evaluate(() => window.performance.mark('Perf:Ended'));
@@ -638,7 +609,9 @@ export default class GoogleSearchPage {
 
         for (let metricBefore of metricsBefore.metrics) {
           // find corresponding metricAfter
-          const metricAfter = metricsAfter.metrics.find((metric) => metric.name === metricBefore.name);
+          const metricAfter = metricsAfter.metrics.find(
+            (metric) => metric.name === metricBefore.name
+          );
 
           // prepare a new object
           if (metricAfter) {
@@ -664,21 +637,35 @@ export default class GoogleSearchPage {
         }
 
         // Chrome DevTool Protocol API: Attach metricsDiff to the test report
-        var metricsDiffDataPath = await this.attachJSONToTest(testInfo, metricsDiff, `${query}_metricsDiffDataName`);
+        var metricsDiffDataPath = await this.attachJSONToTest(
+          testInfo,
+          metricsDiff,
+          `${query}_metricsDiffDataName`
+        );
       }
 
       // Metrics calculation
       // Performance.mark API: Performance measure
-      await this.page.evaluate(() => window.performance.measure('action', 'Perf:Started', 'Perf:Ended'));
+      await this.page.evaluate(() =>
+        window.performance.measure('action', 'Perf:Started', 'Perf:Ended')
+      );
 
       // To get all performance marks
-      const allMarksInfo = await this.page.evaluate(() => window.performance.getEntriesByType('mark'));
+      const allMarksInfo = await this.page.evaluate(() =>
+        window.performance.getEntriesByType('mark')
+      );
 
       // Performance.mark API: Attach allMarksInfo to the test report
-      const marksInfoDataPath = await this.attachJSONToTest(testInfo, allMarksInfo, `${query}_marksInfoDataName`);
+      const marksInfoDataPath = await this.attachJSONToTest(
+        testInfo,
+        allMarksInfo,
+        `${query}_marksInfoDataName`
+      );
 
       // Performance.mark API: To get all performance measures
-      const allMeasuresInfo = await this.page.evaluate(() => window.performance.getEntriesByName('action'));
+      const allMeasuresInfo = await this.page.evaluate(() =>
+        window.performance.getEntriesByName('action')
+      );
 
       // Performance.mark API: Duration of the action
       const actionDuration = allMeasuresInfo[0]['duration'];
@@ -689,16 +676,16 @@ export default class GoogleSearchPage {
         allMeasuresInfo,
         `${query}_measuresInfoDataName`
       );
-
+      let metrics;
       if (defaultBrowserType == 'chromium') {
-        var metrics = {
+        metrics = {
           tracesPath,
           marksInfoDataPath,
           measuresInfoDataPath,
           metricsDiffDataPath,
         };
       } else {
-        var metrics = {
+        metrics = {
           marksInfoDataPath,
           measuresInfoDataPath,
         };
@@ -706,7 +693,9 @@ export default class GoogleSearchPage {
 
       return { metrics, actionDuration };
     } catch (error) {
-      console.error(`Failed to get performance metrics for Search results: ${error.message}`);
+      console.error(
+        `Failed to get performance metrics for Search results: ${error.message}`
+      );
     }
   }
 
@@ -725,20 +714,12 @@ export default class GoogleSearchPage {
     try {
       for (let i = 0; i < elementNumber; i++) {
         await this.page.keyboard.press('Tab'); // Move focus to the next focusable element
+        await this.page.waitForTimeout(10);
       }
     } catch (error) {
-      console.error(`Failed to navigate via Tab to select the item number N: ${error.message}`);
-    }
-  }
-
-  // Navigate via Tab to select the item number N
-  async selectElementNViaTab(elementNumber) {
-    try {
-      for (let i = 0; i < elementNumber; i++) {
-        await this.page.keyboard.press('Tab'); // Move focus to the next focusable element
-      }
-    } catch (error) {
-      console.error(`Failed to navigate via Tab to select the item number N: ${error.message}`);
+      console.error(
+        `Failed to navigate via Tab to select the item number N: ${error.message}`
+      );
     }
   }
 
@@ -749,7 +730,9 @@ export default class GoogleSearchPage {
         await this.page.keyboard.press('Shift+Tab'); // Move focus to the next focusable element
       }
     } catch (error) {
-      console.error(`Failed to navigate via Shift+Tab to select the item number N: ${error.message}`);
+      console.error(
+        `Failed to navigate via Shift+Tab to select the item number N: ${error.message}`
+      );
     }
   }
 
@@ -759,7 +742,9 @@ export default class GoogleSearchPage {
       // Fetch the class of the active element
       return await this.page.evaluate(() => document.activeElement.className);
     } catch (error) {
-      console.error(`Failed to get class of the active (focused) element: ${error.message}`);
+      console.error(
+        `Failed to get class of the active (focused) element: ${error.message}`
+      );
     }
   }
 
@@ -767,12 +752,14 @@ export default class GoogleSearchPage {
   async getHorizontalCentreBySelector(selector) {
     try {
       await this.page.waitForSelector(selector);
-      const element = await this.page.$(selector);
+      const element = this.page.locator(selector);
       const elementBox = await element.boundingBox();
       const elementCentre = elementBox.x + elementBox.width / 2;
       return elementCentre;
     } catch (error) {
-      console.error(`Failed to horizontal centre of the element by the selector: ${error.message}`);
+      console.error(
+        `Failed to horizontal centre of the element by the selector: ${error.message}`
+      );
     }
   }
 }

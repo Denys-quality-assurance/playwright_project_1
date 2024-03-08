@@ -3,7 +3,9 @@ export function getCharacterSequence(string) {
   try {
     return string.split('');
   } catch (error) {
-    console.error(`Failed to convert the number to a digit sequence: ${error.message}`);
+    console.error(
+      `Failed to convert the number to a digit sequence: ${error.message}`
+    );
   }
 }
 
@@ -22,12 +24,18 @@ export function getOperationAriaLabel(operation) {
     };
     return operationMap[operation];
   } catch (error) {
-    console.error(`Failed while mapping between operation name and its button aria-label: ${error.message}`);
+    console.error(
+      `Failed while mapping between operation name and its button aria-label: ${error.message}`
+    );
   }
 }
 
 // Caclucate result of the math operation with the numbers
-export function calculateExpectedResultText(firstNumber, secondNumber, operation) {
+export function calculateExpectedResultText(
+  firstNumber,
+  secondNumber,
+  operation
+) {
   try {
     switch (operation) {
       case 'divide':
@@ -42,6 +50,8 @@ export function calculateExpectedResultText(firstNumber, secondNumber, operation
         return Math.pow(Number(firstNumber), Number(secondNumber)).toString();
     }
   } catch (error) {
-    console.error(`Failed to caclucate result of the math operation with the numbers: ${error.message}`);
+    console.error(
+      `Failed to caclucate result of the math operation with the numbers: ${error.message}`
+    );
   }
 }

@@ -1,8 +1,9 @@
-import { escapeRegexSpecialCharacters } from '../../utilities/regexHelper';
+import basePage from './basePage';
 
-export default class GoogleCustomSearchEnginePage {
-  constructor(page) {
-    this.page = page;
+export default class GoogleCustomSearchEnginePage extends basePage {
+  constructor(page, isMobile) {
+    super(page, isMobile);
+
     this.frame = null;
     this.selectors = {
       frameSelectors: [
@@ -15,12 +16,17 @@ export default class GoogleCustomSearchEnginePage {
     };
   }
 
-  // Navigate to Home page
+  // Select Frame
   async selectFrame() {
     try {
-      await this.page.goto('/google-sites/how-to/insert-custom-code/google-custom-search-engine/');
+      await this.page.goto(
+        '/google-sites/how-to/insert-custom-code/google-custom-search-engine/'
+      );
       // Get nested iFrame
-      this.frame = await this.getNestedFrame(this.page, this.selectors.frameSelectors);
+      this.frame = await this.getNestedFrame(
+        this.page,
+        this.selectors.frameSelectors
+      );
     } catch (error) {
       console.error(`Failed to navigate to CSE iFrame: ${error.message}`);
     }
@@ -41,49 +47,4 @@ export default class GoogleCustomSearchEnginePage {
       console.error(`Failed to retrieve the nested iframe: ${error.message}`);
     }
   };
-
-  // Search for query
-  async searchFor(query) {
-    try {
-      await this.frame.waitForSelector(this.selectors.searchInputTextArea);
-      await this.frame.fill(this.selectors.searchInputTextArea, query);
-      await this.frame.press(this.selectors.searchInputTextArea, 'Enter');
-      // Waiting for search result page to appear
-      await this.frame.waitForLoadState('networkidle');
-    } catch (error) {
-      console.error(`Failed to search: ${error.message}`);
-    }
-  }
-
-  // Get Search results
-  async getSearchResultElements() {
-    try {
-      await this.frame.waitForSelector(this.selectors.searchResult);
-      const searchResultElements = await this.frame.$$(this.selectors.searchResult);
-      return searchResultElements;
-    } catch (error) {
-      console.error(`Failed to get search results: ${error.message}`);
-    }
-  }
-
-  // Check if all search results contain query
-  async checkIfAllSearchResultsContainQuery(searchResults, query) {
-    try {
-      for (let searchResult of searchResults) {
-        // Get the text of each searchResult
-        let resultText = await searchResult.innerText();
-
-        // Case insensitive regex for the query
-        let queryRegex = new RegExp(escapeRegexSpecialCharacters(query), 'i'); // 'i' flag for case insensitive
-
-        // Check if the text contains query
-        if (!queryRegex.test(resultText)) {
-          return false;
-        }
-      }
-      return true;
-    } catch (error) {
-      console.error(`Failed to check if all search results contain query: ${error.message}`);
-    }
-  }
 }

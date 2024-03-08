@@ -9,20 +9,22 @@ test.describe('Geolocation Tests @skip-for-firefox', () => {
   // Sets the geolocation, navigate to Google Maps page and reject all Cookies if it's needed
   test.beforeEach(
     `Sets the geolocation, navigate to Google Maps page and reject all Cookies if it's needed`,
-    async ({ sharedContext }) => {
-      // Sets the geolocation
-      await sharedContext.setGeolocation(geoData);
+    async ({ sharedContext }, testInfo) => {
+      if (testInfo.expectedStatus !== 'skipped') {
+        // Sets the geolocation
+        await sharedContext.setGeolocation(geoData);
 
-      // Navigate to page and reject all Cookies if it's needed
-      let page = await sharedContext.newPage();
-      const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
-      googleMapsPage = new GoogleMapsPage(page, isMobile);
-      await googleMapsPage.openGoogleMaps();
+        // Navigate to page and reject all Cookies if it's needed
+        let page = await sharedContext.newPage();
+        const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
+        googleMapsPage = new GoogleMapsPage(page, isMobile);
+        await googleMapsPage.openGoogleMaps();
+      }
     }
   );
 
   // Check that URL contains geolocation data
-  test(`Check that URL contains geolocation data`, async ({}) => {
+  test(`TEST-25: Check that URL contains geolocation data`, async ({}) => {
     // Go to My Place
     await googleMapsPage.goToMyLocation();
 
@@ -30,6 +32,8 @@ test.describe('Geolocation Tests @skip-for-firefox', () => {
     const expectedGeolocationData = `${geoData.latitude},${geoData.longitude}`;
 
     // Check if the URL contains the geolocation data
-    expect(url).toContain(expectedGeolocationData, `URL does not contain the expected geolocation data`);
+    expect(url, `URL does not contain the expected geolocation data`).toContain(
+      expectedGeolocationData
+    );
   });
 });

@@ -1,57 +1,24 @@
-export default class GoogleMapsPage {
+import basePage from './basePage';
+
+export default class GoogleMapsPage extends basePage {
   constructor(page, isMobile) {
-    this.page = page;
-    this.isMobile = isMobile; // type of device is mobile
+    super(page, isMobile);
+
     this.selectors = {
-      cookiesModal: `#CXQnmb`, // Cookies consent modal
-      rejectAllCookiesButton: `button#W0wltc`, // Reject all cookies button
+      ...this.selectors,
+
       navigationModal: `.OuM1Vb[role="dialog"]`, // navigation tracking modal
       rejectNavigationButton: `button.vrdm1c`, // Reject navigation tracking button
       myPlaceButton: this.isMobile ? `button.uWaeI` : `button#sVuEFc`, // My place button for mobile and for desktop
     };
   }
 
-  // Click or Tap
-  async clickOrTap(elementOrSelector) {
-    try {
-      if (typeof elementOrSelector === 'string') {
-        if (this.isMobile) {
-          await this.page.tap(elementOrSelector);
-        } else {
-          await this.page.click(elementOrSelector);
-        }
-      } else {
-        // elementOrSelector is an ElementHandle
-        if (this.isMobile) {
-          await elementOrSelector.tap();
-        } else {
-          await elementOrSelector.click();
-        }
-      }
-    } catch (error) {
-      console.error(`Failed to chose click or tap method: ${error.message}`);
-    }
-  }
-
   // Navigate to URL
-  async navigateHome(URL) {
+  async navigateURL(URL) {
     try {
       await this.page.goto(URL);
-      await this.page.waitForLoadState('networkidle');
     } catch (error) {
       console.error(`Failed to navigate to URL: ${error.message}`);
-    }
-  }
-
-  // Reject all Cookies if it's needed
-  async rejectCookiesIfAsked() {
-    if (await this.page.isVisible(this.selectors.cookiesModal)) {
-      try {
-        await this.clickOrTap(this.selectors.rejectAllCookiesButton);
-        await this.page.waitForSelector(this.selectors.cookiesModal, { state: 'hidden' });
-      } catch (error) {
-        console.error(`Failed to reject all Cookies: ${error.message}`);
-      }
     }
   }
 
@@ -60,7 +27,9 @@ export default class GoogleMapsPage {
     if (await this.page.isVisible(this.selectors.navigationModal)) {
       try {
         await this.clickOrTap(this.selectors.rejectNavigationButton);
-        await this.page.waitForSelector(this.selectors.navigationModal, { state: 'hidden' });
+        await this.page.waitForSelector(this.selectors.navigationModal, {
+          state: 'hidden',
+        });
       } catch (error) {
         console.error(`Failed to reject location tracking: ${error.message}`);
       }
@@ -69,9 +38,9 @@ export default class GoogleMapsPage {
 
   // Navigate to Google Maps
   async openGoogleMaps() {
-    await this.navigateHome('/');
+    await this.navigateURL('/');
     await this.rejectCookiesIfAsked();
-    await this.navigateHome('/maps');
+    await this.navigateURL('/maps');
     await this.rejectNavigationIfAsked();
   }
 
@@ -80,8 +49,6 @@ export default class GoogleMapsPage {
     await this.page.waitForSelector(this.selectors.myPlaceButton);
     await this.clickOrTap(this.selectors.myPlaceButton);
     await this.page.waitForNavigation();
-    // Waiting for result page to appear
-    await this.page.waitForLoadState('networkidle');
   }
 
   // Get page url
