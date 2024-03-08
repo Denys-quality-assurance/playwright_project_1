@@ -1,3 +1,22 @@
+/*
+ * This configuration file controls the settings for running end-to-end tests using Playwright test.
+ *
+ * The file configures:
+ * - The number of tests that can run at the same time
+ * - The maximum time a test is allowed to run before it is considered failed
+ * - The maximum number of retries when a test fails
+ * - The file paths for the tests
+ * - The environment specific settings for the projects we're testing.
+ *
+ * The best practices enforced in this config include:
+ * - Testing across multiple browsers (Chrome, Safari, Firefox, Edge) for comprehensive coverage
+ * - Inclusion of device-specific settings for both desktop and mobile testing
+ * - Use of relevant configurations to skip tests known to fail, maximizing efficiency
+ * - Use of environment variables, allowing for flexibility and security
+ * - Ability to test individual features
+ * - Different reporter options for Continuous Integration (CI) and local environments: customReporter.js + 'dot'/'list' + 'html'
+ */
+
 import { devices } from '@playwright/test';
 
 module.exports = {
@@ -48,7 +67,7 @@ module.exports = {
       use: {
         ...devices['Desktop Safari'],
         headless: false,
-        baseURL: process.env.BASE_URL || 'https://www.google.com', //default PROD URL
+        baseURL: process.env.BASE_URL || 'https://www.google.com', // default PROD URL
       },
     },
     {
@@ -62,7 +81,7 @@ module.exports = {
         ...devices['Desktop Edge'],
         channel: 'msedge', // or "msedge-beta" or 'msedge-dev'
         headless: false,
-        baseURL: process.env.BASE_URL || 'https://www.google.com', //default PROD URL
+        baseURL: process.env.BASE_URL || 'https://www.google.com', // default PROD URL
       },
     },
     {
@@ -75,7 +94,7 @@ module.exports = {
       use: {
         ...devices['Desktop Firefox'],
         headless: false,
-        baseURL: process.env.BASE_URL || 'https://www.google.com', //default PROD URL
+        baseURL: process.env.BASE_URL || 'https://www.google.com', // default PROD URL
       },
     },
     /* Test against mobile viewports. */
@@ -89,7 +108,7 @@ module.exports = {
       use: {
         ...devices['iPhone 14'],
         headless: false,
-        baseURL: process.env.BASE_URL || 'https://www.google.com', //default PROD URL
+        baseURL: process.env.BASE_URL || 'https://www.google.com', // default PROD URL
       },
     },
     {
@@ -102,7 +121,7 @@ module.exports = {
       use: {
         ...devices['iPhone 14 landscape'],
         headless: false,
-        baseURL: process.env.BASE_URL || 'https://www.google.com', //default PROD URL
+        baseURL: process.env.BASE_URL || 'https://www.google.com', // default PROD URL
       },
     },
     {
@@ -116,7 +135,7 @@ module.exports = {
         ...devices['Galaxy Tab S4'],
         channel: 'chrome', // or 'chrome-beta'
         headless: false,
-        baseURL: process.env.BASE_URL || 'https://www.google.com', //default PROD URL
+        baseURL: process.env.BASE_URL || 'https://www.google.com', // default PROD URL
       },
     },
     {
@@ -130,19 +149,21 @@ module.exports = {
         ...devices['Galaxy Tab S4 landscape'],
         channel: 'chrome', // or 'chrome-beta'
         headless: false,
-        baseURL: process.env.BASE_URL || 'https://www.google.com', //default PROD URL
+        baseURL: process.env.BASE_URL || 'https://www.google.com', // default PROD URL
       },
     },
   ],
   reporter: process.env.CI
     ? [
-        ['dot'],
-        ['./tests/setup/customReporter.js'],
-        ['html', { outputFolder: 'playwright-report' }],
-      ] // for CI: use concise 'dot' and 'html' reporters
+        // for CI: use concise 'dot', customReporter and 'html' reporters:
+        ['dot'], // 'dot' reporter displays a very concise output. Well-suited for less verbose reporting of test runs in continuous integration (CI) environments.
+        ['./tests/setup/customReporter.js'], // A Custom reporter defined in the project.
+        ['html', { outputFolder: 'playwright-report' }], // 'html' reporter generates a static website with test results. The outputFolder option specifies the directory where the report should be saved.
+      ]
     : [
-        ['list'],
+        // for local run: use default 'list', customReporter and 'html' reporters
+        ['list'], // 'list' reporter prints test progress and results in a detailed list format. Useful for local development.
         ['./tests/setup/customReporter.js'],
         ['html', { outputFolder: 'playwright-report' }],
-      ], // fol local run: use default 'list' and 'html' reporters
+      ],
 };
