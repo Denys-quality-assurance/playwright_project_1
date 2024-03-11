@@ -20,7 +20,7 @@ test.describe(`Google Home Page: User Interface`, () => {
     }
   );
 
-  test(`TEST-14: Google logo is visiable on the Home page @UI`, async ({
+  test(`TEST-14: Google logo is visiable on the Home page (pixel check) @UI`, async ({
     sharedContext,
   }, testInfo) => {
     // Make and save a screenshot of the Google Logo
