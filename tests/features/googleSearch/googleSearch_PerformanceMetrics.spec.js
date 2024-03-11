@@ -5,7 +5,7 @@ import { queryDataGeneral } from '../../test-data/googleSearch/queryData';
 import acceptablePerformanceData from '../../test-data/googleSearch/acceptablePerformanceData';
 import {
   checkFileExists,
-  deleteTempFile,
+  deleteFileAtPath,
 } from '../../../utilities/fileSystemHelper';
 
 const acceptableActionDutation =
@@ -80,7 +80,7 @@ test.describe(`Google Search results: Performance metrics`, () => {
 
       // Delete the temporaty files
       for (let key in metrics) {
-        deleteTempFile(metrics[key]);
+        deleteFileAtPath(metrics[key]);
       }
     });
   });

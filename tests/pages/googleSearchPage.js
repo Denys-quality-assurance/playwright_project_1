@@ -1,9 +1,9 @@
 import basePage from './basePage';
 import {
-  readFileSync,
-  createUniqueFileName,
+  readDataFromFileSync,
+  generateUniqueFileName,
   getTempFilePath,
-  writeFile,
+  writeDataToFileAsync,
 } from '../../utilities/fileSystemHelper';
 import { escapeRegexSpecialCharacters } from '../../utilities/regexHelper';
 
@@ -176,7 +176,7 @@ export default class GoogleSearchPage extends basePage {
   // Mock the search response with Empty Results
   async mockResponseWithEmptyResults(sharedContext, query) {
     try {
-      let responseBodyForEmptyResults = readFileSync(
+      let responseBodyForEmptyResults = readDataFromFileSync(
         responseBodyForEmptyResultsMockPath
       );
       // Replace 'Query' with the current query globally in the HTML
@@ -514,9 +514,9 @@ export default class GoogleSearchPage extends basePage {
   // Attach JSON to test
   async attachJSONToTest(testInfo, data, fileName) {
     try {
-      const dataName = createUniqueFileName(testInfo, `${fileName}.json`);
+      const dataName = generateUniqueFileName(testInfo, `${fileName}.json`);
       const dataPath = getTempFilePath(dataName);
-      await writeFile(dataPath, JSON.stringify(data, null, 2));
+      await writeDataToFileAsync(dataPath, JSON.stringify(data, null, 2));
       await testInfo.attach(dataName, {
         path: dataPath,
         contentType: 'application/json',
@@ -534,9 +534,9 @@ export default class GoogleSearchPage extends basePage {
       const element = this.page.locator(this.selectors.googleLogo);
       const screenshotBuffer = await element.screenshot();
       const screenshotPath = getTempFilePath(
-        createUniqueFileName(testInfo, `logo_screenshot.png`)
+        generateUniqueFileName(testInfo, `logo_screenshot.png`)
       );
-      await writeFile(screenshotPath, screenshotBuffer);
+      await writeDataToFileAsync(screenshotPath, screenshotBuffer);
       return screenshotPath;
     } catch (error) {
       console.error(
@@ -555,7 +555,7 @@ export default class GoogleSearchPage extends basePage {
       if (defaultBrowserType == 'chromium') {
         // Performance API: Start performance tracing
         var currentBrowser = this.page.context().browser();
-        var tracesName = createUniqueFileName(
+        var tracesName = generateUniqueFileName(
           testInfo,
           `${query}_perfTraces.json`
         );

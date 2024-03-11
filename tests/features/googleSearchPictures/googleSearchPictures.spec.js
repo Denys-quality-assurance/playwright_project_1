@@ -4,7 +4,7 @@ import GoogleSearchPicturesPage from '../../pages/googleSearchPicturesPage';
 import {
   downloadImageFromUrlToTempDir,
   checkFileExists,
-  deleteTempFile,
+  deleteFileAtPath,
 } from '../../../utilities/fileSystemHelper';
 import { escapeRegexSpecialCharacters } from '../../../utilities/regexHelper';
 import { queryDataGeneral } from '../../test-data/googleSearch/queryData';
@@ -60,7 +60,7 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
       await googleSearchPicturesPage.getSearchByPictureResultsLocator();
 
     // Delete the picture from PC
-    deleteTempFile(imagePath);
+    deleteFileAtPath(imagePath);
 
     // Check if any search result description contains the downloaded picture query
     const doesAnySearchResultContainsPictureQuery =
@@ -97,6 +97,6 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
     ).toBe(true);
 
     // Delete the picture from PC
-    deleteTempFile(imagePath);
+    deleteFileAtPath(imagePath);
   });
 });

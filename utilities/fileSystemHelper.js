@@ -1,3 +1,10 @@
+/*
+ * The main purpose of this code file is to provide utility functions for reading and writing files,
+ * and manipulating images. It provides functions to create unique file names, shorten long names,
+ * check if a file exists, delete a file, download an image from a URL, and compare images.
+ *
+ */
+
 import fs from 'fs';
 import util from 'util';
 import https from 'https';
@@ -8,10 +15,12 @@ import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
 import sharp from 'sharp';
 
-// Create unique file name
-export function createUniqueFileName(testInfo, fileName) {
+// A function to generate a unique filename by combining the project name, a timestamp and the filename.
+export function generateUniqueFileName(testInfo, fileName) {
   try {
-    const shortenFilename = getShortenName(fileName);
+    // Shorten the name
+    const shortenFilename = getShortenedName(fileName);
+
     const projectName = testInfo.project.name;
     let timestamp;
     let filePath;
@@ -25,15 +34,15 @@ export function createUniqueFileName(testInfo, fileName) {
   }
 }
 
-// Shorten the string
-export function getShortenName(str) {
+// A function to shorten a given fileName
+export function getShortenedName(fileName) {
   try {
     const MAX_LENGTH = 30;
 
     // Check if the string contains underscore
-    if (str.includes('_')) {
+    if (fileName.includes('_')) {
       // Split the string on the underscore
-      const parts = str.split('_');
+      const parts = fileName.split('_');
       const beforeUnderscore = parts[0].slice(0, MAX_LENGTH); // Get first part, cut up to 30 symbols
       const afterUnderscore = parts.slice(1).join('_'); // If there are multiple underscores, join the strings after the first underscore
       // Concatenate the parts into one string using template literals
@@ -44,13 +53,13 @@ export function getShortenName(str) {
     }
 
     // If there is no underscore, cut the string up to 30 characters
-    return str.slice(0, MAX_LENGTH);
+    return fileName.slice(0, MAX_LENGTH);
   } catch (error) {
     console.error(`Error while getting the short file name: ${error.message}`);
   }
 }
 
-// Get path to the system's temp directory
+// Get path of the operating system's temporary directory
 export function getTempDirPath() {
   try {
     // Get the system's temp directory
@@ -63,7 +72,7 @@ export function getTempDirPath() {
   }
 }
 
-// Get path to the system's temp directory with the temporaty file
+// Get path of a given filename under the system temporary directory
 export function getTempFilePath(fileName) {
   try {
     // Get the system's temp directory
@@ -78,11 +87,13 @@ export function getTempFilePath(fileName) {
   }
 }
 
-// Download image from url to the system's directory for temporary files
+// Download an image from a specified URL to the system's directory for temporary files
 export async function downloadImageFromUrlToTempDir(url, testInfo) {
   return new Promise((resolve, reject) => {
     https
       .get(url, (response) => {
+        // Check if the response status code is not successful or if the Content-Type of the response is not an 'image'.
+        // If any check fails, reject the Promise with the appropriate error message
         if (
           response.statusCode < 200 ||
           response.statusCode >= 300 ||
@@ -95,16 +106,17 @@ export async function downloadImageFromUrlToTempDir(url, testInfo) {
           );
           return;
         }
-        // Path to a new temp file
-        const fileName = createUniqueFileName(
+        // Create a unique filename for the downloaded image and generate its path in the system's temporary files directory
+        const fileName = generateUniqueFileName(
           testInfo,
           'downloaded_picture.jpg'
         );
         const filePath = getTempFilePath(fileName);
 
+        // Create a writable stream to write the image file to the filesystem
         const fileStream = fs.createWriteStream(filePath);
 
-        // Cleanup function to delete file and reject promise
+        // Define a cleanup function to delete the file and reject the promise in case of any error
         function cleanupAndReject(error) {
           fs.unlink(filePath, () => {}); // deletes the file if any error occurs
           console.error(
@@ -113,9 +125,13 @@ export async function downloadImageFromUrlToTempDir(url, testInfo) {
           reject(error); // Promise is rejected
         }
 
+        // Attach 'error' event listeners to the response and file writing stream to handle any errors by invoking the cleanup function
         response.on('error', cleanupAndReject); // attaching error event on response
         fileStream.on('error', cleanupAndReject); // attaching error event on fileStream
 
+        // Use the 'pipeline' function to pipe the response (readable stream) into the file writing stream.
+        // If there is any error during this process, invoke the cleanup function;
+        // otherwise, resolve the Promise with the filePath
         pipeline(response, fileStream, (error) => {
           if (error) {
             cleanupAndReject(error);
@@ -124,6 +140,8 @@ export async function downloadImageFromUrlToTempDir(url, testInfo) {
           }
         });
       })
+
+      // If there is any error during the HTTPS GET request, log the error and reject the promise with the error
       .on('error', (error) => {
         console.error(
           `Error while downloading image from url to the system's directory for temporary files: ${error.message}`
@@ -133,22 +151,21 @@ export async function downloadImageFromUrlToTempDir(url, testInfo) {
   });
 }
 
-// Check file exists
+// Checking if a file exists at the specified file path
 export function checkFileExists(filePath) {
   try {
     if (fs.existsSync(filePath)) {
       //file exists
       return true;
     }
+    return false;
   } catch (error) {
     console.error(`Error while checking the file existance: ${error.message}`);
-    return false;
   }
-  return false;
 }
 
-// Delete the temporaty file
-export function deleteTempFile(filePath) {
+// Deletes a file at the specified path
+export function deleteFileAtPath(filePath) {
   try {
     fs.unlinkSync(filePath);
   } catch (error) {
@@ -156,11 +173,14 @@ export function deleteTempFile(filePath) {
   }
 }
 
-// Read the file data into a buffer asynchronously
-export async function readFile(filePath) {
+// Asynchronously read a file from the disk and return its contents as a buffer
+export async function readDataFromFileAsync(filePath) {
   try {
-    const readFilePromise = util.promisify(fs.readFile); // Create a promisified version of fs.readFile
+    // Use built-in util.promisify to convert the fs.readFile callback function into a function that supports Promises
+    const readFilePromise = util.promisify(fs.readFile);
+    // Perform the async file read operation and wait for it to complete
     const fileBuffer = await readFilePromise(filePath);
+    // Return the file's contents as a buffer
     return fileBuffer;
   } catch (error) {
     console.error(
@@ -169,8 +189,8 @@ export async function readFile(filePath) {
   }
 }
 
-// Read the file data into a buffer synchronously
-export function readFileSync(filePath) {
+// Synchronously read a file from the disk and return its contents as a buffer
+export function readDataFromFileSync(filePath) {
   try {
     return fs.readFileSync(filePath);
   } catch (error) {
@@ -180,10 +200,12 @@ export function readFileSync(filePath) {
   }
 }
 
-// Write data to file
-export async function writeFile(filePath, data) {
+// Asynchronously write data to a file in the disk
+export async function writeDataToFileAsync(filePath, data) {
   try {
-    const writeFilePromise = util.promisify(fs.writeFile); // Create a promisified version of fs.writeFile
+    // Use built-in util.promisify to convert the fs.writeFile callback function into a function that supports Promises
+    const writeFilePromise = util.promisify(fs.writeFile);
+    // Perform the async file write operation and wait for it to complete
     await writeFilePromise(filePath, data);
   } catch (error) {
     console.error(`Error while writing file: ${error.message}`);
@@ -257,7 +279,7 @@ export async function getMismatchedPixelsCount(
       }
     );
     if (mismatchedPixelsCount > 0) {
-      const diffImageName = createUniqueFileName(
+      const diffImageName = generateUniqueFileName(
         testInfo,
         'difference_between_basaline_and_actual_screenshot.png'
       );
@@ -274,10 +296,10 @@ export async function getMismatchedPixelsCount(
       ]);
 
       // Delete the temporaty files
-      deleteTempFile(diffImagePath);
+      deleteFileAtPath(diffImagePath);
     }
     // Delete the temporaty files
-    deleteTempFile(actualScreenshotPath);
+    deleteFileAtPath(actualScreenshotPath);
     return mismatchedPixelsCount;
   } catch (error) {
     console.error(
