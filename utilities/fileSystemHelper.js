@@ -279,7 +279,7 @@ export async function getMismatchedPixelsCount(
       await attachAllImages(testInfo, paths);
 
       // Delete the temporaty files
-      // deleteFileAtPath(diffImagePath);
+      deleteFileAtPath(diffImagePath);
     }
     // Delete the temporaty files
     deleteFileAtPath(actualScreenshotPath);
