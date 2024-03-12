@@ -1,5 +1,5 @@
 import basePage from './basePage';
-import { getOperationAriaLabel } from '../../utilities/googleCalculator/calculatorHelper';
+import { mapOperationToAriaLabel } from '../../utilities/googleCalculator/calculatorHelper';
 
 export default class GoogleCalculatorPage extends basePage {
   constructor(page, isMobile) {
@@ -76,7 +76,7 @@ export default class GoogleCalculatorPage extends basePage {
   async clickOrTapOperation(operationName) {
     try {
       // Convert operation name to corresponding aria-label
-      const operationAriaLabel = getOperationAriaLabel(operationName);
+      const operationAriaLabel = mapOperationToAriaLabel(operationName);
       // Construct unique locator for operation button
       const operationLocator = `${this.selectors.operationsButtons}[aria-label="${operationAriaLabel}"]`;
       await this.page.waitForSelector(operationLocator);

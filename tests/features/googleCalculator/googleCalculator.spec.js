@@ -3,7 +3,7 @@ import test from '../../../hooks/testWithAfterEachHooks.mjs';
 import GoogleCalculatorPage from '../../pages/googleCalculatorPage';
 import { mathOperation } from '../../test-data/googleCalculator/mathOperation';
 import {
-  getCharacterSequence,
+  splitStringToCharArray,
   calculateExpectedResultText,
 } from '../../../utilities/googleCalculator/calculatorHelper';
 
@@ -35,12 +35,12 @@ test.describe(`Google calculator`, () => {
   });
 
   mathOperation.forEach((mathOperation) => {
-    test(`TEST-29: Perform "${mathOperation.operationName}" operation for ${mathOperation.firstNumber} and ${mathOperation.secondNumber} @only-desktop`, async () => {
+    test.only(`TEST-29: Perform "${mathOperation.operationName}" operation for ${mathOperation.firstNumber} and ${mathOperation.secondNumber} @only-desktop`, async () => {
       // Change to English if it's needed
       await googleCalculatorPage.changeToEnglishIfAsked();
       // Click or tap the 1st number
       await googleCalculatorPage.typeNumbers(
-        getCharacterSequence(mathOperation.firstNumber)
+        splitStringToCharArray(mathOperation.firstNumber)
       );
       // Click or tap the orertion button
       await googleCalculatorPage.clickOrTapOperation(
@@ -48,7 +48,7 @@ test.describe(`Google calculator`, () => {
       );
       // Click or tap the 2nd number
       await googleCalculatorPage.typeNumbers(
-        getCharacterSequence(mathOperation.secondNumber)
+        splitStringToCharArray(mathOperation.secondNumber)
       );
       // Click or tap the "equals" button
       await googleCalculatorPage.clickOrTap(
