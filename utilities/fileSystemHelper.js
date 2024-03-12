@@ -21,6 +21,7 @@ const BASE_IMG_PATHS = {
   DESKTOP:
     './tests/test-data/googleSearch/baseline-images/baseline_homepage_logo.png',
 };
+const PIXEL_MATCH_THRESHOLD = 0.19;
 
 // A function to generate a unique filename by combining the project name, a timestamp and the filename.
 export function generateUniqueFileName(testInfo, fileName) {
@@ -221,8 +222,9 @@ export async function writeDataToFileAsync(filePath, data) {
   }
 }
 
-// Compare the actual screenshot against the expected baseline Logo, attach results to the report, delete temporary files
-export async function getMismatchedPixelsCount(
+// Compare the actual screenshot to the expected baseline logo.
+// If the pixels don't match, it saves a difference image, attaches all images to the report, and deletes temporary files.
+export async function compareScreenshotsAndReportDifferences(
   actualScreenshotPath,
   testInfo,
   sharedContext
@@ -243,16 +245,19 @@ export async function getMismatchedPixelsCount(
     const expectedBaseline = PNG.sync.read(
       fs.readFileSync(expectedBaselinePath)
     );
-    // Resize the Actual screenshot if needed
-    const actualScreenshot = await resizeActualScreenshotToBaseline(
+
+    // If needed, resize the actual screenshot to the baseline dimensions
+    const actualScreenshot = await resizeActualScreenshotToBaselineDimension(
       expectedBaseline,
       actualScreenshotPath
     );
 
+    // Initialize difference image container
     // Create mismatchedPixelsDiff PNG object
     const { width, height } = expectedBaseline;
     const mismatchedPixelsDiff = new PNG({ width, height });
-    // Compare images
+
+    // Compare baseline and actual images
     const mismatchedPixelsCount = pixelmatch(
       expectedBaseline.data,
       actualScreenshot.data,
@@ -260,29 +265,37 @@ export async function getMismatchedPixelsCount(
       width,
       height,
       {
-        threshold: 0.19,
+        threshold: PIXEL_MATCH_THRESHOLD,
       }
     );
+
+    // If there are any mismatches between the two images
     if (mismatchedPixelsCount > 0) {
+      // Create a unique filename for the difference image
       const diffImageName = generateUniqueFileName(
         testInfo,
         'difference_between_basaline_and_actual_screenshot.png'
       );
+
       // Get path of diffImageName under the system temporary directory
       const diffImagePath = getTempFilePath(diffImageName);
-      await writeDataToFile(diffImagePath, mismatchedPixelsDiff);
 
-      // Paths of files to attach
+      // Write the difference image to file
+      await writePNGToFile(mismatchedPixelsDiff, diffImagePath);
+
+      // Collect paths of all images for report
       const paths = [expectedBaselinePath, actualScreenshotPath, diffImagePath];
 
       // Attach images to test report
-      await attachAllImages(testInfo, paths);
+      await attachAllImagesToTestReport(testInfo, paths);
 
-      // Delete the temporaty files
+      // Delete the difference image file after it has been attached to the test report
       deleteFileAtPath(diffImagePath);
     }
-    // Delete the temporaty files
+    // Delete the temporary actual screenshot
     deleteFileAtPath(actualScreenshotPath);
+
+    // Return the amount of mismatched pixels
     return mismatchedPixelsCount;
   } catch (error) {
     console.error(
@@ -291,49 +304,54 @@ export async function getMismatchedPixelsCount(
   }
 }
 
+// Return the path to the baseline image
+// The path depends on the device type(mobile or not) and the browser type
 export function getBaselineImagePath(isMobile, defaultBrowserType) {
   return isMobile && defaultBrowserType == 'webkit'
     ? BASE_IMG_PATHS.MOBILE_WEBKIT
     : BASE_IMG_PATHS.DESKTOP;
 }
 
-// Resize the Actual screenshot if needed
-export async function resizeActualScreenshotToBaseline(
+// Resize the Actual screenshot to match the dimensions of the baseline
+export async function resizeActualScreenshotToBaselineDimension(
   expectedBaseline,
   actualScreenshotPath
 ) {
-  // Convert binaris into Buffers, transform Buffers into pixel data for direct comparison
+  // Convert binaris into Buffers, transform Buffers into pixel data
   const actualScreenshotOriginalSize = PNG.sync.read(
     fs.readFileSync(actualScreenshotPath)
   );
 
-  // Resize image if needed
+  // If the dimensions of the actual screenshot don't match the dimensions of the baseline
   if (
     expectedBaseline.width !== actualScreenshotOriginalSize.width ||
     expectedBaseline.height !== actualScreenshotOriginalSize.height
   ) {
-    // The sizes don't match. Resize the screenshot buffer.
+    // Resize the screenshot buffer to match the baseline dimensions
     const actualScreenshotOriginalBuffer =
       fs.readFileSync(actualScreenshotPath);
     const resizedScreenshotBuffer = await sharp(actualScreenshotOriginalBuffer)
-      .resize(expectedBaseline.width, expectedBaseline.height) // Resize to expectedBaseline dimensions
+      .resize(expectedBaseline.width, expectedBaseline.height)
       .png()
       .toBuffer();
 
     // Return resized screenshot buffer
     return PNG.sync.read(resizedScreenshotBuffer);
   } else {
-    // The sizes match. No need to resize.
+    // If the sizes already match, return the original screenshot buffer
     return actualScreenshotOriginalSize;
   }
 }
 
-export function attachAllImages(testInfo, paths) {
-  return Promise.all(paths.map((p) => attachImage(testInfo, p)));
+// Attach each image from the paths to the test report
+export function attachAllImagesToTestReport(testInfo, paths) {
+  // Promise.all is used to execute attachImageToReport function for all path of image
+  // It waits until all these operations complete and then returns the result
+  return Promise.all(paths.map((path) => attachImageToReport(testInfo, path)));
 }
 
-// Write the data into new file via stream
-export function writeDataToFile(filePath, data) {
+// Write the PNG into new file via stream
+export function writePNGToFile(image, filePath) {
   return new Promise((resolve, reject) => {
     try {
       const fileStream = fs.createWriteStream(filePath);
@@ -346,8 +364,8 @@ export function writeDataToFile(filePath, data) {
       // Use the 'end' event to resolve the Promise with the filePath when file is fully written
       fileStream.on('finish', () => resolve(filePath));
 
-      // Write data (PNG) to the file through the stream
-      data.pack().pipe(fileStream);
+      // Write PNG image to the file through the stream
+      image.pack().pipe(fileStream);
     } catch (error) {
       console.error(
         `Error while writing data into a new file: ${error.message}`
@@ -358,9 +376,9 @@ export function writeDataToFile(filePath, data) {
 }
 
 // Attach image to test report
-export async function attachImage(testInfo, imagePath) {
+export async function attachImageToReport(testInfo, imagePath) {
   try {
-    return testInfo.attach(getFileName(imagePath), {
+    return testInfo.attach(extractFileNameFromPath(imagePath), {
       path: imagePath,
       contentType: 'image/png',
     });
@@ -372,8 +390,9 @@ export async function attachImage(testInfo, imagePath) {
 }
 
 // Get the file name from the file path
-export function getFileName(filePath) {
+export function extractFileNameFromPath(filePath) {
   try {
+    // The path.basename() method returns the last portion of a path
     return path.basename(filePath);
   } catch (error) {
     console.error(

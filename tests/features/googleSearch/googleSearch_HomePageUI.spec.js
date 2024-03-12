@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test';
 import test from '../../../hooks/testWithAfterEachHooks.mjs';
 import GoogleSearchPage from '../../pages/googleSearchPage';
-import { getMismatchedPixelsCount } from '../../../utilities/fileSystemHelper';
+import { compareScreenshotsAndReportDifferences } from '../../../utilities/fileSystemHelper';
 
 test.describe(`Google Home Page: User Interface`, () => {
   let page; // Page instance
@@ -27,7 +27,7 @@ test.describe(`Google Home Page: User Interface`, () => {
     const actualScreenshotPath =
       await googleSearchPage.saveGoogleLogoScreenshot(testInfo);
     // Compare the actual Logo against the expected baseline Logo, attach results to the report, delete temporary files
-    const mismatchedPixelsCount = await getMismatchedPixelsCount(
+    const mismatchedPixelsCount = await compareScreenshotsAndReportDifferences(
       actualScreenshotPath,
       testInfo,
       sharedContext

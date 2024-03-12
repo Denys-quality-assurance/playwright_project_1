@@ -1,4 +1,4 @@
-import { getFileName } from './fileSystemHelper.js';
+import { extractFileNameFromPath } from './fileSystemHelper.js';
 
 // String constants for reporting
 export const FAILED_STR = '[FAILED]';
@@ -20,7 +20,7 @@ export const PASSED_TESTS_WITH_KNOWN_UNFIXED_ISSUES_STR =
 export function findRelatedBugsForTest(fileName, testTitle, knownBugs) {
   try {
     // Current spec file name, test title
-    const currentSpecFileName = getFileName(fileName);
+    const currentSpecFileName = extractFileNameFromPath(fileName);
     const currentTestTitle = testTitle;
 
     const relatedBugs = knownBugs.filter(
@@ -45,7 +45,7 @@ export function findRelatedUnfixedBugsForTest(
 ) {
   try {
     // Current spec file name, test title
-    const currentSpecFileName = getFileName(fileName);
+    const currentSpecFileName = extractFileNameFromPath(fileName);
     const currentTestTitle = testTitle;
 
     const relatedUnfixedBugs = knownBugs.filter(
