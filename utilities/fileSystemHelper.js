@@ -15,13 +15,15 @@ import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
 import sharp from 'sharp';
 
+// Path to the baseline image
+// The path depends on the device type(mobile or not) and the browser type
 const BASE_IMG_PATHS = {
   MOBILE_WEBKIT:
     './tests/test-data/googleSearch/baseline-images/baseline_homepage_logo_Webkit_Mobile.png',
   DESKTOP:
     './tests/test-data/googleSearch/baseline-images/baseline_homepage_logo.png',
 };
-const PIXEL_MATCH_THRESHOLD = 0.19;
+const PIXEL_MATCH_THRESHOLD = 0.19; // Sensitivity of the pixel-to-pixel comparison
 
 // A function to generate a unique filename by combining the project name, a timestamp and the filename.
 export function generateUniqueFileName(testInfo, fileName) {
