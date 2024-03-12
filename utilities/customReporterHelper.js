@@ -1,3 +1,9 @@
+/*
+ * This is a module that provides functions for classifying bugs in test cases and collecting data
+ * to use it in Custom Perorter
+ *
+ */
+
 import { extractFileNameFromPath } from './fileSystemHelper.js';
 
 // String constants for reporting
@@ -23,6 +29,7 @@ export function findRelatedBugsForTest(fileName, testTitle, knownBugs) {
     const currentSpecFileName = extractFileNameFromPath(fileName);
     const currentTestTitle = testTitle;
 
+    // Filter all known bugs to only include those related to the current test file and title
     const relatedBugs = knownBugs.filter(
       (bug) =>
         bug.testFile === currentSpecFileName &&
@@ -44,9 +51,9 @@ export function findRelatedUnfixedBugsForTest(
   currentENV
 ) {
   try {
-    // Find if the current test has known bugs
+    // Filter all known bugs to only include those related to the current test file and title
     const relatedBugs = findRelatedBugsForTest(fileName, testTitle, knownBugs);
-    // Find if the current test has unfixed bugs
+    // Filter out only those bugs that are NOT fixed in the current environment
     const relatedUnfixedBugs = relatedBugs.filter(
       (bug) => bug.status[currentENV] !== 'FIXED'
     );
@@ -68,55 +75,40 @@ export function sortKnownIssues(
   finalListKnownFixedIssues
 ) {
   try {
+    // Get status name
+    const statusStr = testStatus === 'passed' ? PASSED_STR : FAILED_STR;
     // Add header to the List of the tests with known unfixed issues on the current environment
-    let knownUnfixedIssues =
-      testStatus === 'passed'
-        ? [`${PASSED_STR} ${currentTestPath}\n`]
-        : [`${FAILED_STR} ${currentTestPath}\n`];
+    let knownUnfixedIssues = [`${statusStr} ${currentTestPath}\n`];
     // Add header to the List of the tests with known fixed issues on the current environment
-    let knownFixedIssues =
-      testStatus === 'passed'
-        ? [`${PASSED_STR} ${currentTestPath}\n`]
-        : [`${FAILED_STR} ${currentTestPath}\n`];
+    let knownFixedIssues = [`${statusStr} ${currentTestPath}\n`];
 
     // Add the bug data to the list of known fixed and unfixed issues
-    const knownIssues = addBugData(
+    const { unfixedIssues, fixedIssues } = addBugData(
       relatedBugs,
       currentENV,
       knownUnfixedIssues,
       knownFixedIssues
     );
-    knownUnfixedIssues = knownIssues.unfixedIssues;
-    knownFixedIssues = knownIssues.fixedIssues;
 
     // List of the known unfixed issues for the test
     let listKnownUnfixedIssues = [
       ...finalListKnownUnfixedIssues,
-      ...checkIfKnownIssuesEmpty(knownUnfixedIssues),
+      ...checkIfKnownIssuesEmpty(unfixedIssues),
     ];
     // List of the known fixed issues for the test
     let listKnownFixedIssues =
       testStatus !== 'passed'
         ? [
             ...finalListKnownFixedIssues,
-            ...checkIfKnownIssuesEmpty(knownFixedIssues),
+            ...checkIfKnownIssuesEmpty(fixedIssues),
           ]
         : [];
+
     return { listKnownUnfixedIssues, listKnownFixedIssues };
   } catch (error) {
     console.error(
       `Error while collecting the list of the tests with known fixed and unfixed issues: ${error.message}`
     );
-  }
-}
-
-// Create an issue list header
-function createIssuesListHeader(testStatus, testPath) {
-  try {
-    const status = testStatus === 'passed' ? PASSED_STR : FAILED_STR;
-    return [`${status} ${testPath}\n`];
-  } catch (error) {
-    `Error while creating issue list header: ${error.message}`;
   }
 }
 
@@ -150,13 +142,15 @@ export function addBugData(
 }
 
 // Get bug data
+// This function builds a data string about a bug, specifically for its status
 export function getBugData(relatedBug, status) {
   try {
-    // Bug statuses of all environments
+    // Format bug statuses of all environments into a string
     const bugStatuses = Object.entries(relatedBug.status)
       .map(([key, value]) => `${key}:'${value}'`)
       .join(',');
-    // Add the info to the list of known bugs for the current test to custom report
+
+    // Structuring bug data
     const bugData = [
       `${HAS_KNOWN_ISSUE_STR} [${status}][${relatedBug.id}][${bugStatuses}] ${relatedBug.summary}`,
       '------------------------',
@@ -170,13 +164,9 @@ export function getBugData(relatedBug, status) {
 // Check if the list of the tests with known issues is empty
 export function checkIfKnownIssuesEmpty(knownIssues) {
   try {
-    // List is empty
-    let allKnownIssues = [];
-    // List is not empty and contains not onlu [`${FAILED_STR} ${currentTestPath}`]
-    if (knownIssues.length > 1) {
-      allKnownIssues = knownIssues;
-    }
-    return allKnownIssues;
+    // Check if the list is not empty and contains not only 1st element of the header [`${FAILED_STR} ${currentTestPath}`]
+    // If it is empty - delete the header
+    return knownIssues.length > 1 ? knownIssues : [];
   } catch (error) {
     console.error(
       `Error while updating the list of the tests with known issues: ${error.message}`
