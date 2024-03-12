@@ -1,5 +1,7 @@
 import basePage from './basePage';
 
+const MAPS_PAGE_URL_PART = '/maps'; // Part of Google Maps page URL
+
 export default class GoogleMapsPage extends basePage {
   constructor(page, isMobile) {
     super(page, isMobile);
@@ -7,13 +9,13 @@ export default class GoogleMapsPage extends basePage {
     this.selectors = {
       ...this.selectors,
 
-      navigationModal: `.OuM1Vb[role="dialog"]`, // navigation tracking modal
+      navigationModal: `.OuM1Vb[role="dialog"]`, // Navigation tracking modal
       rejectNavigationButton: `button.vrdm1c`, // Reject navigation tracking button
-      myPlaceButton: this.isMobile ? `button.uWaeI` : `button#sVuEFc`, // My place button for mobile and for desktop
+      myPlaceButton: this.isMobile ? `button.uWaeI` : `button#sVuEFc`, // 'My place' button for mobile and for desktop
     };
   }
 
-  // Navigate to URL
+  // Navigate to the specified URL
   async goToURL(URL) {
     try {
       await this.page.goto(URL);
@@ -22,7 +24,7 @@ export default class GoogleMapsPage extends basePage {
     }
   }
 
-  // Reject navigation tracking if it's needed
+  // If navigation tracking modal exists, reject the tracking request
   async rejectNavigationIfAsked() {
     if (await this.page.isVisible(this.selectors.navigationModal)) {
       try {
@@ -36,23 +38,24 @@ export default class GoogleMapsPage extends basePage {
     }
   }
 
-  // Navigate to Google Maps
-  async openGoogleMaps() {
-    await this.goToURL('/');
-    await this.rejectCookiesIfAsked();
-    await this.goToURL('/maps');
-    await this.rejectNavigationIfAsked();
+  // Navigate to the homepage, reject cookies and then redirect to Google Maps page
+  async goToGoogleMapsPage() {
+    await this.goToURL('/'); // Navigate to homepage
+    await this.rejectCookiesIfAsked(); // Handle cookies prompt
+    await this.goToURL(MAPS_PAGE_URL_PART); // Redirect to Google Maps page
+    await this.rejectNavigationIfAsked(); // Handle navigation prompt
   }
 
-  // Go to My Place
+  // Click on the "My Place" button and wait for the page to navigate
   async goToMyLocation() {
     await this.page.waitForSelector(this.selectors.myPlaceButton);
     await this.clickOrTap(this.selectors.myPlaceButton);
     await this.page.waitForNavigation();
   }
 
-  // Get page url
-  getPageUrl() {
+  // Get the current page URL
+  getCurrentPageUrl() {
+    // Return the URL of the current page
     return this.page.url();
   }
 }

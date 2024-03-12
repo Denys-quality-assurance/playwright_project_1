@@ -18,7 +18,7 @@ test.describe('Geolocation Tests @skip-for-firefox', () => {
         let page = await sharedContext.newPage();
         const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
         googleMapsPage = new GoogleMapsPage(page, isMobile);
-        await googleMapsPage.openGoogleMaps();
+        await googleMapsPage.goToGoogleMapsPage();
       }
     }
   );
@@ -28,7 +28,7 @@ test.describe('Geolocation Tests @skip-for-firefox', () => {
     // Go to My Place
     await googleMapsPage.goToMyLocation();
 
-    const url = googleMapsPage.getPageUrl();
+    const url = googleMapsPage.getCurrentPageUrl();
     const expectedGeolocationData = `${geoData.latitude},${geoData.longitude}`;
 
     // Check if the URL contains the geolocation data
