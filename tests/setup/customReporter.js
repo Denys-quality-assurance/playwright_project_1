@@ -1,3 +1,22 @@
+/*
+ * This module exports a custom class named 'CustomReporter' that's used for constructing a detailed and specific test report.
+ * The main function of the class is to collect and report tests issues on different stages of the tests:
+ * end of each test (`onTestEnd()`) and end of all tests (`onEnd()`).
+ *
+ * Known bug issues related to tests are collected and categorised based on the test outcome:
+ *    - failed tests with known unfixed or fixed bug issues
+ *    - failed tests without known bug issues
+ *    - passed tests with known unfixed bug issues
+ *
+ * These lists of bug issues are stored as class instance variables and are updated after each test ends.
+ *
+ * The `onTestEnd()` (end of each test) function collects and handles related issues
+ * by sorting known bug issues based on their status (unfixed or fixed).
+ *
+ * The `onEnd()` (end of all tests) function reports all compiled bug issues based on their categories.
+ *
+ */
+
 import { knownBugs } from '../knownBugs.js';
 import {
   findRelatedBugsForTest,
