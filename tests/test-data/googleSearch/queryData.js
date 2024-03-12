@@ -1,3 +1,23 @@
+/*
+ * This module exports a set of constant arrays that are used for testing various
+ * aspects of a search engine or input field functionality.
+ *
+ * It test list includes:
+ * - queryDataGeneral for testing general cases: single word, special characters,
+ *   multiple words, alphanumeric keywords, large valid strings, and multi-language inputs.
+ * - queryDataCaseInsensitive for testing case insensitive search results.
+ * - queryDataEmptyResults for testing situations when the search results should be empty.
+ * - queryDataAutoSuggestion for testing auto suggestion functionality.
+ * - queryDataMisspelled for testing auto-correction of misspelled input.
+ *
+ * Each data input follows certain properties such as 'query' that corresponds to search input
+ * and 'autoSuggestion' or 'correctedQuery' for expected modified input.
+ *
+ * The purpose is to reuse these sets of data in different tests, and add more cases easily when necessary,
+ * promoting the DRY (Do Not Repeat Yourself) principle in the test code.
+ *
+ */
+
 // Data for general cases testing
 export const queryDataGeneral = [
   {
