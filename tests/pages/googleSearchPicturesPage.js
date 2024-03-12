@@ -1,5 +1,17 @@
+/*
+ * The `GoogleSearchPicturesPage` class is a Page Object Model that represents the Google Picture Search Page.
+ * This class extends from a `basePage` class and provides abstraction for the structure and behavior of the web page.
+ *
+ * With methods such as searching and navigating through pages, viewing picture previews, retrieving picture description
+ * and download link, performing a picture-based search, and checking if search results contain a specified query,
+ * the class provides a way to interact with the page.
+ *
+ */
+
 import basePage from './basePage';
 import { escapeRegexSpecialCharacters } from '../../utilities/regexHelper';
+
+const PICTURES_PAGE_URL_PART = '/search?sca_esv='; // Part of picture search results URL
 
 export default class GoogleSearchPicturesPage extends basePage {
   constructor(page, isMobile) {
@@ -12,30 +24,33 @@ export default class GoogleSearchPicturesPage extends basePage {
         ? `[href*="/webhp"]` // Pictures Search button for mobile
         : `[href*="/imghp"]`, // Pictures Search button for desktop
       firstSearchResult: this.isMobile
-        ? `div.kb0PBd:first-of-type`
-        : `[data-ri="0"]`, // 1st result in the list of results
+        ? `div.kb0PBd:first-of-type` // 1st result in the list of results for mobile
+        : `[data-ri="0"]`, // 1st result in the list of results for desktop
       firstSearchResultText: this.isMobile
-        ? `div.kb0PBd:first-of-type >> .Q6A6Dc`
-        : `[data-ri="0"] >> .bytUYc`, // Text of the 1st result in the list of results
+        ? `div.kb0PBd:first-of-type >> .Q6A6Dc` // Text of the 1st result in the list of results for mobile
+        : `[data-ri="0"] >> .bytUYc`, // Text of the 1st result in the list of results for desktop
       picturePreview: this.isMobile
-        ? `img.iPVvYb[src*="https"][role="button"]`
-        : `[role="link"] img[src*="https"]`, // Preview of the picture in the result list
+        ? `img.iPVvYb[src*="https"][role="button"]` // Preview of the picture in the result list for mobile
+        : `[role="link"] img[src*="https"]`, // Preview of the picture in the result list for desktop
       searchByPictureButton: this.isMobile
-        ? `.r5jQRd[role="link"]`
-        : `.NGBa0b[role="button"]`, // Search by uploaded picture button for mobile and for desktop
+        ? `.r5jQRd[role="link"]` // Search by uploaded picture button for mobile
+        : `.NGBa0b[role="button"]`, // Search by uploaded picture button for desktop
       searchByPictureResults: `.UAiK1e[dir="ltr"]`, // List of results of search by picture
     };
   }
 
   // Navigate to Home page, reject all Cookies, navigate to Pictures and search for query
-  async navigateAndSearchPictures(query) {
+  async goToHomeAndSearchPictures(query) {
     try {
-      await this.navigateAndRejectCookies();
+      // Navigate to home page and reject all cookies
+      await this.goToHomeAndRejectCookies();
       await this.page.waitForSelector(this.selectors.picturesSearchButton);
+      // Navigate to Pictures
       await this.clickOrTap(this.selectors.picturesSearchButton);
       await this.page.waitForNavigation({
-        url: (url) => url.includes('/search?sca_esv='),
+        url: (url) => url.includes(PICTURES_PAGE_URL_PART),
       });
+      // Search for the specific query
       await this.searchForQueryByEnter(query);
     } catch (error) {
       console.error(
@@ -44,9 +59,10 @@ export default class GoogleSearchPicturesPage extends basePage {
     }
   }
 
-  // Click on the search result to open picture preview
-  async openPicturePreview(picture) {
+  // Click on a selected search result to open picture preview
+  async viewSelectedPictureInPreview(picture) {
     try {
+      // Click on selected picture
       await this.clickOrTap(picture);
       await this.page.waitForSelector(this.selectors.picturePreview);
       return this.page.locator(this.selectors.picturePreview);
@@ -55,21 +71,22 @@ export default class GoogleSearchPicturesPage extends basePage {
     }
   }
 
-  // Get description and picture link of the the 1st picture search result
-  async get1stPictureDescriptionAndDownload() {
+  // Get the description and the download link of the first result from the picture search
+  async getFirstPictureDescriptionAndDownloadLink() {
     try {
-      // Get text from the 1st search result
+      // Get the text description from the first search result
       const pictureDescription = await this.page
         .locator(this.selectors.firstSearchResultText)
         .innerText();
 
       // Click on the 1st search result to open picture preview
-      const picturePreview = await this.openPicturePreview(
+      const picturePreview = await this.viewSelectedPictureInPreview(
         this.selectors.firstSearchResult
       );
 
-      // Get picture link of the preview
+      // Get the source URL of the picture from the preview
       const imageUrl = await picturePreview.getAttribute('src');
+
       return { pictureDescription, imageUrl };
     } catch (error) {
       console.error(
@@ -78,17 +95,17 @@ export default class GoogleSearchPicturesPage extends basePage {
     }
   }
 
-  // Upload the picture to search by picture
-  async uploadPictureToSearch(imagePath) {
+  // Upload a picture and perform a picture-based search
+  async performPictureSearchByUploading(imagePath) {
     try {
-      // Click on the Search by picture button to open picture upload area
+      // Click on the "Search by picture" button to open the picture upload area
       await this.page.waitForSelector(this.selectors.searchByPictureButton);
       await this.clickOrTap(this.selectors.searchByPictureButton);
       await this.page.waitForSelector(this.selectors.pictureUploadButton);
 
-      // Listen for the 'filechooser' event that triggers when file chooser dialog opens
+      // Listen for the 'filechooser' event, which triggers when the file chooser dialog opens
       this.page.on('filechooser', async (fileChooser) => {
-        // Set files for upload. Provide your own file path
+        // Set the path of the file to be uploaded
         await fileChooser.setFiles(imagePath);
       });
 
@@ -104,7 +121,9 @@ export default class GoogleSearchPicturesPage extends basePage {
   // Get Locator object of Search by picture results
   async getSearchByPictureResultsLocator() {
     try {
+      // Wait until the search results element has loaded on the page
       await this.page.waitForSelector(this.selectors.searchByPictureResults);
+      // Return a Locator for the search results element
       return this.page.locator(this.selectors.searchByPictureResults);
     } catch (error) {
       console.error(
@@ -113,24 +132,27 @@ export default class GoogleSearchPicturesPage extends basePage {
     }
   }
 
-  // Check if any search result contains query
+  // Checks if any of the returned search results contain a specified query
   async checkIfAnySearchResultContainsQuery(searchResultsLocator, query) {
     try {
-      // Collect all elements of search results
+      // Get all individual search result elements
       const allSearchResultElements = await searchResultsLocator.all();
-      // Case insensitive regex for the query
+      // Case-insensitive regex for the query
       let queryRegex = new RegExp(escapeRegexSpecialCharacters(query), 'i'); // 'i' flag for case insensitive
 
+      // Loop through each search result element
       for (let searchResult of allSearchResultElements) {
-        // Get the text of each searchResult
+        // Get the text of the specific search result
         let resultText = await searchResult.innerText();
 
-        // Check if the text contains query
+        // Check if the specific search result text contains the query
         if (queryRegex.test(resultText)) {
-          // Stop iteration if we found a match
+          // If a search result contains the query, stop checking the rest and return true
           return true;
         }
       }
+
+      // If no search results contain the query, return false
       return false;
     } catch (error) {
       console.error(
