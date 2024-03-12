@@ -1,3 +1,13 @@
+/*
+ * The `GoogleMapsPage` class is a Page Object Model that represents the Google Maps page.
+ * This class extends from a `basePage` class and provides abstraction for the structure
+ * and behavior of the web page.
+ *
+ * The class encapsulates key operations like navigating to specific URLs, handling navigation
+ * tracking modals, redirecting to the Google Maps page, and fetching the current page URL.
+ *
+ */
+
 import basePage from './basePage';
 
 const MAPS_PAGE_URL_PART = '/maps'; // Part of Google Maps page URL
