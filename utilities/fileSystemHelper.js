@@ -309,9 +309,13 @@ export async function compareScreenshotsAndReportDifferences(
 // Return the path to the baseline image
 // The path depends on the device type(mobile or not) and the browser type
 export function getBaselineImagePath(isMobile, defaultBrowserType) {
-  return isMobile && defaultBrowserType == 'webkit'
-    ? BASE_IMG_PATHS.MOBILE_WEBKIT
-    : BASE_IMG_PATHS.DESKTOP;
+  try {
+    return isMobile && defaultBrowserType == 'webkit'
+      ? BASE_IMG_PATHS.MOBILE_WEBKIT
+      : BASE_IMG_PATHS.DESKTOP;
+  } catch (error) {
+    `Error while returning the path to the baseline image: ${error.message}`;
+  }
 }
 
 // Resize the Actual screenshot to match the dimensions of the baseline
@@ -319,37 +323,49 @@ export async function resizeActualScreenshotToBaselineDimension(
   expectedBaseline,
   actualScreenshotPath
 ) {
-  // Convert binaris into Buffers, transform Buffers into pixel data
-  const actualScreenshotOriginalSize = PNG.sync.read(
-    fs.readFileSync(actualScreenshotPath)
-  );
+  try {
+    // Convert binaris into Buffers, transform Buffers into pixel data
+    const actualScreenshotOriginalSize = PNG.sync.read(
+      fs.readFileSync(actualScreenshotPath)
+    );
 
-  // If the dimensions of the actual screenshot don't match the dimensions of the baseline
-  if (
-    expectedBaseline.width !== actualScreenshotOriginalSize.width ||
-    expectedBaseline.height !== actualScreenshotOriginalSize.height
-  ) {
-    // Resize the screenshot buffer to match the baseline dimensions
-    const actualScreenshotOriginalBuffer =
-      fs.readFileSync(actualScreenshotPath);
-    const resizedScreenshotBuffer = await sharp(actualScreenshotOriginalBuffer)
-      .resize(expectedBaseline.width, expectedBaseline.height)
-      .png()
-      .toBuffer();
+    // If the dimensions of the actual screenshot don't match the dimensions of the baseline
+    if (
+      expectedBaseline.width !== actualScreenshotOriginalSize.width ||
+      expectedBaseline.height !== actualScreenshotOriginalSize.height
+    ) {
+      // Resize the screenshot buffer to match the baseline dimensions
+      const actualScreenshotOriginalBuffer =
+        fs.readFileSync(actualScreenshotPath);
+      const resizedScreenshotBuffer = await sharp(
+        actualScreenshotOriginalBuffer
+      )
+        .resize(expectedBaseline.width, expectedBaseline.height)
+        .png()
+        .toBuffer();
 
-    // Return resized screenshot buffer
-    return PNG.sync.read(resizedScreenshotBuffer);
-  } else {
-    // If the sizes already match, return the original screenshot buffer
-    return actualScreenshotOriginalSize;
+      // Return resized screenshot buffer
+      return PNG.sync.read(resizedScreenshotBuffer);
+    } else {
+      // If the sizes already match, return the original screenshot buffer
+      return actualScreenshotOriginalSize;
+    }
+  } catch (error) {
+    `Error while resizing the Actual screenshot to match the dimensions of the baseline: ${error.message}`;
   }
 }
 
 // Attach each image from the paths to the test report
 export function attachAllImagesToTestReport(testInfo, paths) {
-  // Promise.all is used to execute attachImageToReport function for all path of image
-  // It waits until all these operations complete and then returns the result
-  return Promise.all(paths.map((path) => attachImageToReport(testInfo, path)));
+  try {
+    // Promise.all is used to execute attachImageToReport function for all path of image
+    // It waits until all these operations complete and then returns the result
+    return Promise.all(
+      paths.map((path) => attachImageToReport(testInfo, path))
+    );
+  } catch (error) {
+    `Error while attaching each image from the paths to the test report: ${error.message}`;
+  }
 }
 
 // Write the PNG into new file via stream
