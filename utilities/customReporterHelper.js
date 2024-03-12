@@ -16,7 +16,7 @@ export const NO_KNOWN_ISSUE_STR =
 export const PASSED_TESTS_WITH_KNOWN_UNFIXED_ISSUES_STR =
   'PASSED (OR FLAKY) TESTS WITH KNOWN UNFIXED ISSUES ON THE ENVIRONMENT (to clarify and update the status of the linked bug)';
 
-// Find if the current test has known bugs
+// Find and return known bugs related to the current test file and title
 export function findRelatedBugsForTest(fileName, testTitle, knownBugs) {
   try {
     // Current spec file name, test title
@@ -44,15 +44,11 @@ export function findRelatedUnfixedBugsForTest(
   currentENV
 ) {
   try {
-    // Current spec file name, test title
-    const currentSpecFileName = extractFileNameFromPath(fileName);
-    const currentTestTitle = testTitle;
-
-    const relatedUnfixedBugs = knownBugs.filter(
-      (bug) =>
-        bug.testFile === currentSpecFileName &&
-        bug.testTitle === currentTestTitle &&
-        bug.status[currentENV] !== 'FIXED'
+    // Find if the current test has known bugs
+    const relatedBugs = findRelatedBugsForTest(fileName, testTitle, knownBugs);
+    // Find if the current test has unfixed bugs
+    const relatedUnfixedBugs = relatedBugs.filter(
+      (bug) => bug.status[currentENV] !== 'FIXED'
     );
     return relatedUnfixedBugs;
   } catch (error) {
@@ -111,6 +107,16 @@ export function sortKnownIssues(
     console.error(
       `Error while collecting the list of the tests with known fixed and unfixed issues: ${error.message}`
     );
+  }
+}
+
+// Create an issue list header
+function createIssuesListHeader(testStatus, testPath) {
+  try {
+    const status = testStatus === 'passed' ? PASSED_STR : FAILED_STR;
+    return [`${status} ${testPath}\n`];
+  } catch (error) {
+    `Error while creating issue list header: ${error.message}`;
   }
 }
 
