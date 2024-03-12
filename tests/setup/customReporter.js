@@ -37,20 +37,18 @@ export default class CustomReporter {
         // Environment for current test project
         this.currentENV = test.parent.project().metadata.currentENV;
 
-        // Find if the current test has known bugs
+        // Get known bugs related to the test
         const relatedBugs = findRelatedBugsForTest(
           test.location.file,
           test.title,
           knownBugs
         );
 
+        // If there are related bugs for the test
         if (relatedBugs.length > 0) {
           // Add info to the custom reporter if the test has related bugs
-          // If the test failed 1st time
-          if (
-            (result.status === 'failed' || result.status === 'timedOut') &&
-            result.retry === 0
-          ) {
+          // If the test failed or timed out in its first run
+          if (isFirstFailure()) {
             // Collect the list of the failed tests with known fixed and unfixed issues
             const listKnownIssues = sortKnownIssues(
               result.status,
@@ -61,14 +59,16 @@ export default class CustomReporter {
               this.allKnownFixedIssuesForFailed
             );
 
+            // Store known unfixed and fixed issues for the failed test
             // List of the known unfixed issues for the test
             this.allKnownUnfixedIssuesForFailed =
               listKnownIssues.listKnownUnfixedIssues;
             // List of the known fixed issues for the test
             this.allKnownFixedIssuesForFailed =
               listKnownIssues.listKnownFixedIssues;
+            // If the test has passed without any retries
           } else if (result.status === 'passed' && result.retry === 0) {
-            // Collect the list of the passed tests with known unfixed issues
+            // Store the known unfixed issues for the passed test
             const listKnownIssues = sortKnownIssues(
               result.status,
               currentTestPath,
@@ -81,11 +81,9 @@ export default class CustomReporter {
             this.allKnownUnfixedIssuesForPassed =
               listKnownIssues.listKnownUnfixedIssues;
           }
-        } else if (
-          (result.status === 'failed' || result.status === 'timedOut') &&
-          result.retry === 0
-        ) {
-          // If there is no known bugs for the test add the info about the absence of known bugs for the current failed test to custom report
+        } // If there are no known bugs for the test and it failed or timed out in its first run
+        else if (isFirstFailure()) {
+          // Log the info about the absence of known bugs for the current failed test
           this.allUnknownIssuesForFailed.push(
             `${FAILED_STR} ${currentTestPath}`
           );
@@ -98,30 +96,52 @@ export default class CustomReporter {
         `Failed to get related known bugs for the custom report: ${error.message}`
       );
     }
+
+    // Check if the test failed or timed out in its first run
+    function isFirstFailure() {
+      return (
+        (result.status === 'failed' || result.status === 'timedOut') &&
+        result.retry === 0
+      );
+    }
   }
 
   onEnd(result) {
     // Get the list of all known issues
-    const messages = [
+    const issueReportMessages = [
       `\n${RUN_STATUS_STR}: ${result.status}\n`,
-      '==================================',
-      `<${this.currentENV}> ${FAILED_TESTS_WITH_KNOWN_UNFIXED_ISSUES_STR}:`,
-      '==================================',
-      ...this.allKnownUnfixedIssuesForFailed,
-      '==================================',
-      `${FAILED_TESTS_WITHOUT_KNOWN_ISSUES_STR}:`,
-      '==================================',
-      ...this.allUnknownIssuesForFailed,
-      '==================================',
-      `<${this.currentENV}> ${FAILED_TESTS_WITH_KNOWN_FIXED_ISSUES_STR}:`,
-      '==================================',
-      ...this.allKnownFixedIssuesForFailed,
-      '==================================',
-      `<${this.currentENV}> ${PASSED_TESTS_WITH_KNOWN_UNFIXED_ISSUES_STR}:`,
-      '==================================',
-      ...this.allKnownUnfixedIssuesForPassed,
+      ...formatIssuesForReport(
+        this.currentENV,
+        FAILED_TESTS_WITH_KNOWN_UNFIXED_ISSUES_STR,
+        this.allKnownUnfixedIssuesForFailed
+      ),
+      ...formatIssuesForReport(
+        'ALL',
+        FAILED_TESTS_WITHOUT_KNOWN_ISSUES_STR,
+        this.allUnknownIssuesForFailed
+      ),
+      ...formatIssuesForReport(
+        this.currentENV,
+        FAILED_TESTS_WITH_KNOWN_FIXED_ISSUES_STR,
+        this.allKnownFixedIssuesForFailed
+      ),
+      ...formatIssuesForReport(
+        this.currentENV,
+        PASSED_TESTS_WITH_KNOWN_UNFIXED_ISSUES_STR,
+        this.allKnownUnfixedIssuesForPassed
+      ),
     ];
 
-    console.log(messages.join('\n'));
+    // Format issues into a string for reporting
+    function formatIssuesForReport(environment, title, issues) {
+      return [
+        '==================================',
+        `<${environment}> ${title}:`,
+        '==================================',
+        ...issues,
+      ];
+    }
+
+    console.log(issueReportMessages.join('\n'));
   }
 }

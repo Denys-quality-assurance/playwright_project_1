@@ -35,7 +35,7 @@ test.describe(`Google calculator`, () => {
   });
 
   mathOperation.forEach((mathOperation) => {
-    test.only(`TEST-29: Perform "${mathOperation.operationName}" operation for ${mathOperation.firstNumber} and ${mathOperation.secondNumber} @only-desktop`, async () => {
+    test(`TEST-29: Perform "${mathOperation.operationName}" operation for ${mathOperation.firstNumber} and ${mathOperation.secondNumber} @only-desktop`, async () => {
       // Change to English if it's needed
       await googleCalculatorPage.changeToEnglishIfAsked();
       // Click or tap the 1st number
