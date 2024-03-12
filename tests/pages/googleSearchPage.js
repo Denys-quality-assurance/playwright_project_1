@@ -147,9 +147,9 @@ export default class GoogleSearchPage extends basePage {
   }
 
   // Navigate to page, reject all Cookies and search for query
-  async navigateAndSearch(query) {
+  async goToHomeAndSearch(query) {
     try {
-      await this.navigateAndRejectCookies();
+      await this.goToHomeAndRejectCookies();
       await this.searchForQueryByEnter(query);
     } catch (error) {
       console.error(

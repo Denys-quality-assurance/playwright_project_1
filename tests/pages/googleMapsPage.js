@@ -14,7 +14,7 @@ export default class GoogleMapsPage extends basePage {
   }
 
   // Navigate to URL
-  async navigateURL(URL) {
+  async goToURL(URL) {
     try {
       await this.page.goto(URL);
     } catch (error) {
@@ -38,9 +38,9 @@ export default class GoogleMapsPage extends basePage {
 
   // Navigate to Google Maps
   async openGoogleMaps() {
-    await this.navigateURL('/');
+    await this.goToURL('/');
     await this.rejectCookiesIfAsked();
-    await this.navigateURL('/maps');
+    await this.goToURL('/maps');
     await this.rejectNavigationIfAsked();
   }
 

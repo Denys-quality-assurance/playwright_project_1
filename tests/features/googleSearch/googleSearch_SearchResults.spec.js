@@ -23,7 +23,7 @@ test.describe(`Google Search results: Search results verification`, () => {
         page = await sharedContext.newPage();
         const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
         googleSearchPage = new GoogleSearchPage(page, isMobile);
-        await googleSearchPage.navigateAndRejectCookies();
+        await googleSearchPage.goToHomeAndRejectCookies();
       }
     }
   );

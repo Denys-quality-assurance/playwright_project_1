@@ -39,7 +39,7 @@ export default class basePage {
   }
 
   // Navigate to Google Home page
-  async navigateHome() {
+  async goToHome() {
     try {
       await this.page.goto('/');
     } catch (error) {
@@ -63,9 +63,9 @@ export default class basePage {
   }
 
   // Navigate to page and reject all Cookies if it's needed
-  async navigateAndRejectCookies() {
+  async goToHomeAndRejectCookies() {
     try {
-      await this.navigateHome();
+      await this.goToHome();
       await this.rejectCookiesIfAsked();
     } catch (error) {
       console.error(

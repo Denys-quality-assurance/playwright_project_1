@@ -19,7 +19,7 @@ test.describe(`Google calculator`, () => {
         page = await sharedContext.newPage();
         const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
         googleCalculatorPage = new GoogleCalculatorPage(page, isMobile);
-        await googleCalculatorPage.navigateAndRejectCookies();
+        await googleCalculatorPage.goToHomeAndRejectCookies();
         await googleCalculatorPage.searchForQueryByEnter('calculator');
         await page.waitForSelector(googleCalculatorPage.selectors.searchResult);
       }

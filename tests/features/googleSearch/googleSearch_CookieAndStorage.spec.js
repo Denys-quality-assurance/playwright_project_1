@@ -26,7 +26,7 @@ test.describe(`Google Search results: Cookies and storage`, () => {
           ? expectedLocalStorageKeysData.mobile
           : expectedLocalStorageKeysData.desktop; // expectedLocalStorageKeys for mobile and for desktop
         googleSearchPage = new GoogleSearchPage(page, isMobile);
-        await googleSearchPage.navigateAndRejectCookies();
+        await googleSearchPage.goToHomeAndRejectCookies();
       }
     }
   );

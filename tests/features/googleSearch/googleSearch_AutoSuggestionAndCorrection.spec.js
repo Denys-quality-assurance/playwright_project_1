@@ -7,7 +7,7 @@ import {
 } from '../../test-data/googleSearch/queryData';
 import {
   performSearchAndFetchResultsForNewPage,
-  navigateHomeForNewPage,
+  goToHomeForNewPage,
 } from '../../../utilities/pagesHelper';
 
 test.describe(`Google Search results: Auto-suggestion and Correction`, () => {
@@ -22,7 +22,7 @@ test.describe(`Google Search results: Auto-suggestion and Correction`, () => {
         page = await sharedContext.newPage();
         const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
         googleSearchPage = new GoogleSearchPage(page, isMobile);
-        await googleSearchPage.navigateAndRejectCookies();
+        await googleSearchPage.goToHomeAndRejectCookies();
       }
     }
   );
@@ -58,7 +58,7 @@ test.describe(`Google Search results: Auto-suggestion and Correction`, () => {
   queryDataAutoSuggestion.forEach((queryData) => {
     test(`TEST-21: Auto-suggestion menu contains approptiate options for '${queryData.query}' query @autosuggestion`, async () => {
       // Navigate to page and reject all Cookies if it's needed
-      await googleSearchPage.navigateAndRejectCookies();
+      await googleSearchPage.goToHomeAndRejectCookies();
       // Type the query
       await page.waitForSelector(
         googleSearchPage.selectors.searchInputTextArea
@@ -94,8 +94,10 @@ test.describe(`Google Search results: Auto-suggestion and Correction`, () => {
         GoogleSearchPage
       );
       // Create new page 2 in the same context, navigate to Home page and reject all Cookies if it's needed
-      const { googleSearchPage: googleSearchPage2 } =
-        await navigateHomeForNewPage(sharedContext, GoogleSearchPage);
+      const { googleSearchPage: googleSearchPage2 } = await goToHomeForNewPage(
+        sharedContext,
+        GoogleSearchPage
+      );
       // Fill Search imput
       await googleSearchPage2.fillSearchInput(queryData.query);
       // Get Search auto suggestions

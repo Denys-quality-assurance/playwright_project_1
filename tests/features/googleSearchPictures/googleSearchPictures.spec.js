@@ -23,7 +23,7 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
         page = await sharedContext.newPage();
         const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
         googleSearchPicturesPage = new GoogleSearchPicturesPage(page, isMobile);
-        await googleSearchPicturesPage.navigateAndSearchPictures(
+        await googleSearchPicturesPage.goToHomeAndSearchPictures(
           queryWithExtension
         );
       }
@@ -33,7 +33,7 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
   test(`TEST-23: User can download picture from test results, User can search by picture @skip-for-webkit @only-desktop`, async ({}, testInfo) => {
     // Get description and picture link of the the 1st picture search result
     const { pictureDescription, imageUrl } =
-      await googleSearchPicturesPage.get1stPictureDescriptionAndDownload();
+      await googleSearchPicturesPage.getFirstPictureDescriptionAndDownloadLink();
     // Case insensitive regex for the query
     let queryRegex = new RegExp(escapeRegexSpecialCharacters(query), 'i'); // 'i' flag for case insensitive
     // Check if the picture's description contains the query
@@ -53,7 +53,7 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
     ).toBe(true);
 
     // Upload the picture to search by picture
-    await googleSearchPicturesPage.uploadPictureToSearch(imagePath);
+    await googleSearchPicturesPage.performPictureSearchByUploading(imagePath);
 
     // Get search results
     const searchResultsLocator =
@@ -77,7 +77,7 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
   test(`TEST-24: User can download picture from test results, User can search by picture @only-mobile`, async ({}, testInfo) => {
     // Get description and picture link of the the 1st picture search result
     const { pictureDescription, imageUrl } =
-      await googleSearchPicturesPage.get1stPictureDescriptionAndDownload();
+      await googleSearchPicturesPage.getFirstPictureDescriptionAndDownloadLink();
     // Case insensitive regex for the query
     let queryRegex = new RegExp(escapeRegexSpecialCharacters(query), 'i'); // 'i' flag for case insensitive
     // Check if the picture's description contains the query
