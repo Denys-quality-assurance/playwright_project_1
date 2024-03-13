@@ -9,6 +9,7 @@ import { escapeRegexSpecialCharacters } from '../../utilities/regexHelper';
 
 const responseBodyForEmptyResultsMockPath =
   './tests/test-data/googleSearch/mocks/responseBodyForEmptyResults.html';
+const SEARCH_RESULTS_PAGE_URL_PART = '/search?q='; // Part of search results page URL
 
 export default class GoogleSearchPage extends basePage {
   constructor(page, isMobile) {
@@ -137,7 +138,7 @@ export default class GoogleSearchPage extends basePage {
       await this.clickOrTap(this.selectors.searchButton);
       // Waiting for search result page to appear
       await this.page.waitForNavigation({
-        url: (url) => url.includes('/search?q='),
+        url: (url) => url.toString().includes(SEARCH_RESULTS_PAGE_URL_PART),
       });
     } catch (error) {
       console.error(

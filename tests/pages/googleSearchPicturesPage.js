@@ -11,7 +11,7 @@
 import basePage from './basePage';
 import { escapeRegexSpecialCharacters } from '../../utilities/regexHelper';
 
-const PICTURES_PAGE_URL_PART = '/search?sca_esv='; // Part of picture search results URL
+const PICTURES_PAGE_URL_PART = '/imghp?'; // Part of picture search results URL
 
 export default class GoogleSearchPicturesPage extends basePage {
   constructor(page, isMobile) {
@@ -48,7 +48,7 @@ export default class GoogleSearchPicturesPage extends basePage {
       // Navigate to Pictures
       await this.clickOrTap(this.selectors.picturesSearchButton);
       await this.page.waitForNavigation({
-        url: (url) => url.includes(PICTURES_PAGE_URL_PART),
+        url: (url) => url.toString().includes(PICTURES_PAGE_URL_PART),
       });
       // Search for the specific query
       await this.searchForQueryByEnter(query);
