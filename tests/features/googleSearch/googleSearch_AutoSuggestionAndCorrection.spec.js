@@ -51,7 +51,7 @@ test.describe(`Google Search results: Auto-suggestion and Correction`, () => {
         checkQueryResults.failedQuery
       }' query.\nText of the results:\n\n${checkQueryResults.failedResultText.join('\n----------------------\n\n')}'`;
 
-      expect(checkQueryResults.success, errorMessage).toBe(true);
+      expect(checkQueryResults.isSuccess, errorMessage).toBe(true);
     });
   });
 

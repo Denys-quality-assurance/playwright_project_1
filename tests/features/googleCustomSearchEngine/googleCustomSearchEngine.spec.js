@@ -39,7 +39,7 @@ test.describe(`Google Custom Search Engine: Search results testing for '${query}
       checkQueryResults.failedQuery
     }' query.\nText of the results:\n\n${checkQueryResults.failedResultText.join('\n----------------------\n\n')}'`;
 
-    expect(checkQueryResults.success, errorMessage).toBe(true);
+    expect(checkQueryResults.isSuccess, errorMessage).toBe(true);
   });
 
   test(`TEST-27: Google search results page contains 10 results on 1 page for '${query}' query`, async () => {

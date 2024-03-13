@@ -116,7 +116,9 @@ export default class GoogleSearchPage extends BasePage {
 
       for (let optionText of searchAutoSuggestionOptionsText) {
         // Check if the option contains any query word
-        if (this.hasQueryWords(optionText, queryWords)) {
+        if (
+          this.checkIfSearchResultsContainsQueryWords(optionText, queryWords)
+        ) {
           return true;
         }
       }
@@ -284,7 +286,7 @@ export default class GoogleSearchPage extends BasePage {
       }
       // success is try if no items in failedResults
       return {
-        success: failedResults.length === 0,
+        isSuccess: failedResults.length === 0,
         failedDescriptionHTML: failedResults,
         failedQuery: query,
       };
@@ -409,7 +411,7 @@ export default class GoogleSearchPage extends BasePage {
         await page.waitForTimeout(200);
       }
       // success is try if no items in failedResults
-      return { success: missingKeys.length === 0, missingKeys: missingKeys };
+      return { isSuccess: missingKeys.length === 0, missingKeys: missingKeys };
     } catch (error) {
       console.error(
         `Failed to check if all expected keys exist in the object: ${error.message}`
@@ -440,7 +442,7 @@ export default class GoogleSearchPage extends BasePage {
         await this.page.waitForTimeout(200);
       }
       // success is try if no items in failedResults
-      return { success: failedKeys.length === 0, failedKeys: failedKeys };
+      return { isSuccess: failedKeys.length === 0, failedKeys: failedKeys };
     } catch (error) {
       console.error(
         `Failed to check if all storage values are not empty: ${error.message}`

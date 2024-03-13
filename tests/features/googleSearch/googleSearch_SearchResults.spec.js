@@ -49,7 +49,7 @@ test.describe(`Google Search results: Search results verification`, () => {
       checkQueryResults.failedQuery
     }' query.\nText of the results:\n\n${checkQueryResults.failedResultText.join('\n----------------------\n\n')}'`;
 
-    expect(checkQueryResults.success, errorMessage).toBe(true);
+    expect(checkQueryResults.isSuccess, errorMessage).toBe(true);
   });
 
   queryDataGeneral.forEach((queryData) => {
@@ -92,7 +92,7 @@ test.describe(`Google Search results: Search results verification`, () => {
       const errorMessage = `Some search results do not contain the '${
         checkQueryResults.failedQuery
       }' query.\nText of the results:\n\n${checkQueryResults.failedResultText.join('\n----------------------\n\n')}'`;
-      expect(checkQueryResults.success, errorMessage).toBe(true);
+      expect(checkQueryResults.isSuccess, errorMessage).toBe(true);
     });
   });
 
@@ -130,7 +130,7 @@ test.describe(`Google Search results: Search results verification`, () => {
       }' query highlighted.\nHTML of the results:\n\n${checkQueryResults.failedDescriptionHTML.join(
         '\n----------------------\n\n'
       )}'`;
-      expect(checkQueryResults.success, errorMessage).toBe(true);
+      expect(checkQueryResults.isSuccess, errorMessage).toBe(true);
     });
   });
 

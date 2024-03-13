@@ -44,7 +44,7 @@ test.describe(`Google Search results: Cookies and storage`, () => {
       );
 
     expect(
-      checkIfAllLocalStorageKeysExist.success,
+      checkIfAllLocalStorageKeysExist.isSuccess,
       `Not all expected keys included to the Local storage. Missing: ${checkIfAllLocalStorageKeysExist.missingKeys.join(
         ', '
       )}`
@@ -62,7 +62,7 @@ test.describe(`Google Search results: Cookies and storage`, () => {
       );
 
     expect(
-      checkIfAllLocalStorageValuesNotEmpty.success,
+      checkIfAllLocalStorageValuesNotEmpty.isSuccess,
       `Not all Local storage values are not empty. Empty keys: ${checkIfAllLocalStorageValuesNotEmpty.failedKeys.join(
         ', '
       )}`
@@ -82,7 +82,7 @@ test.describe(`Google Search results: Cookies and storage`, () => {
       );
 
     expect(
-      checkIfAllSessionStorageKeysExist.success,
+      checkIfAllSessionStorageKeysExist.isSuccess,
       `Not all expected keys included to the Session storage. Missing: ${checkIfAllSessionStorageKeysExist.missingKeys.join(
         ', '
       )}`
@@ -105,7 +105,7 @@ test.describe(`Google Search results: Cookies and storage`, () => {
       );
 
     expect(
-      checkIfAllSessionStorageValuesNotEmpty.success,
+      checkIfAllSessionStorageValuesNotEmpty.isSuccess,
       `Not all Session storage values are not empty. Empty keys: ${checkIfAllSessionStorageValuesNotEmpty.failedKeys.join(
         ', '
       )}`
