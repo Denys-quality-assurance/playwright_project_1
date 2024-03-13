@@ -1,7 +1,17 @@
-import basePage from './basePage';
+/*
+ * The `GoogleCalculatorPage` is a Page Object Model that represents the Google Calculator Page.
+ * This class extends from the `BasePage` class, encapsulating the structure and behavior of the web page,
+ * providing API to interact with the page.
+ *
+ * This class provides methods to input number sequence (including negative), operations and retrieve the result of
+ * these operations.
+ *
+ */
+
+import BasePage from './basePage';
 import { mapOperationToAriaLabel } from '../../utilities/googleCalculator/calculatorHelper';
 
-export default class GoogleCalculatorPage extends basePage {
+export default class GoogleCalculatorPage extends BasePage {
   constructor(page, isMobile) {
     super(page, isMobile);
 
@@ -17,14 +27,14 @@ export default class GoogleCalculatorPage extends basePage {
     };
   }
 
-  // Type numbers on the calculator
-  async typeNumbers(digits) {
+  // Enter a sequence of numbers (including negative numbers) on the calculator.
+  async enterNumberSequence(digits) {
     try {
       // copy digits array
       let digitsArray = [...digits];
       if (digitsArray[0] === '-') {
         // Handle negative numbers
-        await this.handleNegativeNumbers(digitsArray);
+        await this.enterNegativeNumber(digitsArray);
       } else {
         // Click or tap digits on the calculator
         await this.clickOrTapDigits(digitsArray);
@@ -36,16 +46,16 @@ export default class GoogleCalculatorPage extends basePage {
     }
   }
 
-  // Handle negative numbers
-  async handleNegativeNumbers(digits) {
+  // Enter a negative number on the calculator
+  async enterNegativeNumber(digits) {
     try {
       // Open the parentheses and put -
       await this.clickOrTapOperation('left parenthesis');
       await this.clickOrTapOperation('minus');
       // Remove the first element ('-') from digits
-      digits.shift();
+      const positiveDigits = digits.slice(1);
       // Click or tap digits on the calculator
-      await this.clickOrTapDigits(digits);
+      await this.clickOrTapDigits(positiveDigits);
       // Close the parentheses
       await this.clickOrTapOperation('right parenthesis');
     } catch (error) {
@@ -58,11 +68,12 @@ export default class GoogleCalculatorPage extends basePage {
   // Click or tap digits on the calculator
   async clickOrTapDigits(digits) {
     try {
+      // Loop through the specified digits one by one
       for (const digit of digits) {
-        // Construct unique locator for digit button
+        // Get locator for the digit button and wait for the button to appear on the UI
         const digitLocator = `${this.selectors.digitsAndDotButtons}:has-text("${digit}")`;
         await this.page.waitForSelector(digitLocator);
-        // Click or Tap the locator with the digit in text
+        // Click or Tap on the digit button
         await this.clickOrTap(digitLocator);
       }
     } catch (error) {
@@ -75,12 +86,12 @@ export default class GoogleCalculatorPage extends basePage {
   // Click or tap operation on the calculator
   async clickOrTapOperation(operationName) {
     try {
-      // Convert operation name to corresponding aria-label
+      // Map operation name to its corresponding button aria-label
       const operationAriaLabel = mapOperationToAriaLabel(operationName);
-      // Construct unique locator for operation button
+      // Get locator for the operation button and wait for the button to appear on the UI
       const operationLocator = `${this.selectors.operationsButtons}[aria-label="${operationAriaLabel}"]`;
       await this.page.waitForSelector(operationLocator);
-      // Click or Tap the locator with the digit in text
+      // Click or Tap the operation button
       await this.clickOrTap(operationLocator);
     } catch (error) {
       console.error(
@@ -92,6 +103,7 @@ export default class GoogleCalculatorPage extends basePage {
   // Get the text of the result
   async getResultText() {
     try {
+      // Wait for the entered data and result areas to appear on the UI
       await this.page.waitForSelector(this.selectors.enteredDataArea);
       await this.page.waitForSelector(this.selectors.resultArea);
       // Get text content from resultArea

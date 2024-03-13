@@ -39,7 +39,7 @@ test.describe(`Google calculator`, () => {
       // Change to English if it's needed
       await googleCalculatorPage.changeToEnglishIfAsked();
       // Click or tap the 1st number
-      await googleCalculatorPage.typeNumbers(
+      await googleCalculatorPage.enterNumberSequence(
         splitStringToCharArray(mathOperation.firstNumber)
       );
       // Click or tap the orertion button
@@ -47,7 +47,7 @@ test.describe(`Google calculator`, () => {
         mathOperation.operationName
       );
       // Click or tap the 2nd number
-      await googleCalculatorPage.typeNumbers(
+      await googleCalculatorPage.enterNumberSequence(
         splitStringToCharArray(mathOperation.secondNumber)
       );
       // Click or tap the "equals" button
