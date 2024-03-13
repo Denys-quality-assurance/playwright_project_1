@@ -39,8 +39,7 @@ export default class GoogleSearchPage extends BasePage {
   // Get Locator object of Search auto suggestions
   async getSearchAutoSuggestionOptionsLocator() {
     try {
-      await this.page.waitForSelector(this.selectors.autoSuggestionOption);
-      return this.page.locator(this.selectors.autoSuggestionOption);
+      return await this.getLocator(this.selectors.autoSuggestionOption);
     } catch (error) {
       console.error(
         `Failed to get search auto suggestion options elements: ${error.message}`
@@ -66,10 +65,7 @@ export default class GoogleSearchPage extends BasePage {
   // Get the text of the message with the total number of results and the time taken to fetch the result
   async getResultsNumberAndTimeMessageText() {
     try {
-      await this.page.waitForSelector(
-        this.selectors.resultsNumberAndTimeMessage
-      );
-      const resultsNumberAndTimeMessageElement = this.page.locator(
+      const resultsNumberAndTimeMessageElement = await this.getLocator(
         this.selectors.resultsNumberAndTimeMessage
       );
       // Get text content from resultsNumberAndTimeMessageElement
@@ -203,8 +199,7 @@ export default class GoogleSearchPage extends BasePage {
   // Get Locator object of Search results descriptions
   async getSearchResultsDescriptionLocator() {
     try {
-      await this.page.waitForSelector(this.selectors.webPageDescription);
-      return this.page.locator(this.selectors.webPageDescription);
+      return await this.getLocator(this.selectors.webPageDescription);
     } catch (error) {
       console.error(
         `Failed to get search results descriptions: ${error.message}`
@@ -215,8 +210,7 @@ export default class GoogleSearchPage extends BasePage {
   // Get titles of the web pages in the search results
   async getSearchResultsWebPagesTitles() {
     try {
-      await this.page.waitForSelector(this.selectors.webPageTitle);
-      const searchResultsWebPagesTitlesLocator = this.page.locator(
+      const searchResultsWebPagesTitlesLocator = await this.getLocator(
         this.selectors.webPageTitle
       );
       // Get text content from searchResultsWebPagesTitles
@@ -234,8 +228,7 @@ export default class GoogleSearchPage extends BasePage {
   // Get corrected query text for the misspelled query in the message "Showing results for <correcter query>"
   async getCorrectedQueryFormMessageText() {
     try {
-      await this.page.waitForSelector(this.selectors.correctedQuery);
-      const correctedQueryElement = this.page.locator(
+      const correctedQueryElement = await this.getLocator(
         this.selectors.correctedQuery
       );
       // Get text content from correctedQueryElement
@@ -250,8 +243,7 @@ export default class GoogleSearchPage extends BasePage {
   // Get Locator object of elements with web pages URLs in the search results
   async getSearchResultsWebPagesUrlsLocator() {
     try {
-      await this.page.waitForSelector(this.selectors.webPageUrl);
-      return this.page.locator(this.selectors.webPageUrl);
+      return await this.getLocator(this.selectors.webPageUrl);
     } catch (error) {
       console.error(
         `Failed to get URLs of the web pagep in the search results: ${error.message}`
@@ -533,8 +525,7 @@ export default class GoogleSearchPage extends BasePage {
   // Make and save a screenshot of the Google Logo
   async saveGoogleLogoScreenshot(testInfo) {
     try {
-      await this.page.waitForSelector(this.selectors.googleLogo);
-      const element = this.page.locator(this.selectors.googleLogo);
+      const element = await this.getLocator(this.selectors.googleLogo);
       const screenshotBuffer = await element.screenshot();
       const screenshotPath = getTempFilePath(
         generateUniqueFileName(testInfo, `logo_screenshot.png`)
@@ -754,8 +745,7 @@ export default class GoogleSearchPage extends BasePage {
   // Get horizontal centre of the element by the selector
   async getHorizontalCentreBySelector(selector) {
     try {
-      await this.page.waitForSelector(selector);
-      const element = this.page.locator(selector);
+      const element = await this.getLocator(selector);
       const elementBox = await element.boundingBox();
       const elementCentre = elementBox.x + elementBox.width / 2;
       return elementCentre;
