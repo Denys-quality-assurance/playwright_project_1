@@ -64,8 +64,7 @@ export default class GoogleSearchPicturesPage extends BasePage {
     try {
       // Click on selected picture
       await this.clickOrTap(picture);
-      await this.page.waitForSelector(this.selectors.picturePreview);
-      return this.page.locator(this.selectors.picturePreview);
+      return await this.getLocator(this.selectors.picturePreview);
     } catch (error) {
       console.error(`Failed to open picture preview: ${error.message}`);
     }
@@ -74,10 +73,12 @@ export default class GoogleSearchPicturesPage extends BasePage {
   // Get the description and the download link of the first result from the picture search
   async getFirstPictureDescriptionAndDownloadLink() {
     try {
+      // Get Locator for firstSearchResultText
+      const firstSearchResultTextLocator = await this.getLocator(
+        this.selectors.firstSearchResultText
+      );
       // Get the text description from the first search result
-      const pictureDescription = await this.page
-        .locator(this.selectors.firstSearchResultText)
-        .innerText();
+      const pictureDescription = await firstSearchResultTextLocator.innerText();
 
       // Click on the 1st search result to open picture preview
       const picturePreview = await this.viewSelectedPictureInPreview(
@@ -121,10 +122,8 @@ export default class GoogleSearchPicturesPage extends BasePage {
   // Get Locator object of Search by picture results
   async getSearchByPictureResultsLocator() {
     try {
-      // Wait until the search results element has loaded on the page
-      await this.page.waitForSelector(this.selectors.searchByPictureResults);
       // Return a Locator for the search results element
-      return this.page.locator(this.selectors.searchByPictureResults);
+      return await this.getLocator(this.selectors.searchByPictureResults);
     } catch (error) {
       console.error(
         `Failed to get search by picture results: ${error.message}`
