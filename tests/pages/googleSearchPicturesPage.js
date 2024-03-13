@@ -1,6 +1,6 @@
 /*
  * The `GoogleSearchPicturesPage` class is a Page Object Model that represents the Google Picture Search Page.
- * This class extends from a `basePage` class and provides abstraction for the structure and behavior of the web page.
+ * This class extends from a `BasePage` class and provides abstraction for the structure and behavior of the web page.
  *
  * With methods such as searching and navigating through pages, viewing picture previews, retrieving picture description
  * and download link, performing a picture-based search, and checking if search results contain a specified query,
@@ -8,12 +8,12 @@
  *
  */
 
-import basePage from './basePage';
+import BasePage from './basePage';
 import { escapeRegexSpecialCharacters } from '../../utilities/regexHelper';
 
 const PICTURES_PAGE_URL_PART = '/imghp?'; // Part of picture search results URL
 
-export default class GoogleSearchPicturesPage extends basePage {
+export default class GoogleSearchPicturesPage extends BasePage {
   constructor(page, isMobile) {
     super(page, isMobile);
 

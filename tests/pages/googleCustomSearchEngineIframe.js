@@ -1,6 +1,6 @@
 /*
  * The `GoogleCustomSearchEnginePage` class is a Page Object Model representing the Google Custom Search Engine page.
- * This class extends from the `basePage` class providing an abstraction of the web page's structure and behavior.
+ * This class extends from the `BasePage` class providing an abstraction of the web page's structure and behavior.
  *
  * Key functionalities of this class include searching for specific queries, handling multiple iframes,
  * navigating to the Custom Search Engine (CSE) page, and retrieving search results.
@@ -10,12 +10,12 @@
  *
  */
 
-import basePage from './basePage';
+import BasePage from './basePage';
 
 const CSE_PAGE_URL_PART =
   '/google-sites/how-to/insert-custom-code/google-custom-search-engine/'; // Part of Google custom search engine page URL
 
-export default class GoogleCustomSearchEnginePage extends basePage {
+export default class GoogleCustomSearchEnginePage extends BasePage {
   constructor(page, isMobile) {
     super(page, isMobile);
 

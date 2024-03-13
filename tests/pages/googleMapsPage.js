@@ -1,6 +1,6 @@
 /*
  * The `GoogleMapsPage` class is a Page Object Model that represents the Google Maps page.
- * This class extends from a `basePage` class and provides abstraction for the structure
+ * This class extends from a `BasePage` class and provides abstraction for the structure
  * and behavior of the web page.
  *
  * The class encapsulates key operations like navigating to specific URLs, handling navigation
@@ -8,11 +8,11 @@
  *
  */
 
-import basePage from './basePage';
+import BasePage from './basePage';
 
 const MAPS_PAGE_URL_PART = '/maps'; // Part of Google Maps page URL
 
-export default class GoogleMapsPage extends basePage {
+export default class GoogleMapsPage extends BasePage {
   constructor(page, isMobile) {
     super(page, isMobile);
 

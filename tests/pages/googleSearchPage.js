@@ -1,4 +1,4 @@
-import basePage from './basePage';
+import BasePage from './basePage';
 import {
   readDataFromFileSync,
   generateUniqueFileName,
@@ -11,7 +11,7 @@ const responseBodyForEmptyResultsMockPath =
   './tests/test-data/googleSearch/mocks/responseBodyForEmptyResults.html';
 const SEARCH_RESULTS_PAGE_URL_PART = '/search?q='; // Part of search results page URL
 
-export default class GoogleSearchPage extends basePage {
+export default class GoogleSearchPage extends BasePage {
   constructor(page, isMobile) {
     super(page, isMobile);
 

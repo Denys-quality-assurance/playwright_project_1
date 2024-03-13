@@ -1,6 +1,6 @@
 import { escapeRegexSpecialCharacters } from '../../utilities/regexHelper';
 
-export default class basePage {
+export default class BasePage {
   constructor(page, isMobile) {
     this.page = page;
     this.isMobile = isMobile; // Type of device is mobile
