@@ -136,11 +136,22 @@ export default class BasePage {
     return this.page.waitForResponse(this.apiEndpoints.searchResults);
   }
 
-  // Get Locator object for Search results
-  async getSearchResultsLocator(pageOrFrame = this.page) {
+  // Get Locator for selector on the Page or IFrame
+  async getLocator(selector, pageOrIFrame = this.page) {
     try {
-      await pageOrFrame.waitForSelector(this.selectors.searchResult);
-      return pageOrFrame.locator(this.selectors.searchResult);
+      await pageOrIFrame.waitForSelector(selector);
+      return pageOrIFrame.locator(selector);
+    } catch (error) {
+      console.error(
+        `Failed to get locator for selector '${selector}': ${error.message}`
+      );
+    }
+  }
+
+  // Get Locator object for Search results on the Page or IFrame
+  async getSearchResultsLocator(pageOrIFrame = this.page) {
+    try {
+      return await this.getLocator(this.selectors.searchResult, pageOrIFrame);
     } catch (error) {
       console.error(`Failed to get search results: ${error.message}`);
     }
