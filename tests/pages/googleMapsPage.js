@@ -50,7 +50,7 @@ export default class GoogleMapsPage extends BasePage {
 
   // Navigate to the homepage, reject cookies and then redirect to Google Maps page
   async goToGoogleMapsPage() {
-    await this.goToURL('/'); // Navigate to homepage
+    await this.goToURL('/'); // Navigate to home page (baseURL)
     await this.rejectCookiesIfAsked(); // Handle cookies prompt
     await this.goToURL(MAPS_PAGE_URL_PART); // Redirect to Google Maps page
     await this.rejectNavigationIfAsked(); // Handle navigation prompt
