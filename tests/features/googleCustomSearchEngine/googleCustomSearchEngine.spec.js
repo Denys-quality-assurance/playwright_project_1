@@ -22,10 +22,13 @@ test.describe(`Google Custom Search Engine: Search results testing for '${query}
   );
 
   test(`TEST-26: Google CSE search results page contains '${query}' query`, async () => {
-    await googleCSEPage.searchForQueryByEnter(query, googleCSEPage.frame);
+    await googleCSEPage.searchForQueryByEnter(
+      query,
+      googleCSEPage.iFrameHandler
+    );
     // Check if each search result actually contains the query in its text
     const searchResultsLocator = await googleCSEPage.getSearchResultsLocator(
-      googleCSEPage.frame
+      googleCSEPage.iFrameHandler
     );
     const checkQueryResults =
       await googleCSEPage.checkIfAllSearchResultsContainQuery(
@@ -40,10 +43,13 @@ test.describe(`Google Custom Search Engine: Search results testing for '${query}
   });
 
   test(`TEST-27: Google search results page contains 10 results on 1 page for '${query}' query`, async () => {
-    await googleCSEPage.searchForQueryByEnter(query, googleCSEPage.frame);
+    await googleCSEPage.searchForQueryByEnter(
+      query,
+      googleCSEPage.iFrameHandler
+    );
     // Checking if the search results page contains 10 results on 1 page for the query
     const searchResultsLocator = await googleCSEPage.getSearchResultsLocator(
-      googleCSEPage.frame
+      googleCSEPage.iFrameHandler
     );
     expect(
       await searchResultsLocator.count(),
