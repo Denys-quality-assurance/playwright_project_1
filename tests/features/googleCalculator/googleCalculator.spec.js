@@ -4,7 +4,7 @@ import GoogleCalculatorPage from '../../pages/googleCalculatorPage';
 import { mathOperation } from '../../test-data/googleCalculator/mathOperation';
 import {
   splitStringToCharArray,
-  calculateExpectedResultText,
+  selectProvidedOrCalculatedExpectedResult,
 } from '../../../utilities/googleCalculator/calculatorHelper';
 
 test.describe(`Google calculator`, () => {
@@ -58,12 +58,8 @@ test.describe(`Google calculator`, () => {
       const resultAreaText = await googleCalculatorPage.getResultText();
       // Caclucate result of the math operation with the numbers
       const extectedResultText =
-        mathOperation.expectedResult ||
-        calculateExpectedResultText(
-          mathOperation.firstNumber,
-          mathOperation.secondNumber,
-          mathOperation.operationName
-        );
+        selectProvidedOrCalculatedExpectedResult(mathOperation);
+
       // Check if the actual result of the mathematical operation is equal to the expected result
       expect(
         resultAreaText,

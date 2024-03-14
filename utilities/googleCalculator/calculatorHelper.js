@@ -42,6 +42,17 @@ export function mapOperationToAriaLabel(operation) {
   }
 }
 
+export function selectProvidedOrCalculatedExpectedResult(mathOperation) {
+  return (
+    mathOperation.expectedResult ||
+    calculateExpectedResultText(
+      mathOperation.firstNumber,
+      mathOperation.secondNumber,
+      mathOperation.operationName
+    )
+  );
+}
+
 // Caclucate result of the math operation with the numbers
 export function calculateExpectedResultText(
   firstNumber,
