@@ -134,7 +134,7 @@ export default class GoogleSearchPicturesPage extends BasePage {
   // Checks if any of the returned search results contain a specified query
   async checkIfAnySearchResultContainsQuery(searchResultsLocator, query) {
     try {
-      // Get all individual search result elements
+      // Get an array of individual search result elements
       const allSearchResultElements = await searchResultsLocator.all();
       // Case-insensitive regex for the query
       let queryRegex = new RegExp(escapeRegexSpecialCharacters(query), 'i'); // 'i' flag for case insensitive

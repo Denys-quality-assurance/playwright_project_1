@@ -166,24 +166,23 @@ export default class BasePage {
   // Check if all search results contain query
   async checkIfAllSearchResultsContainQuery(searchResultsLocator, query) {
     try {
-      // Get all individual search result elements
+      // Get an array of individual search result elements
       const allSearchResultElements = await searchResultsLocator.all();
       // Get all words from the query as an array
       const queryWords = query.split(' ');
-      let failedResults = [];
 
-      for (let searchResultElement of allSearchResultElements) {
-        // Get the text of each searchResult
-        let resultText = await searchResultElement.innerText();
+      // Get the text of each SearchResultElement
+      const resultsText = await Promise.all(
+        allSearchResultElements.map(
+          async (element) => await element.innerText()
+        )
+      );
 
-        // Check if the search result contains any query word
-        const doesContainQueryWords =
-          this.checkIfSearchResultsContainsQueryWords(resultText, queryWords);
-        // If search result doesn't contain any query word, add it to the failed results array
-        if (!doesContainQueryWords) {
-          failedResults.push(resultText);
-        }
-      }
+      // Check if the result contains any query word and collect failedResults
+      const failedResults = resultsText.filter(
+        (resultText) =>
+          !this.checkIfSearchResultsContainsQueryWords(resultText, queryWords)
+      );
 
       // isSuccess is true if no items in failedResults
       return {
