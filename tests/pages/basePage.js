@@ -117,17 +117,23 @@ export default class BasePage {
 
   // Change to English if it's needed
   async changeToEnglishIfAsked() {
-    if (await this.page.isVisible(this.selectors.changeToEnglishModal)) {
-      try {
-        await this.page.waitForSelector(this.selectors.changeToEnglishButton);
-        await this.clickOrTap(this.selectors.changeToEnglishButton);
-        // Wait for the language modal to be hidden after clicking on the button
-        await this.page.waitForSelector(this.selectors.changeToEnglishModal, {
-          state: 'hidden',
-        });
-      } catch (error) {
-        console.error(`Failed to change to English: ${error.message}`);
+    // Run loop until Change to English modal is visible
+    for (let i = 0; i < 10; i++) {
+      if (await this.page.isVisible(this.selectors.changeToEnglishModal)) {
+        try {
+          await this.page.waitForSelector(this.selectors.changeToEnglishButton);
+          await this.clickOrTap(this.selectors.changeToEnglishButton);
+          // Wait for the language modal to be hidden after clicking on the button
+          await this.page.waitForSelector(this.selectors.changeToEnglishModal, {
+            state: 'hidden',
+          });
+        } catch (error) {
+          console.error(`Failed to change to English: ${error.message}`);
+        }
       }
+
+      // Sleep between retries
+      await this.page.waitForTimeout(200);
     }
   }
 
