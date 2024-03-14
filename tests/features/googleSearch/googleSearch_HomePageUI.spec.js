@@ -25,7 +25,7 @@ test.describe(`Google Home Page: User Interface`, () => {
   }, testInfo) => {
     // Make and save a screenshot of the Google Logo
     const actualScreenshotPath =
-      await googleSearchPage.saveGoogleLogoScreenshot(testInfo);
+      await googleSearchPage.captureAndSaveGoogleLogoScreenshot(testInfo);
     // Compare the actual Logo against the expected baseline Logo, attach results to the report, delete temporary files
     const mismatchedPixelsCount = await compareScreenshotsAndReportDifferences(
       actualScreenshotPath,
@@ -40,7 +40,7 @@ test.describe(`Google Home Page: User Interface`, () => {
 
   test(`TEST-15: Google logo is centre aligned on the Home page @UI`, async () => {
     // Get horizontal centre of the logo
-    const logoCentre = await googleSearchPage.getHorizontalCentreBySelector(
+    const logoCentre = await googleSearchPage.getHorizontalMiddleOfElement(
       googleSearchPage.selectors.googleLogo
     );
 
@@ -56,7 +56,7 @@ test.describe(`Google Home Page: User Interface`, () => {
   test(`TEST-16: Google search input area is centre aligned on the Home page @UI`, async () => {
     // Get horizontal centre of the search input area
     const searchInputCentre =
-      await googleSearchPage.getHorizontalCentreBySelector(
+      await googleSearchPage.getHorizontalMiddleOfElement(
         googleSearchPage.selectors.searchInputBox
       );
 

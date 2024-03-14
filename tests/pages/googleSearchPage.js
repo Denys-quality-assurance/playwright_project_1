@@ -1,3 +1,12 @@
+/*
+ * The `GoogleSearchPage` class is a Page Object Model that represents the Google Search Page.
+ * This class extends from a `BasePage` class and provides abstraction for the structure and behavior of the web page.
+ *
+ * The class provides a way to interact with the page, including performance tracking,
+ * retrieving cookie and storage values, mocking a search response.
+ *
+ */
+
 import BasePage from './basePage';
 import {
   readDataFromFileSync,
@@ -8,8 +17,12 @@ import {
 import { escapeRegexSpecialCharacters } from '../../utilities/regexHelper';
 
 const responseBodyForEmptyResultsMockPath =
-  './tests/test-data/googleSearch/mocks/responseBodyForEmptyResults.html';
+  './tests/test-data/googleSearch/mocks/responseBodyForEmptyResults.html'; // HTML body for the mock response
 const SEARCH_RESULTS_PAGE_URL_PART = '/search?q='; // Part of search results page URL
+const PERF_MARK_STARTED = 'Perf:Started'; // 'Start marker' name for Performance.mark API
+const PERF_MARK_ENDED = 'Perf:Ended'; // 'End marker' name for Performance.mark API
+const PERF_MEASURE_NAME = 'action'; // Name of the performance measure for Performance.mark API
+const PERF_ENTRY_TYPE = 'mark'; // Type of entries for Performance.mark API
 
 export default class GoogleSearchPage extends BasePage {
   constructor(page, isMobile) {
@@ -172,17 +185,20 @@ export default class GoogleSearchPage extends BasePage {
     }
   }
 
-  // Mock the search response with Empty Results
+  // Mock the search response with Empty Results by loading data from a file and setting up playwright routes with the loaded data
   async mockEmptySearchResponse(sharedContext, query) {
     try {
+      // Read the mock response data from the specified file path
       let responseBodyForEmptyResults = readDataFromFileSync(
         responseBodyForEmptyResultsMockPath
       );
-      // Replace 'Query' with the current query globally in the HTML
+      // Replace all instances of 'Query' within the data with the provided search query
       responseBodyForEmptyResults = responseBodyForEmptyResults.toString();
       const responseBodyForEmptyResultsCurrentQuery =
         responseBodyForEmptyResults.replace(/Query/g, query);
-      await sharedContext.route('/search?q=**', (route) => {
+
+      // Set up a playwright route for the search results endpoint to always return the modified mock data when called
+      await sharedContext.route(this.apiEndpoints.searchResults, (route) => {
         route.fulfill({
           status: 200,
           contentType: 'text/html; charset=UTF-8',
@@ -257,7 +273,7 @@ export default class GoogleSearchPage extends BasePage {
     query
   ) {
     try {
-      // Get all words from the query as an array
+      // Split the query into individual words
       const queryWords = query.split(' ');
       // Get an array of individual elements
       const searchResultsDescriptions =
@@ -270,13 +286,13 @@ export default class GoogleSearchPage extends BasePage {
         )
       );
 
-      // Check if the description contains any query word highlighted and collect failedResults
+      // Test each HTML description to see if it contains any of the query words. Store any that fail this check
       const failedResults = searchDescriptionsHTML.filter(
         (descriptionHTML) =>
           !this.hasHighlightedWords(descriptionHTML, queryWords)
       );
 
-      // success is try if no items in failedResults
+      // isSuccess is true if no items in failedResults
       return {
         isSuccess: failedResults.length === 0,
         failedDescriptionHTML: failedResults,
@@ -289,15 +305,14 @@ export default class GoogleSearchPage extends BasePage {
     }
   }
 
-  // Check if the description contains any query word highlighted
-  hasHighlightedWords(descriptionHTML, queryWords) {
-    // Get arrays of highlighted words between <em> and </em> tags
-    const highlightedWords = descriptionHTML
-      .split('<em>')
+  // Check if the HTML text contains any query word highlighted
+  hasHighlightedWords(HTMLText, queryWords) {
+    // Get arrays of 'highlighted' words enclosed with <em></em> tags
+    const highlightedWords = HTMLText.split('<em>')
       .filter((word) => word.includes('</em>'))
       .map((word) => word.split('</em>')[0]);
 
-    // Check if some word from the query is included in the words between <em> and </em> tags
+    // Check each highlighted word if it includes any of the query word
     for (let highlightedWord of highlightedWords) {
       const highlightedParts = highlightedWord.split(' ');
 
@@ -315,7 +330,7 @@ export default class GoogleSearchPage extends BasePage {
   }
 
   // Get href attributes from array of objects
-  async getHrefAttribute(objects) {
+  async getHrefAttributes(objects) {
     try {
       return await Promise.all(
         objects.map((element) => element.getAttribute('href'))
@@ -342,6 +357,7 @@ export default class GoogleSearchPage extends BasePage {
       const localStorageItemsByKeys = await page.evaluate((keys) => {
         let data = {};
         keys.forEach((key) => {
+          // Get the value of the current key from local storage and assign it to the data object
           data[key] = window.localStorage.getItem(key);
         });
         return data;
@@ -369,6 +385,7 @@ export default class GoogleSearchPage extends BasePage {
       const sessionStorageItemsByKeys = await page.evaluate((keys) => {
         let data = {};
         keys.forEach((key) => {
+          // Get the value of the current key from session storage and assign it to the data object
           data[key] = window.sessionStorage.getItem(key);
         });
         return data;
@@ -385,7 +402,7 @@ export default class GoogleSearchPage extends BasePage {
   async checkIfAllKeysExist(getItemsByKeys, page, keys) {
     try {
       let missingKeys = [];
-      // Run loop until all keys are detected in the Storage
+      // Run loop until all keys are detected in the Storage, up to 10 attempts
       for (let i = 0; i < 10; i++) {
         let storageData = await getItemsByKeys(page, keys);
         missingKeys = keys.filter((key) => storageData[key] === null);
@@ -395,7 +412,7 @@ export default class GoogleSearchPage extends BasePage {
         // Sleep between retries
         await page.waitForTimeout(200);
       }
-      // success is try if no items in failedResults
+      // success is true if no items in failedResults
       return { isSuccess: missingKeys.length === 0, missingKeys: missingKeys };
     } catch (error) {
       console.error(
@@ -405,28 +422,33 @@ export default class GoogleSearchPage extends BasePage {
   }
 
   // Check if all storage values are not empty
-  async checkIfAllStorageValuesNotEmpty(keys, storageData) {
+  async checkIfAllStorageKeysHaveData(keys, storageData) {
     try {
-      // Run loop until all keys are detected in the Storage
+      // Run loop until all keys are detected in the Storage, up to 10 attempts
       for (let i = 0; i < 10; i++) {
         var failedKeys = [];
+
+        // Fetch storage data if not provided
         const sessionStorageData = storageData
           ? storageData
           : await this.getSessionStorageData();
+
         keys.forEach((key) => {
           if (
             sessionStorageData[key] === null ||
             sessionStorageData[key] === ''
           ) {
+            // If a key's value is empty, add to failed keys
             failedKeys.push(key);
           }
         });
+        // If all keys have non-empty values, exit the loop
         if (failedKeys.length === 0) break;
 
         // Sleep between retries
         await this.page.waitForTimeout(200);
       }
-      // success is try if no items in failedResults
+      // isSuccess is true if no items in failedResults
       return { isSuccess: failedKeys.length === 0, failedKeys: failedKeys };
     } catch (error) {
       console.error(
@@ -438,7 +460,7 @@ export default class GoogleSearchPage extends BasePage {
   // Check if the object includes the expectedValue among its values
   async checkIfValueExists(expectedValue) {
     try {
-      // Run loop until all keys are detected in the Storage
+      // Run loop until all keys are detected in the Storage, up to 10 attempts
       for (let i = 0; i < 10; i++) {
         const sessionStorageData = await this.getSessionStorageData();
         const values = Object.values(sessionStorageData);
@@ -472,11 +494,14 @@ export default class GoogleSearchPage extends BasePage {
   }
 
   // Check if all expected items included to the array
-  checkIfAllItemsInArray(array, expectedItems) {
+  checkIfAllItemsArePresentInArray(array, expectedItems) {
     try {
+      // Filters the expected items to determine which, if any, are missing from the array
       const missingItems = expectedItems.filter(
         (item) => !array.includes(item)
       );
+      // If there are no missing items, the length of the 'missingItems' array will be 0
+      // so 'hasAllItems' will be true, otherwise it will be false
       return {
         hasAllItems: missingItems.length === 0,
         missingItems: missingItems,
@@ -502,9 +527,12 @@ export default class GoogleSearchPage extends BasePage {
   // Attach JSON to test
   async attachJSONToTest(testInfo, data, fileName) {
     try {
+      // Creating a temporary file path for the JSON file
       const dataName = generateUniqueFileName(testInfo, `${fileName}.json`);
       const dataPath = getTempFilePath(dataName);
+      // Writing the JSON test data to the file
       await writeDataToFileAsync(dataPath, JSON.stringify(data, null, 2));
+      // Attaching the JSON file to the test info context
       await testInfo.attach(dataName, {
         path: dataPath,
         contentType: 'application/json',
@@ -515,173 +543,21 @@ export default class GoogleSearchPage extends BasePage {
     }
   }
 
-  // Make and save a screenshot of the Google Logo
-  async saveGoogleLogoScreenshot(testInfo) {
+  // Take a screenshot of the Google logo and save it
+  async captureAndSaveGoogleLogoScreenshot(testInfo) {
     try {
       const element = await this.getLocator(this.selectors.googleLogo);
       const screenshotBuffer = await element.screenshot();
+      // Generate a filename using the test's info and unique name
       const screenshotPath = getTempFilePath(
         generateUniqueFileName(testInfo, `logo_screenshot.png`)
       );
+      // Write the screenshot buffer to the screenshot file
       await writeDataToFileAsync(screenshotPath, screenshotBuffer);
       return screenshotPath;
     } catch (error) {
       console.error(
         `Failed to make and save a screenshot of the Google Logo: ${error.message}`
-      );
-    }
-  }
-
-  // Get performance metrics for Search results
-  async getPerformanceMetricsForSearchResults(
-    query,
-    testInfo,
-    defaultBrowserType
-  ) {
-    try {
-      if (defaultBrowserType == 'chromium') {
-        // Performance API: Start performance tracing
-        var currentBrowser = this.page.context().browser();
-        var tracesName = generateUniqueFileName(
-          testInfo,
-          `${query}_perfTraces.json`
-        );
-        var tracesPath = getTempFilePath(tracesName);
-        await currentBrowser.startTracing(this.page, {
-          path: tracesPath,
-          screenshots: true,
-        });
-      }
-
-      // Make Search action
-      // Fill Search imput with query
-      await this.fillSearchInput(query);
-      await this.page.press(this.selectors.searchInputTextArea, 'Enter');
-
-      //Performance.mark API: Start performance tracking
-      await this.page.evaluate(() => window.performance.mark('Perf:Started'));
-
-      if (defaultBrowserType == 'chromium') {
-        // Chrome DevTool Protocol API: Create a new connection to an existing CDP session to enable performance Metrics
-        var session = await this.page.context().newCDPSession(this.page);
-        await session.send('Performance.enable');
-        // Chrome DevTool Protocol API: Record the performance metrics before actions
-        var metricsBefore = await session.send('Performance.getMetrics');
-      }
-
-      // Wait for search Results are visible
-      await this.page.waitForSelector(this.selectors.searchResult, {
-        state: 'visible',
-      });
-
-      //Performance.mark API: Stop performance tracking
-      await this.page.evaluate(() => window.performance.mark('Perf:Ended'));
-
-      if (defaultBrowserType == 'chromium') {
-        // Chrome DevTool Protocol API: Record the performance metrics after the actions
-        var metricsAfter = await session.send('Performance.getMetrics');
-
-        // Performance API: Stop performance tracing
-        await currentBrowser.stopTracing();
-
-        // Performance API: Attach traces to the test report
-        await testInfo.attach(tracesName, {
-          path: tracesPath,
-          contentType: 'application/json',
-        });
-
-        // Metrics calculation
-        // Chrome DevTool Protocol API: Subtract the metrics before the action from the metrics after the action
-        var metricsDiff = [];
-
-        for (let metricBefore of metricsBefore.metrics) {
-          // find corresponding metricAfter
-          const metricAfter = metricsAfter.metrics.find(
-            (metric) => metric.name === metricBefore.name
-          );
-
-          // prepare a new object
-          if (metricAfter) {
-            const diff = metricAfter.value - metricBefore.value;
-            const metricDiffObj = {
-              name: metricBefore.name,
-              value_before: metricBefore.value,
-              value_after: metricAfter.value,
-              value_diff: diff,
-            };
-
-            // push the new object to metricsDiff array
-            metricsDiff.push(metricDiffObj);
-          } else {
-            const metricDiffObj = {
-              name: metricBefore.name,
-              value_before: metricBefore.value,
-              value_after: null,
-              value_diff: null,
-            };
-            metricsDiff.push(metricDiffObj);
-          }
-        }
-
-        // Chrome DevTool Protocol API: Attach metricsDiff to the test report
-        var metricsDiffDataPath = await this.attachJSONToTest(
-          testInfo,
-          metricsDiff,
-          `${query}_metricsDiffDataName`
-        );
-      }
-
-      // Metrics calculation
-      // Performance.mark API: Performance measure
-      await this.page.evaluate(() =>
-        window.performance.measure('action', 'Perf:Started', 'Perf:Ended')
-      );
-
-      // To get all performance marks
-      const allMarksInfo = await this.page.evaluate(() =>
-        window.performance.getEntriesByType('mark')
-      );
-
-      // Performance.mark API: Attach allMarksInfo to the test report
-      const marksInfoDataPath = await this.attachJSONToTest(
-        testInfo,
-        allMarksInfo,
-        `${query}_marksInfoDataName`
-      );
-
-      // Performance.mark API: To get all performance measures
-      const allMeasuresInfo = await this.page.evaluate(() =>
-        window.performance.getEntriesByName('action')
-      );
-
-      // Performance.mark API: Duration of the action
-      const actionDuration = allMeasuresInfo[0]['duration'];
-
-      // Performance.mark API: Attach allMeasuresInfo to the test report
-      const measuresInfoDataPath = await this.attachJSONToTest(
-        testInfo,
-        allMeasuresInfo,
-        `${query}_measuresInfoDataName`
-      );
-      let metrics;
-      if (defaultBrowserType == 'chromium') {
-        metrics = {
-          tracesPath,
-          marksInfoDataPath,
-          measuresInfoDataPath,
-          metricsDiffDataPath,
-        };
-      } else {
-        metrics = {
-          marksInfoDataPath,
-          measuresInfoDataPath,
-        };
-      }
-
-      return { metrics, actionDuration };
-    } catch (error) {
-      console.error(
-        `Failed to get performance metrics for Search results: ${error.message}`
       );
     }
   }
@@ -696,11 +572,14 @@ export default class GoogleSearchPage extends BasePage {
     }
   }
 
-  // Navigate via Tab to select the item number N
-  async selectElementNViaTab(elementNumber) {
+  // Select the 'elementNumber' th focusable element using the Tab key
+  async selectElementByTabbing(elementNumber) {
     try {
+      // Loop for 'elementNumber' times
       for (let i = 0; i < elementNumber; i++) {
-        await this.page.keyboard.press('Tab'); // Move focus to the next focusable element
+        // Press the 'Tab' key each time to move the focus to the next focusable field or button in the web page
+        await this.page.keyboard.press('Tab');
+        // Wait after each tab press, this is to ensure that the focus has moved before the next key press
         await this.page.waitForTimeout(10);
       }
     } catch (error) {
@@ -710,11 +589,14 @@ export default class GoogleSearchPage extends BasePage {
     }
   }
 
-  // Navigate via Shift+Tab to select the item number N
-  async selectElementNViaShiftTab(elementNumber) {
+  // Select the 'elementNumber' th focusable element using the Shift + Tab keys
+  async selectElementByShiftTabbing(elementNumber) {
     try {
+      // Loop for 'elementNumber' times
       for (let i = 0; i < elementNumber; i++) {
-        await this.page.keyboard.press('Shift+Tab'); // Move focus to the next focusable element
+        // Press the 'Shift + Tab' keys each time to move the focus to the previous focusable element in the web page
+        await this.page.keyboard.press('Shift+Tab');
+        // Wait after each tab press, this is to ensure that the focus has moved before the next key press
         await this.page.waitForTimeout(10);
       }
     } catch (error) {
@@ -736,16 +618,347 @@ export default class GoogleSearchPage extends BasePage {
     }
   }
 
-  // Get horizontal centre of the element by the selector
-  async getHorizontalCentreBySelector(selector) {
+  // Compute the horizontal middle point of an element by the selector
+  async getHorizontalMiddleOfElement(selector) {
     try {
       const element = await this.getLocator(selector);
+      // Get the bounding box of an element which gives the (x, y) coordinates along with the width and height
       const elementBox = await element.boundingBox();
+      // Calculate and return the middle point of the element on the x-axis
       const elementCentre = elementBox.x + elementBox.width / 2;
       return elementCentre;
     } catch (error) {
       console.error(
         `Failed to horizontal centre of the element by the selector: ${error.message}`
+      );
+    }
+  }
+
+  //Performance.mark API: Add marker
+  async addPerformanceMark(markerName) {
+    try {
+      await this.page.evaluate(
+        // window.performance.mark() creates a timestamp in the browser's performance entry buffer with the given name
+        ([marker]) => window.performance.mark(marker),
+        [markerName] // passing markerName to the page context
+      );
+    } catch (error) {
+      this.handleError(
+        `Failed to add performance marker ${markerName} with Performance.mark API: ${error.message}`
+      );
+    }
+  }
+
+  //Performance.mark API: Start performance tracking
+  async startPerformanceMarkTracing() {
+    try {
+      // Adding "start" performance marker
+      await this.addPerformanceMark(PERF_MARK_STARTED);
+    } catch (error) {
+      console.error(
+        `Failed to start performance tracking with Performance.mark API: ${error.message}`
+      );
+    }
+  }
+
+  //Performance.mark API: Stop performance tracking. Attach results to the test report
+  async stopPerformanceMarkTracingAndAttachResults(testInfo, query) {
+    try {
+      // Adding a performance marker to indicate the ending of measurement
+      await this.addPerformanceMark(PERF_MARK_ENDED);
+
+      // Calculate the performance metrics
+      const { allMarksInfo, allMeasuresInfo, actionDuration } =
+        await this.performanceMarkMetricsCalculation();
+
+      // Attaching the performance marks information collected to the test report
+      // The 'query' parameter is used to derive the name for the attachment
+      const marksInfoDataPath = await this.attachJSONToTest(
+        testInfo,
+        allMarksInfo,
+        `${query}_marksInfoDataName`
+      );
+
+      // Attaching the performance measures information collected to the test report
+      // The 'query' parameter is again used to derive the name for the attachment
+      const measuresInfoDataPath = await this.attachJSONToTest(
+        testInfo,
+        allMeasuresInfo,
+        `${query}_measuresInfoDataName`
+      );
+
+      // Return the path of the attachments and the actionDuration
+      return { marksInfoDataPath, measuresInfoDataPath, actionDuration };
+    } catch (error) {
+      console.error(
+        `Failed to stop performance tracking with Performance.mark API and attach results to the test report: ${error.message}`
+      );
+    }
+  }
+
+  // Performance.mark API: Metrics calculation
+  async performanceMarkMetricsCalculation() {
+    try {
+      // Evaluate the performance measure inside the browser context.
+      // This function uses the window.performance.measure API to measure the time between two performance marks.
+      // PERF_MEASURE_NAME is the name given to the performance measure.
+      // PERF_MARK_STARTED and PERF_MARK_ENDED are the names of the start and end marks.
+      await this.page.evaluate(
+        ([PERF_MEASURE_NAME, PERF_MARK_STARTED, PERF_MARK_ENDED]) =>
+          window.performance.measure(
+            PERF_MEASURE_NAME,
+            PERF_MARK_STARTED,
+            PERF_MARK_ENDED
+          ),
+        [PERF_MEASURE_NAME, PERF_MARK_STARTED, PERF_MARK_ENDED]
+      );
+
+      // Gather all performance marks created using the Performance.mark API
+      const allMarksInfo = await this.page.evaluate(
+        ([PERF_ENTRY_TYPE]) =>
+          window.performance.getEntriesByType(PERF_ENTRY_TYPE),
+        [PERF_ENTRY_TYPE]
+      );
+
+      // Get performance measures for a specific name using the Performance.mark API
+      const allMeasuresInfo = await this.page.evaluate(
+        ([PERF_MEASURE_NAME]) =>
+          window.performance.getEntriesByName(PERF_MEASURE_NAME),
+        [PERF_MEASURE_NAME]
+      );
+
+      // Get duration of the action via the measure object
+      // The duration is the amount of time it took for the action to complete in milliseconds
+      const actionDuration = allMeasuresInfo[0]['duration'];
+
+      // Results info about all performance measures and marks, and action duration
+      return { allMarksInfo, allMeasuresInfo, actionDuration };
+    } catch (error) {
+      console.error(
+        `Failed to calculate performance metrics with Performance.mark API: ${error.message}`
+      );
+    }
+  }
+
+  // (Only Chromium) Performance API: Start performance tracing
+  async startChromiumTracing(currentBrowser, testInfo, query) {
+    try {
+      // Get path where to save performance traces
+      var tracesName = generateUniqueFileName(
+        testInfo,
+        `${query}_perfTraces.json`
+      );
+      var tracesPath = getTempFilePath(tracesName);
+
+      // Start tracing collecting process, including screenshots
+      await currentBrowser.startTracing(this.page, {
+        path: tracesPath,
+        screenshots: true,
+      });
+
+      // Return names of the trace file and path
+      return { tracesName, tracesPath };
+    } catch (error) {
+      console.error(
+        `Failed to start performance tracing with Chromium Performance API: ${error.message}`
+      );
+    }
+  }
+
+  // (Only Chromium) Performance API: Stop performance tracing. Attach results to the test report
+  async stopChromiumTracingAndAttach(
+    currentBrowser,
+    testInfo,
+    tracesName,
+    tracesPath
+  ) {
+    try {
+      // Stop tracing collecting process
+      await currentBrowser.stopTracing();
+
+      // Attach the trace to the testing report
+      await testInfo.attach(tracesName, {
+        path: tracesPath,
+        contentType: 'application/json',
+      });
+    } catch (error) {
+      console.error(
+        `Failed to stop performance tracking with Chromium Performance API and attach results to the test report: ${error.message}`
+      );
+    }
+  }
+
+  // (Only Chromium) Chrome DevTool Protocol API: Start performance tracking
+  async startChromeDevToolTracking() {
+    try {
+      // Chrome DevTool Protocol API: Create a new connection to an existing CDP session to enable performance Metrics
+      var session = await this.page.context().newCDPSession(this.page);
+      await session.send('Performance.enable');
+      // Chrome DevTool Protocol API: Record the performance metrics before actions
+      var metricsBefore = await session.send('Performance.getMetrics');
+      return { session, metricsBefore };
+    } catch (error) {
+      console.error(
+        `Failed to start performance tracing with Chrome DevTool Protocol API: ${error.message}`
+      );
+    }
+  }
+
+  // (Only Chromium) Chrome DevTool Protocol API: Stop performance tracking. Attach results to the test report
+  async stopChromeDevToolTrackingAndAttachtResults(
+    testInfo,
+    query,
+    session,
+    metricsBefore
+  ) {
+    try {
+      // Record the performance metrics after the actions
+      var metricsAfter = await session.send('Performance.getMetrics');
+
+      // Calculates the difference in performance metrics before and after the test execution
+      var metricsDiff = this.performanceChromeDevToolMetricsDiffCalculation(
+        metricsBefore,
+        metricsAfter
+      );
+
+      // Attach the performance difference metrics to the test report
+      var metricsDiffDataPath = await this.attachJSONToTest(
+        testInfo,
+        metricsDiff,
+        `${query}_metricsDiffDataName`
+      );
+
+      return metricsDiffDataPath;
+    } catch (error) {
+      console.error(
+        `Failed to stop performance tracking with Chrome DevTool Protocol API and attach results to the test report: ${error.message}`
+      );
+    }
+  }
+
+  // (Only Chromium) Chrome DevTool Protocol API: calculate the difference in metrics before and after an action using the Chrome DevTool Protocol API
+  performanceChromeDevToolMetricsDiffCalculation(metricsBefore, metricsAfter) {
+    try {
+      var metricsDiff = [];
+
+      // Iterate through each metric from the 'before' metrics
+      for (let metricBefore of metricsBefore.metrics) {
+        // Find the corresponding metric from the 'after' metrics
+        const metricAfter = metricsAfter.metrics.find(
+          (metric) => metric.name === metricBefore.name
+        );
+
+        if (metricAfter) {
+          // Calculate the difference between the 'before' and 'after' metric values
+          const diff = metricAfter.value - metricBefore.value;
+          // Create a new object storing the metric name, 'before' value,
+          // 'after' value and its difference. Then, add it to the metricsDifference array
+          metricsDiff.push({
+            name: metricBefore.name,
+            value_before: metricBefore.value,
+            value_after: metricAfter.value,
+            value_diff: diff,
+          });
+        } else {
+          // If there's no corresponding 'after' metric, create a new object with
+          // the metric name and 'before' value, and set the 'after' value and difference to null.
+          // Then, add it to the metricsDifference array
+          metricsDiff.push({
+            name: metricBefore.name,
+            value_before: metricBefore.value,
+            value_after: null,
+            value_diff: null,
+          });
+        }
+      }
+
+      // Return the array
+      return metricsDiff;
+    } catch (error) {
+      console.error(
+        `Failed to calculate performance metrics with Chrome DevTool Protocol API: ${error.message}`
+      );
+    }
+  }
+
+  // Get performance metrics for Search results
+  async getPerformanceMetricsForSearchResults(
+    query,
+    testInfo,
+    defaultBrowserType
+  ) {
+    try {
+      var currentBrowser = this.page.context().browser();
+      if (defaultBrowserType == 'chromium') {
+        // (Only Chromium) Performance API: Start performance tracing
+        var { tracesName, tracesPath } = await this.startChromiumTracing(
+          currentBrowser,
+          testInfo,
+          query
+        );
+      }
+
+      // Make Search action
+      // Fill Search imput with query
+      await this.fillSearchInput(query);
+      await this.page.press(this.selectors.searchInputTextArea, 'Enter');
+
+      //Performance.mark API: Start performance tracking
+      await this.startPerformanceMarkTracing();
+
+      if (defaultBrowserType == 'chromium') {
+        // (Only Chromium) Chrome DevTool Protocol API: Start performance tracing
+        var { session, metricsBefore } =
+          await this.startChromeDevToolTracking(defaultBrowserType);
+      }
+
+      // Wait for search Results are visible
+      await this.page.waitForSelector(this.selectors.searchResult, {
+        state: 'visible',
+      });
+
+      if (defaultBrowserType == 'chromium') {
+        // (Only Chromium) Performance API: Stop performance tracing. Attach results to the test report
+        await this.stopChromiumTracingAndAttach(
+          currentBrowser,
+          testInfo,
+          tracesName,
+          tracesPath
+        );
+
+        // (Only Chromium) Chrome DevTool Protocol API: Stop performance tracking. Attach results to the test report
+        var metricsDiffDataPath =
+          await this.stopChromeDevToolTrackingAndAttachtResults(
+            testInfo,
+            query,
+            session,
+            metricsBefore
+          );
+      }
+
+      // Performance.mark API: Stop performance tracking. Performance measure. Attach results to the test report
+      const { marksInfoDataPath, measuresInfoDataPath, actionDuration } =
+        await this.stopPerformanceMarkTracingAndAttachResults(testInfo, query);
+
+      // Construct an object to store all performance metrics information
+      let metrics =
+        defaultBrowserType == 'chromium'
+          ? {
+              tracesPath,
+              marksInfoDataPath,
+              measuresInfoDataPath,
+              metricsDiffDataPath,
+            }
+          : {
+              marksInfoDataPath,
+              measuresInfoDataPath,
+            };
+
+      // Return the performance metrics and the duration of the action
+      return { metrics, actionDuration };
+    } catch (error) {
+      console.error(
+        `Failed to get performance metrics for Search results: ${error.message}`
       );
     }
   }

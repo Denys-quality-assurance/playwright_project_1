@@ -56,7 +56,7 @@ test.describe(`Google Search results: Cookies and storage`, () => {
       expectedLocalStorageKeys
     );
     let checkIfAllLocalStorageValuesNotEmpty =
-      await googleSearchPage.checkIfAllStorageValuesNotEmpty(
+      await googleSearchPage.checkIfAllStorageKeysHaveData(
         expectedLocalStorageKeys,
         localStorageData
       );
@@ -100,7 +100,7 @@ test.describe(`Google Search results: Cookies and storage`, () => {
 
     // Check that all Session storage values are not empty
     let checkIfAllSessionStorageValuesNotEmpty =
-      await googleSearchPage.checkIfAllStorageValuesNotEmpty(
+      await googleSearchPage.checkIfAllStorageKeysHaveData(
         expectedSessionStorageKeys
       );
 
@@ -119,7 +119,7 @@ test.describe(`Google Search results: Cookies and storage`, () => {
     // Check that all expected names included to the cookies
     const cookies = await googleSearchPage.getCookies();
     const cookieNames = cookies.map((cookie) => cookie.name);
-    let checkResult = googleSearchPage.checkIfAllItemsInArray(
+    let checkResult = googleSearchPage.checkIfAllItemsArePresentInArray(
       cookieNames,
       expectedCookiesNames
     );

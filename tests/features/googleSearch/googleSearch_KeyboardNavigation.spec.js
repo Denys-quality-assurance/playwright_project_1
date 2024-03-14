@@ -27,7 +27,7 @@ test.describe(`Google Search results: Keyboard navigation`, () => {
     await page.waitForSelector(googleSearchPage.selectors.searchResult);
     // Navigate via Tab
     // Navigate via Tab to select the pictures search button (item number N=11)
-    await googleSearchPage.selectElementNViaTab(10);
+    await googleSearchPage.selectElementByTabbing(10);
     // Get class of the active (focused) element
     let activeElementClass = await googleSearchPage.getActiveElementClass();
     // Check if the active element has the expected class
@@ -47,7 +47,7 @@ test.describe(`Google Search results: Keyboard navigation`, () => {
 
     // Navigate via Shift+Tab
     // Navigate via Shift+Tab to select the close button (item number N=1) of the the search by picture modal
-    await googleSearchPage.selectElementNViaShiftTab(1);
+    await googleSearchPage.selectElementByShiftTabbing(1);
     // Get class of the active (focused) element
     activeElementClass = await googleSearchPage.getActiveElementClass();
     // Check if the active element has the expected class

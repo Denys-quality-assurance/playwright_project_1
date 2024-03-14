@@ -117,7 +117,7 @@ export default class BasePage {
 
   // Change to English if it's needed
   async changeToEnglishIfAsked() {
-    // Run loop until Change to English modal is visible
+    // Run loop until Change to English modal is visible, up to 10 attempts
     for (let i = 0; i < 10; i++) {
       if (await this.page.isVisible(this.selectors.changeToEnglishModal)) {
         try {
