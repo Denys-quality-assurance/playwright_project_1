@@ -59,7 +59,7 @@ module.exports = {
     },
     {
       name: 'Desktop_Webkit_PROD',
-      grepInvert: /^(.*@(skip-for-webkit|only-mobile)).*$/, // skip tests with @skip-for-webkit or @only-mobile
+      grepInvert: /^(.*@(skip-for-webkit|only-mobile|only-chromium)).*$/, // skip tests with @skip-for-webkit, @only-mobile, @only-chromium
       metadata: {
         currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
         skipKnownBugs: process.env.SKIP_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_KNOWN_BUGS is 'true'
@@ -72,7 +72,7 @@ module.exports = {
     },
     {
       name: 'Desktop_Microsoft_Edge_PROD',
-      grepInvert: /^(.*@(skip-for-edge|only-mobile)).*$/, // skip tests with @skip-for-edge or @only-mobile
+      grepInvert: /^(.*@(skip-for-edge|skip-for-chromium|only-mobile)).*$/, // skip tests with @skip-for-edge, @skip-for-chromium, @only-mobile
       metadata: {
         currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
         skipKnownBugs: process.env.SKIP_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_KNOWN_BUGS is 'true'
@@ -86,7 +86,7 @@ module.exports = {
     },
     {
       name: 'Desktop_Firefox_PROD',
-      grepInvert: /^(.*@(skip-for-firefox|only-mobile)).*$/, // skip tests with @skip-for-firefox or @only-mobile
+      grepInvert: /^(.*@(skip-for-firefox|only-mobile|only-chromium)).*$/, // skip tests with @skip-for-firefox, @only-mobile, @only-chromium
       metadata: {
         currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
         skipKnownBugs: process.env.SKIP_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_KNOWN_BUGS is 'true'
@@ -100,7 +100,7 @@ module.exports = {
     /* Test against mobile viewports. */
     {
       name: 'iPhone_14_Safari_PROD',
-      grepInvert: /^(.*@(skip-for-webkit|only-desktop)).*$/, // skip tests with @skip-for-webkit or @only-desktop
+      grepInvert: /^(.*@(skip-for-webkit|only-desktop|only-chromium)).*$/, // skip tests with @skip-for-webkit,@only-desktop, @only-chromium
       metadata: {
         currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
         skipKnownBugs: process.env.SKIP_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_KNOWN_BUGS is 'true'
@@ -113,7 +113,7 @@ module.exports = {
     },
     {
       name: 'iPhone_14_Safari_landscape_PROD',
-      grepInvert: /^(.*@(skip-for-webkit|only-desktop)).*$/, // skip tests with @skip-for-webkit or @only-desktop
+      grepInvert: /^(.*@(skip-for-webkit|only-desktop|only-chromium)).*$/, // skip tests with @skip-for-webkit,@only-desktop, @only-chromium
       metadata: {
         currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
         skipKnownBugs: process.env.SKIP_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_KNOWN_BUGS is 'true'
