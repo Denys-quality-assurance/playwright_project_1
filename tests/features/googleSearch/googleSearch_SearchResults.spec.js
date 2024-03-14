@@ -32,7 +32,7 @@ test.describe(`Google Search results: Search results verification`, () => {
     sharedContext,
   }) => {
     // Mock the search response with Empty Results
-    await googleSearchPage.mockResponseWithEmptyResults(sharedContext, query);
+    await googleSearchPage.mockEmptySearchResponse(sharedContext, query);
     // Search for query
     await googleSearchPage.searchForQueryByEnter(query);
     // Apply video filter

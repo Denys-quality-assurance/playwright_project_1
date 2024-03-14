@@ -33,10 +33,10 @@ test.describe(`Google Search results: Auto-suggestion and Correction`, () => {
       await googleSearchPage.searchForQueryByEnter(queryData.query);
       await page.waitForSelector(googleSearchPage.selectors.searchResult);
       // Check if the message "Showing results for <correcter query> contains the corrected query
-      const correctedQueryElementText =
+      const correctedQueryLocatorText =
         await googleSearchPage.getCorrectedQueryFormMessageText();
       expect(
-        correctedQueryElementText,
+        correctedQueryLocatorText,
         `The message "Showing results for <correcter query>" doesn't contain the corrected '${queryData.correctedQuery}' query`
       ).toContain(queryData.correctedQuery);
       // Check if each search result actually contains query in its text
