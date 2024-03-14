@@ -1,3 +1,15 @@
+/*
+ * Google Search Test Suite:
+ * This suite is dedicated to testing the storage interactions (Cookies, Local Storage, Session Storage) in Google Search results.
+ *
+ * The suite begins by setting up a page instance and Google Search page object instance.
+ * Thereafter, it navigates to the home page and rejects all cookies.
+ *
+ * Utilizing the GoogleSearchPage object, it carries out searches for queries.
+ * Helper methods for interacting with storage and cookies are included in the GoogleSearchPage class.
+ *
+ */
+
 import { expect } from '@playwright/test';
 import test from '../../../hooks/testWithAfterEachHooks.mjs';
 import GoogleSearchPage from '../../pages/googleSearchPage';

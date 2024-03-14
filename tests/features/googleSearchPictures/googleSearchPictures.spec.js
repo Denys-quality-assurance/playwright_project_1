@@ -1,3 +1,17 @@
+/*
+ * Google Search Pictures Test Suite:
+ * This suite of tests validates the functionality of Google Search for Pictures.
+ *
+ * Setup: The suite creates a page instance and a Google Search Pictures Page object.
+ * It navigates to the home page, rejects all cookies, and performs a search query.
+ *
+ * Useful methods for picture interaction are specified in the GoogleSearchPicturesPage class.
+ * Helper functions for download, file existence check, and file deletion are imported from fileSystemHelper.
+ *
+ * The data for the search queries is imported from queryData.
+ *
+ */
+
 import { expect } from '@playwright/test';
 import test from '../../../hooks/testWithAfterEachHooks.mjs';
 import GoogleSearchPicturesPage from '../../pages/googleSearchPicturesPage';

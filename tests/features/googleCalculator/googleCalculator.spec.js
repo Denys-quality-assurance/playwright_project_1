@@ -1,3 +1,20 @@
+/*
+ * Google Calculator Test Suite:
+ * This suite of tests is designed to validate the functionality of the Google Calculator.
+ *
+ * The suite begins by setting up a page instance and Google Calculator page object instance.
+ * It then navigates to the homepage, rejects all cookies, and searches for the 'calculator' query.
+ * The first test verifies if the Google Calculator is visible on the Home page.
+ * Subsequent tests perform various mathematical operations in the calculator using data from 'mathOperation' object.
+ * Each operation includes entering the numbers, clicking the operation button, clicking the 'equals' button,
+ * and then comparing the actual result with the expected result.
+ *
+ * Helper methods for calculator interactions are present in the GoogleCalculatorPage class.
+ * Util functions like splitStringToCharArray and selectProvidedOrCalculatedExpectedResult from calculatorHelper
+ * are used for data manipulation.
+ *
+ */
+
 import { expect } from '@playwright/test';
 import test from '../../../hooks/testWithAfterEachHooks.mjs';
 import GoogleCalculatorPage from '../../pages/googleCalculatorPage';

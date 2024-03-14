@@ -1,3 +1,15 @@
+/*
+ * Google Custom Search Engine Test Suite:
+ * This suite tests the functionality of the Google custom search engine.
+ *
+ * The suite utilizes a page object model (GoogleCustomSearchEnginePage) representing the Google search engine frame.
+ *
+ * Each test begins by initializing a new page instance and a related GoogleCustomSearchEnginePage object instance.
+ * The testing process then involves searching the 'query' in the Google search engine within the frame.
+ * Helper methods for Google search engine interactions are present in the GoogleCustomSearchEnginePage class.
+ *
+ */
+
 import { expect } from '@playwright/test';
 import test from '../../../hooks/testWithAfterEachHooks.mjs';
 import GoogleCustomSearchEnginePage from '../../pages/googleCustomSearchEngineIframe';

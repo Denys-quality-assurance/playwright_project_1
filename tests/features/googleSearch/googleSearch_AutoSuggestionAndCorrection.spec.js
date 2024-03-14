@@ -1,3 +1,15 @@
+/*
+ * Google Search Test Suite:
+ * This test suite aims to verify the functionality of key Google Search features
+ * - 'Auto-suggestion' and 'Search Query Correction'.
+ *
+ * In the setup, a new page instance and a Google Search page object instance are created, and cookies are rejected.
+ *
+ * Helper functions and selectors are encapsulated in 'GoogleSearchPage' class,
+ * and data used in tests are imported from queryData files.
+ *
+ */
+
 import { expect } from '@playwright/test';
 import test from '../../../hooks/testWithAfterEachHooks.mjs';
 import GoogleSearchPage from '../../pages/googleSearchPage';

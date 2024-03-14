@@ -1,3 +1,15 @@
+/*
+ * Google Search Functionality Test Suite:
+ * This test suite is designed to validate the search functionality of Google while emphasizing the crucial aspects.
+ *
+ * The suite configures and provides instances of page and googleSearchPage prior to running tests.
+ * For the testing environment setup, it navigates to the homepage and rejects all cookies.
+ *
+ * The GoogleSearchPage class contains helper methods for the entire mechanism of the functionality being evaluated.
+ * The data for the search queries is imported from queryData.
+ *
+ */
+
 import { expect } from '@playwright/test';
 import test from '../../../hooks/testWithAfterEachHooks.mjs';
 import GoogleSearchPage from '../../pages/googleSearchPage';

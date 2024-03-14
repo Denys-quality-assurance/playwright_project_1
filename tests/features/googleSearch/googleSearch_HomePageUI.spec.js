@@ -1,3 +1,17 @@
+/*
+ * Google Search Test Suite:
+ *
+ * This script tests the alignment and visibility of UI elements present on the Google Home Page.
+ *
+ * Setup: An instance of the Page object and the GoogleSearchPage object are initialized,
+ * with the test navigating to the Google homepage and rejecting all cookies.
+ *
+ * Helper methods for UI interactions are present in the GoogleSearchPage class.
+ * The utilities function 'compareScreenshotsAndReportDifferences' from fileSystemHelper is used to
+ * conduct pixel comparisons between actual and baseline screenshots.
+ *
+ */
+
 import { expect } from '@playwright/test';
 import test from '../../../hooks/testWithAfterEachHooks.mjs';
 import GoogleSearchPage from '../../pages/googleSearchPage';

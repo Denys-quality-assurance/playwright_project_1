@@ -1,3 +1,16 @@
+/*
+ * Google Search Test Suite:
+ * This test suite validates the keyboard navigation functionality of the Google Search results.
+ *
+ * Setup: An instance of the Page object and the GoogleSearchPage object are initialized,
+ * with the test navigating to the Google homepage and rejecting all cookies.
+ *
+ * The GoogleSearchPage class houses helper methods for Google Search interactions.
+ *
+ * This suite assumes keyboard navigation on a desktop device and does not handle mobile scenarios.
+ *
+ */
+
 import { expect } from '@playwright/test';
 import test from '../../../hooks/testWithAfterEachHooks.mjs';
 import GoogleSearchPage from '../../pages/googleSearchPage';

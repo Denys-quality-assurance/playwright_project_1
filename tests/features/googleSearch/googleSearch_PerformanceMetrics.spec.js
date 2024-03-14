@@ -1,3 +1,23 @@
+/*
+ * Google Search Results Performance Test Suite:
+ * This suite of tests is designed to measure, analyze, and validate the performance of Google's search results.
+ *
+ * The suite begins by setting up a page instance and GoogleSearchPage object instance.
+ * It then navigates to the Google homepage and rejects all cookies.
+ * Each test in the suite then performs a search of 'queryData' and gathers key performance metrics.
+ *
+ * These metrics include action duration (using Performance.mark API) to ensure the action doesn't exceed set limits,
+ * as well as information on performance marks and measures (also via Performance.mark API).
+ * In the case of Chromium browser, additional metrics collected include traces (Performance API)
+ * and Chrome DevTool Protocol metrics.
+ *
+ * The collected metrics are checked to ensure they have been properly saved in the system.
+ *
+ * The GoogleSearchPage class includes helper methods for search interactions and performance metrics gathering.
+ * The 'fileSystemHelper' module is utilized for handling file-related operations.
+ *
+ */
+
 import { expect } from '@playwright/test';
 import test from '../../../hooks/testWithAfterEachHooks.mjs';
 import GoogleSearchPage from '../../pages/googleSearchPage';

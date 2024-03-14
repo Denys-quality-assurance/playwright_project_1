@@ -1,3 +1,16 @@
+/*
+ * Geolocation Test Suite:
+ * This suite of tests is responsible for validating the geolocation functionality on the Google Maps page.
+ *
+ * Before each test, the geolocation is set, the Google Maps page is loaded, and any present cookies are rejected.
+ * In particular, these tests simulate the following scenario:
+ *
+ * The suite uses a set of utility functions and a page object instance of the GoogleMapsPage.
+ * A 'skip-for-firefox' tag is added to this suite due to potential issues with the geolocation functionality on Firefox.
+ * Helper methods for manipulating the Google Maps page are available in the GoogleMapsPage class.
+ *
+ */
+
 import { expect } from '@playwright/test';
 import test from '../../../hooks/testWithGeolocation.mjs';
 import GoogleMapsPage from '../../pages/googleMapsPage';
