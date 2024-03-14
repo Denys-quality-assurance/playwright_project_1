@@ -26,7 +26,7 @@ export default class GoogleSearchPage extends BasePage {
       correctedQuery: `.p64x9c.KDCVqf`, // The corrected query text for the misspelled query in the message "Showing results for <correcter query>"
       webPageTitle: this.isMobile ? `.v7jaNc` : `.LC20lb`, // One title of the web page in the search result for mobile and for desktop
       webPageUrl: this.isMobile ? `.cz3goc` : `[jsname="UWckNb"]`, // One URL of the web page in the search result for mobile and for desktop
-      webPageDescription: `.VwiC3b`, // One description of the web page in the search result
+      searchResultsDescription: `.VwiC3b`, // One description of the web page in the search result
       googleLogo: this.isMobile ? `#hplogo` : `.lnXdpd[alt="Google"]`, // Google Logo for mobile and for desktop
       videoFilterButton: `.LatpMc[href*="tbm=vid"]`, // Video filter button under the main search query imput area
     };
@@ -65,11 +65,11 @@ export default class GoogleSearchPage extends BasePage {
   // Get the text of the message with the total number of results and the time taken to fetch the result
   async getResultsNumberAndTimeMessageText() {
     try {
-      const resultsNumberAndTimeMessageElement = await this.getLocator(
+      const resultsNumberAndTimeMessageLocator = await this.getLocator(
         this.selectors.resultsNumberAndTimeMessage
       );
-      // Get text content from resultsNumberAndTimeMessageElement
-      return await resultsNumberAndTimeMessageElement.innerText();
+      // Get text content from resultsNumberAndTimeMessageLocator
+      return await resultsNumberAndTimeMessageLocator.innerText();
     } catch (error) {
       console.error(
         `Failed to get the text of the message with the total number of results and the time taken to fetch the result: ${error.message}`
@@ -80,7 +80,7 @@ export default class GoogleSearchPage extends BasePage {
   // Get the 1st element with expected query
   async getFirstElementWithQuery(locator, query) {
     try {
-      // // Collect all elements of locator
+      // Get an array of individual elements
       const elements = await locator.all();
       for (const element of elements) {
         // get the text content of the element
@@ -173,7 +173,7 @@ export default class GoogleSearchPage extends BasePage {
   }
 
   // Mock the search response with Empty Results
-  async mockResponseWithEmptyResults(sharedContext, query) {
+  async mockEmptySearchResponse(sharedContext, query) {
     try {
       let responseBodyForEmptyResults = readDataFromFileSync(
         responseBodyForEmptyResultsMockPath
@@ -199,7 +199,7 @@ export default class GoogleSearchPage extends BasePage {
   // Get Locator object of Search results descriptions
   async getSearchResultsDescriptionLocator() {
     try {
-      return await this.getLocator(this.selectors.webPageDescription);
+      return await this.getLocator(this.selectors.searchResultsDescription);
     } catch (error) {
       console.error(
         `Failed to get search results descriptions: ${error.message}`
@@ -228,11 +228,11 @@ export default class GoogleSearchPage extends BasePage {
   // Get corrected query text for the misspelled query in the message "Showing results for <correcter query>"
   async getCorrectedQueryFormMessageText() {
     try {
-      const correctedQueryElement = await this.getLocator(
+      const correctedQueryLocator = await this.getLocator(
         this.selectors.correctedQuery
       );
-      // Get text content from correctedQueryElement
-      return await correctedQueryElement.innerText();
+      // Get text content from correctedQueryLocator
+      return await correctedQueryLocator.innerText();
     } catch (error) {
       console.error(
         `Failed to get corrected query text for the misspelled query in the message "Showing results for <correcter query>": ${error.message}`
@@ -259,23 +259,23 @@ export default class GoogleSearchPage extends BasePage {
     try {
       // Get all words from the query as an array
       const queryWords = query.split(' ');
+      // Get an array of individual elements
       const searchResultsDescriptions =
         await searchResultsDescriptionLocator.all();
-      let failedResults = [];
 
-      for (let description of searchResultsDescriptions) {
-        // Get the text of each searchResult
-        const descriptionHTML = await description.innerHTML();
+      // Get the HTML of each searchResultsDescription
+      const searchDescriptionsHTML = await Promise.all(
+        searchResultsDescriptions.map(
+          async (description) => await description.innerHTML()
+        )
+      );
 
-        // Check if the description contains any query word highlighted
-        const hasHighlightedWords = this.hasHighlightedWords(
-          descriptionHTML,
-          queryWords
-        );
-        if (!hasHighlightedWords) {
-          failedResults.push(descriptionHTML);
-        }
-      }
+      // Check if the description contains any query word highlighted and collect failedResults
+      const failedResults = searchDescriptionsHTML.filter(
+        (descriptionHTML) =>
+          !this.hasHighlightedWords(descriptionHTML, queryWords)
+      );
+
       // success is try if no items in failedResults
       return {
         isSuccess: failedResults.length === 0,
@@ -317,12 +317,9 @@ export default class GoogleSearchPage extends BasePage {
   // Get href attributes from array of objects
   async getHrefAttribute(objects) {
     try {
-      let results = [];
-      for (let element of objects) {
-        const href = await element.getAttribute('href');
-        results.push(href);
-      }
-      return results;
+      return await Promise.all(
+        objects.map((element) => element.getAttribute('href'))
+      );
     } catch (error) {
       console.error(
         `Failed to get href attributes from array of objects: ${error.message}`
@@ -330,11 +327,10 @@ export default class GoogleSearchPage extends BasePage {
     }
   }
 
-  // Get local storage - isn't used
-  async getLocalStorage(page) {
+  // Get local storage
+  async getLocalStoragetData(page) {
     try {
-      const localStorageData = await page.evaluate(() => window.localStorage);
-      return localStorageData;
+      return await page.evaluate(() => window.localStorage);
     } catch (error) {
       console.error(`Failed to get local storage: ${error.message}`);
     }
@@ -359,12 +355,9 @@ export default class GoogleSearchPage extends BasePage {
   }
 
   // Get session storage
-  async getSessionStorage() {
+  async getSessionStorageData() {
     try {
-      const sessionStorageData = await this.page.evaluate(
-        () => window.sessionStorage
-      );
-      return sessionStorageData;
+      return await this.page.evaluate(() => window.sessionStorage);
     } catch (error) {
       console.error(`Failed to get session storage: ${error.message}`);
     }
@@ -399,7 +392,7 @@ export default class GoogleSearchPage extends BasePage {
 
         if (missingKeys.length === 0) break;
 
-        // Sleep for 1 second between retries
+        // Sleep between retries
         await page.waitForTimeout(200);
       }
       // success is try if no items in failedResults
@@ -419,7 +412,7 @@ export default class GoogleSearchPage extends BasePage {
         var failedKeys = [];
         const sessionStorageData = storageData
           ? storageData
-          : await this.getSessionStorage();
+          : await this.getSessionStorageData();
         keys.forEach((key) => {
           if (
             sessionStorageData[key] === null ||
@@ -430,7 +423,7 @@ export default class GoogleSearchPage extends BasePage {
         });
         if (failedKeys.length === 0) break;
 
-        // Sleep for 1 second between retries
+        // Sleep between retries
         await this.page.waitForTimeout(200);
       }
       // success is try if no items in failedResults
@@ -447,7 +440,7 @@ export default class GoogleSearchPage extends BasePage {
     try {
       // Run loop until all keys are detected in the Storage
       for (let i = 0; i < 10; i++) {
-        const sessionStorageData = await this.getSessionStorage();
+        const sessionStorageData = await this.getSessionStorageData();
         const values = Object.values(sessionStorageData);
         const isExpectedValueIncluded = values.some((value) =>
           new RegExp(escapeRegexSpecialCharacters(expectedValue), 'i').test(
@@ -458,7 +451,7 @@ export default class GoogleSearchPage extends BasePage {
           return true;
         }
 
-        // Sleep for 1 second between retries
+        // Sleep between retries
         await this.page.waitForTimeout(200);
       }
       return false;
@@ -722,6 +715,7 @@ export default class GoogleSearchPage extends BasePage {
     try {
       for (let i = 0; i < elementNumber; i++) {
         await this.page.keyboard.press('Shift+Tab'); // Move focus to the next focusable element
+        await this.page.waitForTimeout(10);
       }
     } catch (error) {
       console.error(
