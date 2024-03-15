@@ -5,6 +5,10 @@
  */
 
 import { extractFileNameFromPath } from './fileSystemHelper.js';
+const bugStatus = {
+  BUG_FIXED: 'FIXED',
+  BUG_UNFIXED: 'unfixed',
+};
 
 // String constants for reporting
 export const FAILED_STR = '[FAILED]';
@@ -55,7 +59,7 @@ export function findRelatedUnfixedBugsForTest(
     const relatedBugs = findRelatedBugsForTest(fileName, testTitle, knownBugs);
     // Filter out only those bugs that are NOT fixed in the current environment
     const relatedUnfixedBugs = relatedBugs.filter(
-      (bug) => bug.status[currentENV] !== 'FIXED'
+      (bug) => bug.status[currentENV] !== bugStatus.BUG_FIXED
     );
     return relatedUnfixedBugs;
   } catch (error) {
@@ -71,8 +75,8 @@ export function sortKnownIssues(
   currentTestPath,
   relatedBugs,
   currentENV,
-  finalListKnownUnfixedIssues,
-  finalListKnownFixedIssues
+  finalListKnownUnfixedIssues = [],
+  finalListKnownFixedIssues = []
 ) {
   try {
     // Get status name
@@ -123,13 +127,13 @@ export function addBugData(
     let unfixedIssues = knownUnfixedIssues;
     let fixedIssues = knownFixedIssues;
     for (const relatedBug of relatedBugs) {
-      if (relatedBug.status[currentENV] !== 'FIXED') {
+      if (relatedBug.status[currentENV] !== bugStatus.BUG_FIXED) {
         // If the bug for current env is not fixed, record it under known unfixed issues
-        const bugData = getBugData(relatedBug, 'unfixed');
+        const bugData = getBugData(relatedBug, bugStatus.BUG_UNFIXED);
         unfixedIssues = [...unfixedIssues, ...bugData];
       } else {
         // If the bug for current env is fixed, record it under known fixed issues
-        const bugData = getBugData(relatedBug, 'FIXED');
+        const bugData = getBugData(relatedBug, bugStatus.BUG_FIXED);
         fixedIssues = [...fixedIssues, ...bugData];
       }
     }

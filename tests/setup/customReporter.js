@@ -33,6 +33,14 @@ import {
   PASSED_TESTS_WITH_KNOWN_UNFIXED_ISSUES_STR,
 } from '../../utilities/customReporterHelper.js';
 
+const testStatus = {
+  FAILED: 'failed',
+  TIMEOUT: 'timedOut',
+  PASSED: 'passed',
+  SKIPPED: 'skipped',
+  INTERRUPTED: 'interrupted',
+};
+
 export default class CustomReporter {
   constructor() {
     // List of the known unfixed issues for failed tests on the current environment
@@ -49,7 +57,10 @@ export default class CustomReporter {
 
   onTestEnd(test, result) {
     try {
-      if (result.status !== 'skipped' && result.status !== 'interrupted') {
+      if (
+        result.status !== testStatus.SKIPPED &&
+        result.status !== testStatus.INTERRUPTED
+      ) {
         // Current test path
         const currentTitlePath = test.titlePath();
         const currentTestPath = `[${currentTitlePath[1]}] › ${currentTitlePath.slice(2).join(' › ')}`;
@@ -86,7 +97,10 @@ export default class CustomReporter {
             this.allKnownFixedIssuesForFailed =
               listKnownIssues.listKnownFixedIssues;
             // If the test has passed without any retries
-          } else if (result.status === 'passed' && result.retry === 0) {
+          } else if (
+            result.status === testStatus.PASSED &&
+            result.retry === 0
+          ) {
             // Store the known unfixed issues for the passed test
             const listKnownIssues = sortKnownIssues(
               result.status,
@@ -119,7 +133,8 @@ export default class CustomReporter {
     // Check if the test failed or timed out in its first run
     function isFirstFailure() {
       return (
-        (result.status === 'failed' || result.status === 'timedOut') &&
+        (result.status === testStatus.FAILED ||
+          result.status === testStatus.TIMEOUT) &&
         result.retry === 0
       );
     }
