@@ -16,6 +16,8 @@
  * to the custom report. Tests associated with known bugs are automatically marked as
  * "should fail" and can be skipped during the test run to save time and resources, focusing on new issues.
  *
+ * NOTE: If the testFile ot testTitle of the test have changed, make sure that they have been updated in this document as well.
+ *
  */
 
 export const knownBugs = [

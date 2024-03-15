@@ -14,6 +14,11 @@ import { expect } from '@playwright/test';
 import test from '../../../hooks/testWithAfterEachHooks.mjs';
 import GoogleSearchPage from '../../pages/googleSearchPage';
 import { queryDataGeneral } from '../../test-data/googleSearch/queryData';
+
+const testStatus = {
+  SKIPPED: 'skipped',
+};
+
 const query = queryDataGeneral[1].query;
 const expectedLocalStorageKeysData = {
   desktop: [`sb_wiz.zpc.gws-wiz-serp.`, `_c;;i`, `ds;;frib`, `sb_wiz.qc`], // Expected Local storage's keys for desktop
@@ -24,6 +29,17 @@ const expectedSessionStorageKeys = [`_c;;i`]; // Expected session storage's keys
 const expectedCookiesNames = ['__Secure-ENID', 'AEC', 'SOCS']; // Expected cookies names
 
 test.describe(`Google Search results: Cookies and storage`, () => {
+  // Test should be failed when the condition is true: there is at least 1 unfixed bug
+  test.fail(
+    ({ shouldFailTest }) => shouldFailTest > 0,
+    `Test marked as "should fail" due to the presence of unfixed bug(s)`
+  );
+  // Test should be skipped when the condition is true: flag skipTestsWithKnownBugs is 'true' and there is at least 1 unfixed bug
+  test.skip(
+    ({ shouldSkipTest }) => shouldSkipTest,
+    `Test skipped due to the presence of unfixed bug(s)`
+  );
+
   let page; // Page instance
   let googleSearchPage; // Page object instance
 
@@ -31,7 +47,8 @@ test.describe(`Google Search results: Cookies and storage`, () => {
   test.beforeEach(
     'Navigate to Home page and reject all Cookies',
     async ({ sharedContext }, testInfo) => {
-      if (testInfo.expectedStatus !== 'skipped') {
+      // Prepare the test only if the test is not skipped
+      if (testInfo.expectedStatus !== testStatus.SKIPPED) {
         page = await sharedContext.newPage();
         const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
         expectedLocalStorageKeys = isMobile

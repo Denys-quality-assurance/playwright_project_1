@@ -7,46 +7,75 @@ import {
 } from '../utilities/customReporterHelper.js';
 
 import { NO_KNOWN_ISSUE_STR } from '../utilities/customReporterHelper.js';
+const testStatus = {
+  FAILED: 'failed',
+  TIMEOUT: 'timedOut',
+  PASSED: 'passed',
+  SKIPPED: 'skipped',
+  INTERRUPTED: 'interrupted',
+};
 
-function createSharedContextTest(contextOptions) {
+// Create a browser shared context and configures each test based on the context options
+function initializeBrowserSharedContextAndSetUpTest(contextOptions) {
   const test = base.extend({
     sharedContext: async ({ browser }, use) => {
       const context = await browser.newContext(contextOptions);
+      // Pass the values to the test functions
       await use(context);
+    },
+    shouldFailTest: async ({}, use, testInfo) => {
+      // Test should be failed when the condition is true: there is at least 1 unfixed bug
+      const shouldFailTest = hasUnfixedBugs(testInfo);
+      // Pass the values to the test functions
+      await use(shouldFailTest);
+    },
+    shouldSkipTest: async ({}, use, testInfo) => {
+      // Test should be skipped when the condition is true: flag skipTestsWithKnownBugs is 'true' and there is at least 1 unfixed bug
+      const shouldSkipTest = shoulSkipTest(testInfo);
+      // Pass the values to the test functions
+      await use(shouldSkipTest);
     },
   });
 
-  // Mark the current test as "should fail" or skip it
-  test.beforeEach(
-    'Mark the current test as "should fail" or skip it',
-    async ({}, testInfo) => {
-      // Test with unfixed bugs is skipped when skipKnownBugs is 'true'
-      const skipKnownBugs =
-        testInfo.project.metadata.skipKnownBugs.toLowerCase() === 'true';
-      // Environment for current test project
-      const currentENV = testInfo.project.metadata.currentENV;
-      // Find if the current test has known bugs unfixed in the current environment
-      const relatedUnfixedBugs = findRelatedUnfixedBugsForTest(
-        testInfo.file,
-        testInfo.title,
-        knownBugs,
-        currentENV
+  // Check if the test has unfixed bugs
+  function hasUnfixedBugs(testInfo) {
+    // Environment for current test project
+    const currentProjectEnv = testInfo.project.metadata.currentENV;
+    // Find if the current test has known bugs unfixed in the current environment
+    const relatedUnfixedBugs = findRelatedUnfixedBugsForTest(
+      testInfo.file,
+      testInfo.title,
+      knownBugs,
+      currentProjectEnv
+    );
+
+    return relatedUnfixedBugs.length > 0;
+  }
+
+  // Mark the current test as "should skip"
+  function shoulSkipTest(testInfo) {
+    // Check if the test has unfixed bugs
+    const areThereUnfixedBugs = hasUnfixedBugs(testInfo);
+    // Check whether a project should skip known bugs
+    const skipTestsWithKnownBugs = shouldSkipTestsWithKnownBugs(testInfo);
+    // Test is skipped when the condition is true: flag skipTestsWithKnownBugs is 'true' and there is at least 1 unfixed bug
+    return skipTestsWithKnownBugs && areThereUnfixedBugs;
+  }
+
+  // Check whether a project should skip tests with known bugs
+  function shouldSkipTestsWithKnownBugs(testInfo) {
+    try {
+      // Test with unfixed bugs is skipped when skipTestsWithKnownBugs is 'true'
+      return (
+        testInfo.project.metadata.skipTestsWithKnownBugs.toLowerCase() ===
+        'true'
       );
-      // Number of the related unfixed bugs
-      const numberOfRelatedUnfixedBugs = relatedUnfixedBugs.length;
-      const hasUnfixedBugs = numberOfRelatedUnfixedBugs > 0;
-      // Test is marked as "should fail" when the condition is true: there is at least 1 related bug
-      testInfo.fail(
-        hasUnfixedBugs,
-        `Test marked as "should fail" due to the presence of ${numberOfRelatedUnfixedBugs} unfixed bug(s)`
-      );
-      // Test is skipped when the condition is true: flag skipKnownBugs is 'true' and there is at least 1 unfixed bug
-      testInfo.skip(
-        skipKnownBugs && hasUnfixedBugs,
-        `Test skipped due to the presence of ${numberOfRelatedUnfixedBugs} unfixed bug(s)`
+    } catch (error) {
+      console.error(
+        `Failed to check whether a project should skip tests with known bugs: ${error.message}`
       );
     }
-  );
+  }
 
   // Add screenshots as attachments to HTML report. Add info to the custom report
   test.afterEach(
@@ -54,8 +83,8 @@ function createSharedContextTest(contextOptions) {
     async ({ sharedContext }, testInfo) => {
       try {
         if (
-          testInfo.status !== 'skipped' &&
-          testInfo.status !== 'interrupted'
+          testInfo.status !== testStatus.SKIPPED &&
+          testInfo.status !== testStatus.INTERRUPTED
         ) {
           // Get all open pages
           const pages = sharedContext.pages();
@@ -81,9 +110,9 @@ function createSharedContextTest(contextOptions) {
 
               // Conditionally save fullpage screenshot if the test had failed or retried
               if (
-                testInfo.status === 'failed' ||
-                testInfo.status === 'timedOut' ||
-                (testInfo.status === 'passed' &&
+                testInfo.status === testStatus.FAILED ||
+                testInfo.status === testStatus.TIMEOUT ||
+                (testInfo.status === testStatus.PASSED &&
                   testInfo.status === testInfo.expectedStatus &&
                   testInfo.retry > 0)
               ) {
@@ -114,7 +143,7 @@ function createSharedContextTest(contextOptions) {
           // Add info to the custom report
           try {
             // Environment for current test project
-            const currentENV = testInfo.project.metadata.currentENV;
+            const currentProjectEnv = testInfo.project.metadata.currentENV;
 
             // List of the known bugs for the current test
             let knownBugsForCurrentTest = [];
@@ -130,9 +159,9 @@ function createSharedContextTest(contextOptions) {
             if (relatedBugs.length > 0) {
               // Add info to the custom report if the test has related bugs
               if (
-                testInfo.status === 'failed' ||
-                testInfo.status === 'timedOut' ||
-                (testInfo.status === 'passed' &&
+                testInfo.status === testStatus.FAILED ||
+                testInfo.status === testStatus.TIMEOUT ||
+                (testInfo.status === testStatus.PASSED &&
                   testInfo.status === testInfo.expectedStatus &&
                   testInfo.retry > 0)
               ) {
@@ -141,12 +170,12 @@ function createSharedContextTest(contextOptions) {
                   testInfo.status,
                   currentTestPath,
                   relatedBugs,
-                  currentENV,
+                  currentProjectEnv,
                   knownBugsForCurrentTest,
                   knownBugsForCurrentTest
                 );
               } else if (
-                testInfo.status === 'passed' &&
+                testInfo.status === testStatus.PASSED &&
                 testInfo.status !== testInfo.expectedStatus
               ) {
                 // Collect the list of the unfixed issues
@@ -154,7 +183,7 @@ function createSharedContextTest(contextOptions) {
                   testInfo.status,
                   currentTestPath,
                   relatedBugs,
-                  currentENV,
+                  currentProjectEnv,
                   knownBugsForCurrentTest
                 );
               }
@@ -162,7 +191,7 @@ function createSharedContextTest(contextOptions) {
               knownBugsForCurrentTest.push('KNOWN ISSUES:');
               // List of the known unfixed issues for the test
               knownBugsForCurrentTest =
-                testInfo.status !== 'passed'
+                testInfo.status !== testStatus.PASSED
                   ? [
                       ...knownBugsForCurrentTest,
                       ...listKnownIssuesForFailed.listKnownUnfixedIssues,
@@ -173,7 +202,7 @@ function createSharedContextTest(contextOptions) {
                     ];
               // List of the known fixed issues for the test
               knownBugsForCurrentTest =
-                testInfo.status !== 'passed'
+                testInfo.status !== testStatus.PASSED
                   ? [
                       ...knownBugsForCurrentTest,
                       ...listKnownIssuesForFailed.listKnownFixedIssues,
@@ -223,4 +252,4 @@ function createSharedContextTest(contextOptions) {
   return test;
 }
 
-export { createSharedContextTest };
+export { initializeBrowserSharedContextAndSetUpTest };

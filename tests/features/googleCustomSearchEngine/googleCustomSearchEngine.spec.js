@@ -14,9 +14,25 @@ import { expect } from '@playwright/test';
 import test from '../../../hooks/testWithAfterEachHooks.mjs';
 import GoogleCustomSearchEnginePage from '../../pages/googleCustomSearchEngineIframe';
 import { queryDataGeneral } from '../../test-data/googleSearch/queryData';
+
+const testStatus = {
+  SKIPPED: 'skipped',
+};
+
 const query = queryDataGeneral[0].query;
 
 test.describe(`Google Custom Search Engine: Search results testing for '${query}' query @only-desktop`, () => {
+  // Test should be failed when the condition is true: there is at least 1 unfixed bug
+  test.fail(
+    ({ shouldFailTest }) => shouldFailTest > 0,
+    `Test marked as "should fail" due to the presence of unfixed bug(s)`
+  );
+  // Test should be skipped when the condition is true: flag skipTestsWithKnownBugs is 'true' and there is at least 1 unfixed bug
+  test.skip(
+    ({ shouldSkipTest }) => shouldSkipTest,
+    `Test skipped due to the presence of unfixed bug(s)`
+  );
+
   let googleCSEPage; // Page object instance
   test.use({ baseURL: 'https://www.steegle.com/' }); // Set a specific base URL for this test
 
@@ -24,7 +40,8 @@ test.describe(`Google Custom Search Engine: Search results testing for '${query}
   test.beforeEach(
     'Navigate to Google Custom Search Engine page and init iFrame',
     async ({ sharedContext }, testInfo) => {
-      if (testInfo.expectedStatus !== 'skipped') {
+      // Prepare the test only if the test is not skipped
+      if (testInfo.expectedStatus !== testStatus.SKIPPED) {
         const page = await sharedContext.newPage();
         const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
         googleCSEPage = new GoogleCustomSearchEnginePage(page, isMobile);

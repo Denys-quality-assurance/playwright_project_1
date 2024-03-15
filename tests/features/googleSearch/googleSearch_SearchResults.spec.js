@@ -19,11 +19,27 @@ import {
   queryDataEmptyResults,
 } from '../../test-data/googleSearch/queryData';
 import { performSearchAndFetchResultsForNewPage } from '../../../utilities/pagesHelper';
+
+const testStatus = {
+  SKIPPED: 'skipped',
+};
+
 const query = queryDataGeneral[1].query;
 const expectedPatternOfNumberAndTimeMessageText =
   /\b\w+\b\s\b\d+(\.\d{3})*\b\s\b\w+\b\s\(\b\d+,\d+\b\s\b\w+\b\)/; // Regex for the message with the total number of results and the time taken to fetch the result based on the template: <1 word> <Integer possibly with thousands as '.'> <1 space> <1 word> <space> (<floating point number with ','> <1 space> <1 word>): \b matches word boundary, \w+ matches matches one or more word character, \s matches whitespace, \d+ matches one or more digits, \,\d+ matches a comma followed by one or more digits, \b\d+(\.\d{3})*\bs\b matches an integer number that might have dot separators between thousands
 
 test.describe(`Google Search results: Search results verification`, () => {
+  // Test should be failed when the condition is true: there is at least 1 unfixed bug
+  test.fail(
+    ({ shouldFailTest }) => shouldFailTest > 0,
+    `Test marked as "should fail" due to the presence of unfixed bug(s)`
+  );
+  // Test should be skipped when the condition is true: flag skipTestsWithKnownBugs is 'true' and there is at least 1 unfixed bug
+  test.skip(
+    ({ shouldSkipTest }) => shouldSkipTest,
+    `Test skipped due to the presence of unfixed bug(s)`
+  );
+
   let page; // Page instance
   let googleSearchPage; // Page object instance
 
@@ -31,7 +47,8 @@ test.describe(`Google Search results: Search results verification`, () => {
   test.beforeEach(
     'Navigate to Home page and reject all Cookies',
     async ({ sharedContext }, testInfo) => {
-      if (testInfo.expectedStatus !== 'skipped') {
+      // Prepare the test only if the test is not skipped
+      if (testInfo.expectedStatus !== testStatus.SKIPPED) {
         page = await sharedContext.newPage();
         const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
         googleSearchPage = new GoogleSearchPage(page, isMobile);
