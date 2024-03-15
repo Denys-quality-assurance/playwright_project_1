@@ -1,3 +1,27 @@
+/*
+ * This module exports a `test` object which is used to create test cases.
+ * # Test Lifecycle Manager
+ * This code manages the test lifecycle in the context of known bugs.
+ * It determines if tests should be skipped or failed based on existing known
+ * bugs. This information is retrieved from a `knownBugs` JSON file.
+ *
+ * The code exports a function - `initSharedContext()` - which sets up the
+ * shared context for a test and configures each test based on the context
+ * options.
+ *
+ * # Screenshot and HTML Report Manager
+ * This code is responsible for managing screenshot captures and handling
+ * known bug information related to test cases.
+ *
+ * Main features:
+ * 1. Determines if screenshots should be taken for test case pass scenarios
+ * 2. Attaches viewport and full-page screenshots to HTML reports
+ * 3. Attaches information about known bugs to the HTML report
+ *
+ * At the end of every test case, the context is closed to ensure proper freeing of resources.
+ *
+ */
+
 import { test as base } from '@playwright/test';
 import { knownBugs } from '../tests/knownBugs.js';
 import {
@@ -15,9 +39,7 @@ const testStatus = {
   INTERRUPTED: 'interrupted',
 };
 
-// This module manages tests lifecycle including decision if
-// test should be skipped or failed based on existing known bugs
-
+// Lifecycle manager
 // Create a browser shared context and configures each test based on the context options
 function initSharedContext(contextOptions) {
   const test = base.extend({
@@ -82,24 +104,11 @@ function initSharedContext(contextOptions) {
     }
   }
 
-  // Check whether the project should take screenshot for passed tests
-  function shouldTakeScreenshotsForPassedTests(testInfo) {
-    try {
-      // screenshots for passed tests are taken when PASSED_TESTS_SCREENSHOT is 'true'
-      return (
-        testInfo.project.metadata.passedTestsScreenshots.toLowerCase() ===
-        'true'
-      );
-    } catch (error) {
-      console.error(
-        `Failed to check whether the project should take screenshot for passed tests: ${error.message}`
-      );
-    }
-  }
-
-  // Attach screenshots to HTML report. Add test info to the custom report
+  // Screenshot and HTML Report Manager
+  // Attach screenshots to HTML report
+  // Add test info to the HTML report
   test.afterEach(
-    'Attach screenshots to HTML report. Add test info to the custom report',
+    'Attach screenshots to HTML report. Add test info to the HTML report',
     async ({ sharedContext }, testInfo) => {
       try {
         if (
@@ -135,16 +144,31 @@ function initSharedContext(contextOptions) {
             );
           }
 
-          // Attach known bugs info info to the custom report
+          // Attach known bugs info info to the HTML report
           await attachKnownBugsInfoToReport(testInfo, currentTestPath);
         }
       } catch (error) {
         console.error(
-          `Failed to attach screenshots to HTML report or add info to the custom report: ${error.message}`
+          `Failed to attach screenshots to HTML report or add info to the HTML report: ${error.message}`
         );
       }
     }
   );
+
+  // Check whether the project should take screenshot for passed tests
+  function shouldTakeScreenshotsForPassedTests(testInfo) {
+    try {
+      // screenshots for passed tests are taken when PASSED_TESTS_SCREENSHOT is 'true'
+      return (
+        testInfo.project.metadata.passedTestsScreenshots.toLowerCase() ===
+        'true'
+      );
+    } catch (error) {
+      console.error(
+        `Failed to check whether the project should take screenshot for passed tests: ${error.message}`
+      );
+    }
+  }
 
   // Attache viewport and fullpage screenshots to the HTML report for a specific page
   async function attachPageScreenshotsToReport(
@@ -155,9 +179,14 @@ function initSharedContext(contextOptions) {
     timestamp
   ) {
     try {
-      // If the project should take screenshot for passed tests
-      if (shouldTakeScreenshotsForPassedTests(testInfo)) {
-        // Take a screenshot of the current viewport
+      // Take a screenshot of the current viewport
+      // If the test passed and the project should take screenshot for passed tests
+      // OR If the test passed unexpectedly
+      if (
+        testInfo.status === testStatus.PASSED &&
+        (shouldTakeScreenshotsForPassedTests(testInfo) ||
+          testInfo.status !== testInfo.expectedStatus)
+      ) {
         const screenshotViewport = await page.screenshot();
         // Attach viewport screenshots to HTML report
         // It is named uniquely by using the project name, timestamp and page index
@@ -193,7 +222,7 @@ function initSharedContext(contextOptions) {
     }
   }
 
-  // Check if the test had failed or retried
+  // Check if the test failed or retried
   function isTestFailureOrRetried(testInfo) {
     return (
       // Check if the test status is FAILED or TIMEOUT. If so, it means the test has failed and return true.
@@ -209,7 +238,7 @@ function initSharedContext(contextOptions) {
     );
   }
 
-  // Attach known bugs info to the custom report
+  // Attach known bugs info to the HTML report
   async function attachKnownBugsInfoToReport(testInfo, currentTestPath) {
     try {
       // Environment for current test project
@@ -222,8 +251,8 @@ function initSharedContext(contextOptions) {
         knownBugs
       );
 
-      // Attach info to the custom report if the test has related bugs
-      // and if the test had failed, was retried OR had passed unexpectedly
+      // Attach info to the HTML report if the test has related bugs
+      // and if the test failed, was retried OR passed unexpectedly
       if (
         relatedBugs.length > 0 &&
         (isTestFailureOrRetried(testInfo) ||
@@ -269,9 +298,7 @@ function initSharedContext(contextOptions) {
         );
       }
     } catch (error) {
-      console.error(
-        `Failed to add info to the custom report: ${error.message}`
-      );
+      console.error(`Failed to add info to the HTML report: ${error.message}`);
     }
   }
 
