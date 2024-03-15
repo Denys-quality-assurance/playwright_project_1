@@ -117,8 +117,8 @@ export default class BasePage {
 
   // Change to English if it's needed
   async changeToEnglishIfAsked() {
-    // Run loop until Change to English modal is visible, up to 10 attempts
-    for (let i = 0; i < 10; i++) {
+    // Run loop until Change to English modal is visible, up to 20 attempts
+    for (let i = 0; i < 20; i++) {
       if (await this.page.isVisible(this.selectors.changeToEnglishModal)) {
         try {
           await this.page.waitForSelector(this.selectors.changeToEnglishButton);
@@ -133,7 +133,7 @@ export default class BasePage {
       }
 
       // Sleep between retries
-      await this.page.waitForTimeout(200);
+      await this.page.waitForTimeout(50);
     }
   }
 

@@ -402,15 +402,15 @@ export default class GoogleSearchPage extends BasePage {
   async checkIfAllKeysExist(getItemsByKeys, page, keys) {
     try {
       let missingKeys = [];
-      // Run loop until all keys are detected in the Storage, up to 10 attempts
-      for (let i = 0; i < 10; i++) {
+      // Run loop until all keys are detected in the Storage, up to 20 attempts
+      for (let i = 0; i < 20; i++) {
         let storageData = await getItemsByKeys(page, keys);
         missingKeys = keys.filter((key) => storageData[key] === null);
 
         if (missingKeys.length === 0) break;
 
         // Sleep between retries
-        await page.waitForTimeout(200);
+        await page.waitForTimeout(50);
       }
       // success is true if no items in failedResults
       return { isSuccess: missingKeys.length === 0, missingKeys: missingKeys };
@@ -424,8 +424,8 @@ export default class GoogleSearchPage extends BasePage {
   // Check if all storage values are not empty
   async checkIfAllStorageKeysHaveData(keys, storageData) {
     try {
-      // Run loop until all keys are detected in the Storage, up to 10 attempts
-      for (let i = 0; i < 10; i++) {
+      // Run loop until all keys are detected in the Storage, up to 20 attempts
+      for (let i = 0; i < 20; i++) {
         var failedKeys = [];
 
         // Fetch storage data if not provided
@@ -446,7 +446,7 @@ export default class GoogleSearchPage extends BasePage {
         if (failedKeys.length === 0) break;
 
         // Sleep between retries
-        await this.page.waitForTimeout(200);
+        await this.page.waitForTimeout(50);
       }
       // isSuccess is true if no items in failedResults
       return { isSuccess: failedKeys.length === 0, failedKeys: failedKeys };
@@ -460,8 +460,8 @@ export default class GoogleSearchPage extends BasePage {
   // Check if the object includes the expectedValue among its values
   async checkIfValueExists(expectedValue) {
     try {
-      // Run loop until all keys are detected in the Storage, up to 10 attempts
-      for (let i = 0; i < 10; i++) {
+      // Run loop until all keys are detected in the Storage, up to 20 attempts
+      for (let i = 0; i < 20; i++) {
         const sessionStorageData = await this.getSessionStorageData();
         const values = Object.values(sessionStorageData);
         const isExpectedValueIncluded = values.some((value) =>
@@ -474,7 +474,7 @@ export default class GoogleSearchPage extends BasePage {
         }
 
         // Sleep between retries
-        await this.page.waitForTimeout(200);
+        await this.page.waitForTimeout(50);
       }
       return false;
     } catch (error) {
