@@ -1,6 +1,6 @@
 /*
  * This module exports a `test` object which is used to create test cases.
- * It uses the shared context created by 'initializeBrowserSharedContextAndSetUpTest' from './baseWithSharedContext.mjs'
+ * It uses the shared context created by 'initSharedContext' from './baseWithSharedContext.mjs'
  * with the context options.
  *
  * The context options defined here allow:
@@ -14,13 +14,13 @@
  *
  */
 
-import { initializeBrowserSharedContextAndSetUpTest } from './baseWithSharedContext.mjs';
+import { initSharedContext } from './baseWithSharedContext.mjs';
 
 const contextOptions = {
   permissions: [`geolocation`], // Allow Google to track the geolocation
   ignoreHTTPSErrors: true,
 };
 
-const test = initializeBrowserSharedContextAndSetUpTest(contextOptions);
+const test = initSharedContext(contextOptions);
 
 export default test;

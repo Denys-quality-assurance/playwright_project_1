@@ -15,10 +15,14 @@ const testStatus = {
   INTERRUPTED: 'interrupted',
 };
 
+// This module manages tests lifecycle including decision if
+// test should be skipped or failed based on existing known bugs
+
 // Create a browser shared context and configures each test based on the context options
-function initializeBrowserSharedContextAndSetUpTest(contextOptions) {
+function initSharedContext(contextOptions) {
   const test = base.extend({
     sharedContext: async ({ browser }, use) => {
+      // Create new context with the given options
       const context = await browser.newContext(contextOptions);
       // Pass the values to the test functions
       await use(context);
@@ -49,17 +53,18 @@ function initializeBrowserSharedContextAndSetUpTest(contextOptions) {
       currentProjectEnv
     );
 
+    // Returns true if the test has any unfixed bugs
     return relatedUnfixedBugs.length > 0;
   }
 
   // Mark the current test as "should skip"
   function shoulSkipTest(testInfo) {
     // Check if the test has unfixed bugs
-    const areThereUnfixedBugs = hasUnfixedBugs(testInfo);
+    const hasUnfixed = hasUnfixedBugs(testInfo);
     // Check whether a project should skip known bugs
     const skipTestsWithKnownBugs = shouldSkipTestsWithKnownBugs(testInfo);
     // Test is skipped when the condition is true: flag skipTestsWithKnownBugs is 'true' and there is at least 1 unfixed bug
-    return skipTestsWithKnownBugs && areThereUnfixedBugs;
+    return skipTestsWithKnownBugs && hasUnfixed;
   }
 
   // Check whether a project should skip tests with known bugs
@@ -252,4 +257,4 @@ function initializeBrowserSharedContextAndSetUpTest(contextOptions) {
   return test;
 }
 
-export { initializeBrowserSharedContextAndSetUpTest };
+export { initSharedContext };
