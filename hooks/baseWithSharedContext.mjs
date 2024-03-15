@@ -181,11 +181,9 @@ function initSharedContext(contextOptions) {
     try {
       // Take a screenshot of the current viewport
       // If the test passed and the project should take screenshot for passed tests
-      // OR If the test passed unexpectedly
       if (
         testInfo.status === testStatus.PASSED &&
-        (shouldTakeScreenshotsForPassedTests(testInfo) ||
-          testInfo.status !== testInfo.expectedStatus)
+        shouldTakeScreenshotsForPassedTests(testInfo)
       ) {
         const screenshotViewport = await page.screenshot();
         // Attach viewport screenshots to HTML report
@@ -199,8 +197,8 @@ function initSharedContext(contextOptions) {
         );
       }
 
-      // If the test failed or was retried, take a full page screenshot
-      if (isTestFailureOrRetried(testInfo)) {
+      // If the test failed, was retried or passed unexpectedly, take a full page screenshot
+      if (isTestFailedOrRetriedOrPassedUnexpectedly(testInfo)) {
         // Take a fullpage screenshot
         const screenshotFullPage = await page.screenshot({
           fullPage: true,
@@ -222,8 +220,8 @@ function initSharedContext(contextOptions) {
     }
   }
 
-  // Check if the test failed or retried
-  function isTestFailureOrRetried(testInfo) {
+  // Check if the test failed, was retried or passed unexpectedly
+  function isTestFailedOrRetriedOrPassedUnexpectedly(testInfo) {
     return (
       // Check if the test status is FAILED or TIMEOUT. If so, it means the test has failed and return true.
       testInfo.status === testStatus.FAILED ||
@@ -234,7 +232,12 @@ function initSharedContext(contextOptions) {
       // If this condition is met, return true as well.
       (testInfo.status === testStatus.PASSED &&
         testInfo.status === testInfo.expectedStatus &&
-        testInfo.retry > 0)
+        testInfo.retry > 0) ||
+      // Check if the test status is PASSED and it doesn't equal the expected test status,
+      // thus indicating an unexpected pass.
+      // If this condition is met, return true as well.
+      (testInfo.status === testStatus.PASSED &&
+        testInfo.status !== testInfo.expectedStatus)
     );
   }
 
@@ -252,12 +255,10 @@ function initSharedContext(contextOptions) {
       );
 
       // Attach info to the HTML report if the test has related bugs
-      // and if the test failed, was retried OR passed unexpectedly
+      // and if the test failed, was retried or passed unexpectedly
       if (
         relatedBugs.length > 0 &&
-        (isTestFailureOrRetried(testInfo) ||
-          (testInfo.status === testStatus.PASSED &&
-            testInfo.status !== testInfo.expectedStatus))
+        isTestFailedOrRetriedOrPassedUnexpectedly(testInfo)
       ) {
         // Collects fixed and unfixed known issues
         var listKnownIssues = sortKnownIssues(
