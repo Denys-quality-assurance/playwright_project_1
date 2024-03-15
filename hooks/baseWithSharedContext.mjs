@@ -67,7 +67,7 @@ function initSharedContext(contextOptions) {
     return skipTestsWithKnownBugs && hasUnfixed;
   }
 
-  // Check whether a project should skip tests with known bugs
+  // Check whether the project should skip tests with known bugs
   function shouldSkipTestsWithKnownBugs(testInfo) {
     try {
       // Test with unfixed bugs is skipped when skipTestsWithKnownBugs is 'true'
@@ -78,6 +78,21 @@ function initSharedContext(contextOptions) {
     } catch (error) {
       console.error(
         `Failed to check whether a project should skip tests with known bugs: ${error.message}`
+      );
+    }
+  }
+
+  // Check whether the project should take screenshot for passed tests
+  function shouldTakeScreenshotsForPassedTests(testInfo) {
+    try {
+      // screenshots for passed tests are taken when PASSED_TESTS_SCREENSHOT is 'true'
+      return (
+        testInfo.project.metadata.passedTestsScreenshots.toLowerCase() ===
+        'true'
+      );
+    } catch (error) {
+      console.error(
+        `Failed to check whether the project should take screenshot for passed tests: ${error.message}`
       );
     }
   }
@@ -121,12 +136,7 @@ function initSharedContext(contextOptions) {
           }
 
           // Attach known bugs info info to the custom report
-          await attachKnownBugsInfoToReport(
-            testInfo,
-            projectName,
-            timestamp,
-            currentTestPath
-          );
+          await attachKnownBugsInfoToReport(testInfo, currentTestPath);
         }
       } catch (error) {
         console.error(
@@ -145,17 +155,20 @@ function initSharedContext(contextOptions) {
     timestamp
   ) {
     try {
-      // Take a screenshot of the current viewport
-      const screenshotViewport = await page.screenshot();
-      // Attach viewport screenshots to HTML report
-      // It is named uniquely by using the project name, timestamp and page index
-      await testInfo.attach(
-        `${projectName}_${timestamp}_viewport_screenshot_of_Page_${index}.png`,
-        {
-          body: screenshotViewport,
-          contentType: 'image/png',
-        }
-      );
+      // If the project should take screenshot for passed tests
+      if (shouldTakeScreenshotsForPassedTests(testInfo)) {
+        // Take a screenshot of the current viewport
+        const screenshotViewport = await page.screenshot();
+        // Attach viewport screenshots to HTML report
+        // It is named uniquely by using the project name, timestamp and page index
+        await testInfo.attach(
+          `${projectName}_${timestamp}_viewport_screenshot_of_Page_${index}.png`,
+          {
+            body: screenshotViewport,
+            contentType: 'image/png',
+          }
+        );
+      }
 
       // If the test failed or was retried, take a full page screenshot
       if (isTestFailureOrRetried(testInfo)) {
@@ -197,12 +210,7 @@ function initSharedContext(contextOptions) {
   }
 
   // Attach known bugs info to the custom report
-  async function attachKnownBugsInfoToReport(
-    testInfo,
-    projectName,
-    timestamp,
-    currentTestPath
-  ) {
+  async function attachKnownBugsInfoToReport(testInfo, currentTestPath) {
     try {
       // Environment for current test project
       const currentProjectEnv = testInfo.project.metadata.currentENV;

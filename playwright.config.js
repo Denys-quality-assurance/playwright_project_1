@@ -36,6 +36,7 @@ module.exports = {
         currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
         skipTestsWithKnownBugs:
           process.env.SKIP_TESTS_WITH_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_TESTS_WITH_KNOWN_BUGS is 'true'
+        passedTestsScreenshots: process.env.PASSED_TESTS_SCREENSHOT || 'false', // screenshots for passed tests are taken when PASSED_TESTS_SCREENSHOT is 'true'
       },
       use: {
         ...devices['Desktop Chrome'],
@@ -51,6 +52,7 @@ module.exports = {
         currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
         skipTestsWithKnownBugs:
           process.env.SKIP_TESTS_WITH_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_TESTS_WITH_KNOWN_BUGS is 'true'
+        passedTestsScreenshots: process.env.PASSED_TESTS_SCREENSHOT || 'false', // screenshots for passed tests are taken when PASSED_TESTS_SCREENSHOT is 'true'
       },
       use: {
         ...devices['Desktop Chrome'],
@@ -66,6 +68,7 @@ module.exports = {
         currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
         skipTestsWithKnownBugs:
           process.env.SKIP_TESTS_WITH_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_TESTS_WITH_KNOWN_BUGS is 'true'
+        passedTestsScreenshots: process.env.PASSED_TESTS_SCREENSHOT || 'false', // screenshots for passed tests are taken when PASSED_TESTS_SCREENSHOT is 'true'
       },
       use: {
         ...devices['Desktop Safari'],
@@ -80,6 +83,7 @@ module.exports = {
         currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
         skipTestsWithKnownBugs:
           process.env.SKIP_TESTS_WITH_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_TESTS_WITH_KNOWN_BUGS is 'true'
+        passedTestsScreenshots: process.env.PASSED_TESTS_SCREENSHOT || 'false', // screenshots for passed tests are taken when PASSED_TESTS_SCREENSHOT is 'true'
       },
       use: {
         ...devices['Desktop Edge'],
@@ -95,6 +99,7 @@ module.exports = {
         currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
         skipTestsWithKnownBugs:
           process.env.SKIP_TESTS_WITH_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_TESTS_WITH_KNOWN_BUGS is 'true'
+        passedTestsScreenshots: process.env.PASSED_TESTS_SCREENSHOT || 'false', // screenshots for passed tests are taken when PASSED_TESTS_SCREENSHOT is 'true'
       },
       use: {
         ...devices['Desktop Firefox'],
@@ -110,6 +115,7 @@ module.exports = {
         currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
         skipTestsWithKnownBugs:
           process.env.SKIP_TESTS_WITH_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_TESTS_WITH_KNOWN_BUGS is 'true'
+        passedTestsScreenshots: process.env.PASSED_TESTS_SCREENSHOT || 'false', // screenshots for passed tests are taken when PASSED_TESTS_SCREENSHOT is 'true'
       },
       use: {
         ...devices['iPhone 14'],
@@ -124,6 +130,7 @@ module.exports = {
         currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
         skipTestsWithKnownBugs:
           process.env.SKIP_TESTS_WITH_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_TESTS_WITH_KNOWN_BUGS is 'true'
+        passedTestsScreenshots: process.env.PASSED_TESTS_SCREENSHOT || 'false', // screenshots for passed tests are taken when PASSED_TESTS_SCREENSHOT is 'true'
       },
       use: {
         ...devices['iPhone 14 landscape'],
@@ -138,6 +145,7 @@ module.exports = {
         currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
         skipTestsWithKnownBugs:
           process.env.SKIP_TESTS_WITH_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_TESTS_WITH_KNOWN_BUGS is 'true'
+        passedTestsScreenshots: process.env.PASSED_TESTS_SCREENSHOT || 'false', // screenshots for passed tests are taken when PASSED_TESTS_SCREENSHOT is 'true'
       },
       use: {
         ...devices['Galaxy Tab S4'],
@@ -153,6 +161,7 @@ module.exports = {
         currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
         skipTestsWithKnownBugs:
           process.env.SKIP_TESTS_WITH_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_TESTS_WITH_KNOWN_BUGS is 'true'
+        passedTestsScreenshots: process.env.PASSED_TESTS_SCREENSHOT || 'false', // screenshots for passed tests are taken when PASSED_TESTS_SCREENSHOT is 'true'
       },
       use: {
         ...devices['Galaxy Tab S4 landscape'],
