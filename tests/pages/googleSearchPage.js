@@ -524,8 +524,8 @@ export default class GoogleSearchPage extends BasePage {
     }
   }
 
-  // Attach JSON to test
-  async attachJSONToTest(testInfo, data, fileName) {
+  // Attach JSON to HTML report
+  async attachJSONToReport(testInfo, data, fileName) {
     try {
       // Creating a temporary file path for the JSON file
       const dataName = generateUniqueFileName(testInfo, `${fileName}.json`);
@@ -661,7 +661,7 @@ export default class GoogleSearchPage extends BasePage {
     }
   }
 
-  //Performance.mark API: Stop performance tracking. Attach results to the test report
+  //Performance.mark API: Stop performance tracking. Attach results to the HTML report
   async stopPerformanceMarkTracingAndAttachResults(testInfo, query) {
     try {
       // Adding a performance marker to indicate the ending of measurement
@@ -671,17 +671,17 @@ export default class GoogleSearchPage extends BasePage {
       const { allMarksInfo, allMeasuresInfo, actionDuration } =
         await this.performanceMarkMetricsCalculation();
 
-      // Attaching the performance marks information collected to the test report
+      // Attaching the performance marks information collected to the HTML report
       // The 'query' parameter is used to derive the name for the attachment
-      const marksInfoDataPath = await this.attachJSONToTest(
+      const marksInfoDataPath = await this.attachJSONToReport(
         testInfo,
         allMarksInfo,
         `${query}_marksInfoDataName`
       );
 
-      // Attaching the performance measures information collected to the test report
+      // Attaching the performance measures information collected to the HTML report
       // The 'query' parameter is again used to derive the name for the attachment
-      const measuresInfoDataPath = await this.attachJSONToTest(
+      const measuresInfoDataPath = await this.attachJSONToReport(
         testInfo,
         allMeasuresInfo,
         `${query}_measuresInfoDataName`
@@ -691,7 +691,7 @@ export default class GoogleSearchPage extends BasePage {
       return { marksInfoDataPath, measuresInfoDataPath, actionDuration };
     } catch (error) {
       console.error(
-        `Failed to stop performance tracking with Performance.mark API and attach results to the test report: ${error.message}`
+        `Failed to stop performance tracking with Performance.mark API and attach results to the HTML report: ${error.message}`
       );
     }
   }
@@ -765,7 +765,7 @@ export default class GoogleSearchPage extends BasePage {
     }
   }
 
-  // (Only Chromium) Performance API: Stop performance tracing. Attach results to the test report
+  // (Only Chromium) Performance API: Stop performance tracing. Attach results to the HTML report
   async stopChromiumTracingAndAttach(
     currentBrowser,
     testInfo,
@@ -783,7 +783,7 @@ export default class GoogleSearchPage extends BasePage {
       });
     } catch (error) {
       console.error(
-        `Failed to stop performance tracking with Chromium Performance API and attach results to the test report: ${error.message}`
+        `Failed to stop performance tracking with Chromium Performance API and attach results to the HTML report: ${error.message}`
       );
     }
   }
@@ -804,7 +804,7 @@ export default class GoogleSearchPage extends BasePage {
     }
   }
 
-  // (Only Chromium) Chrome DevTool Protocol API: Stop performance tracking. Attach results to the test report
+  // (Only Chromium) Chrome DevTool Protocol API: Stop performance tracking. Attach results to the HTML report
   async stopChromeDevToolTrackingAndAttachtResults(
     testInfo,
     query,
@@ -821,8 +821,8 @@ export default class GoogleSearchPage extends BasePage {
         metricsAfter
       );
 
-      // Attach the performance difference metrics to the test report
-      var metricsDiffDataPath = await this.attachJSONToTest(
+      // Attach the performance difference metrics to the HTML report
+      var metricsDiffDataPath = await this.attachJSONToReport(
         testInfo,
         metricsDiff,
         `${query}_metricsDiffDataName`
@@ -831,7 +831,7 @@ export default class GoogleSearchPage extends BasePage {
       return metricsDiffDataPath;
     } catch (error) {
       console.error(
-        `Failed to stop performance tracking with Chrome DevTool Protocol API and attach results to the test report: ${error.message}`
+        `Failed to stop performance tracking with Chrome DevTool Protocol API and attach results to the HTML report: ${error.message}`
       );
     }
   }
@@ -918,7 +918,7 @@ export default class GoogleSearchPage extends BasePage {
       });
 
       if (defaultBrowserType == 'chromium') {
-        // (Only Chromium) Performance API: Stop performance tracing. Attach results to the test report
+        // (Only Chromium) Performance API: Stop performance tracing. Attach results to the HTML report
         await this.stopChromiumTracingAndAttach(
           currentBrowser,
           testInfo,
@@ -926,7 +926,7 @@ export default class GoogleSearchPage extends BasePage {
           tracesPath
         );
 
-        // (Only Chromium) Chrome DevTool Protocol API: Stop performance tracking. Attach results to the test report
+        // (Only Chromium) Chrome DevTool Protocol API: Stop performance tracking. Attach results to the HTML report
         var metricsDiffDataPath =
           await this.stopChromeDevToolTrackingAndAttachtResults(
             testInfo,
@@ -936,7 +936,7 @@ export default class GoogleSearchPage extends BasePage {
           );
       }
 
-      // Performance.mark API: Stop performance tracking. Performance measure. Attach results to the test report
+      // Performance.mark API: Stop performance tracking. Performance measure. Attach results to the HTML report
       const { marksInfoDataPath, measuresInfoDataPath, actionDuration } =
         await this.stopPerformanceMarkTracingAndAttachResults(testInfo, query);
 

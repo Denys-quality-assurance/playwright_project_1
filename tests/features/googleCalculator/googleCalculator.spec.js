@@ -28,7 +28,7 @@ const testStatus = {
   SKIPPED: 'skipped',
 };
 
-test.describe.skip(`Google calculator`, () => {
+test.describe(`Google calculator`, () => {
   // Test should be failed when the condition is true: there is at least 1 unfixed bug
   test.fail(
     ({ shouldFailTest }) => shouldFailTest > 0,

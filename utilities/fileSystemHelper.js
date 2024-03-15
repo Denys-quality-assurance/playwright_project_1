@@ -288,10 +288,10 @@ export async function compareScreenshotsAndReportDifferences(
       // Collect paths of all images for report
       const paths = [expectedBaselinePath, actualScreenshotPath, diffImagePath];
 
-      // Attach images to test report
-      await attachAllImagesToTestReport(testInfo, paths);
+      // Attach images to HTML report
+      await attachAllImagesToReport(testInfo, paths);
 
-      // Delete the difference image file after it has been attached to the test report
+      // Delete the difference image file after it has been attached to the HTML report
       deleteFileAtPath(diffImagePath);
     }
     // Delete the temporary actual screenshot
@@ -355,8 +355,8 @@ export async function resizeActualScreenshotToBaselineDimension(
   }
 }
 
-// Attach each image from the paths to the test report
-export function attachAllImagesToTestReport(testInfo, paths) {
+// Attach each image from the paths to the HTML report
+export function attachAllImagesToReport(testInfo, paths) {
   try {
     // Promise.all is used to execute attachImageToReport function for all path of image
     // It waits until all these operations complete and then returns the result
@@ -364,7 +364,7 @@ export function attachAllImagesToTestReport(testInfo, paths) {
       paths.map((path) => attachImageToReport(testInfo, path))
     );
   } catch (error) {
-    `Error while attaching each image from the paths to the test report: ${error.message}`;
+    `Error while attaching each image from the paths to the HTML report: ${error.message}`;
   }
 }
 
@@ -393,7 +393,7 @@ export function writePNGToFile(image, filePath) {
   });
 }
 
-// Attach image to test report
+// Attach image to HTML report
 export async function attachImageToReport(testInfo, imagePath) {
   try {
     return testInfo.attach(extractFileNameFromPath(imagePath), {
@@ -402,7 +402,7 @@ export async function attachImageToReport(testInfo, imagePath) {
     });
   } catch (error) {
     console.error(
-      `Error while attaching image to test report: ${error.message}`
+      `Error while attaching image to HTML report: ${error.message}`
     );
   }
 }
