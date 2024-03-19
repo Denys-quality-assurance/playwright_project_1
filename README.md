@@ -4,7 +4,7 @@
 
 The aim of this project, aptly titled "Software Testing System with Playwright and Jenkins" is two-pronged. First, **it seeks to systemize knowledge and enhance skill sets dealing with various stages of test framework preparation** including Jenkins configuration, CI jobs configuration, playwright configuration, test lifecycle configuration, test design, and custom report configuration.
 
-The intent isn't to provide full coverage for all features but rather to provide varying difficulty levels and problem statements so I can improve my solving skills in pragmatic scenarios.
+The goal is not to fully cover all the features of the object under test, but to provide solutions to a variety of high-demand problems so that I can improve my solution skills in pragmatic scenarios of **building a compact full-featured testing system from scratch**.
 
 The secondary aim of the project is **testing the usage of CtahGPT as a mentor and co-pilot in test framework creation**. It provides an additional dimension and challenge for me to complete tasks with the AI system.
 
