@@ -2,13 +2,11 @@
 
 ## Overview
 
-The aim of this project, aptly titled "Software Testing System with Playwright and Jenkins" is two-pronged. First, it seeks to systemize knowledge and enhance skill sets dealing with various stages of test framework preparation including Jenkins configuration, CI jobs configuration, playwright configuration, test lifecycle configuration, test design, and custom report configuration.
+The aim of this project, aptly titled "Software Testing System with Playwright and Jenkins" is two-pronged. First, **it seeks to systemize knowledge and enhance skill sets dealing with various stages of test framework preparation** including Jenkins configuration, CI jobs configuration, playwright configuration, test lifecycle configuration, test design, and custom report configuration.
 
 The intent isn't to provide full coverage for all features but rather to provide varying difficulty levels and problem statements so I can improve my solving skills in pragmatic scenarios.
 
-The secondary aim of the project is testing the usage of CtahGPT as a mentor and co-pilot in test framework creation. It provides an additional dimension and challenge for me to complete tasks with the AI system.
-
-The project is written in JavaScript, utilizing the Playwright testing library and Jenkins for continuous integration.
+The secondary aim of the project is **testing the usage of CtahGPT as a mentor and co-pilot in test framework creation**. It provides an additional dimension and challenge for me to complete tasks with the AI system.
 
 ## Technology Stack
 
@@ -43,6 +41,53 @@ The Software Testing System is built leveraging diverse technology tools and lib
 ### Version Control
 
 - **Git and GitHub**: Used for source version control and project repository hosting, enabling collaborative work and contribution tracking.
+
+## Features
+
+### Jenkins CI/CD Pipeline
+
+Our software testing system employs an automated Jenkins CI/CD pipeline that runs end-to-end tests using the Playwright JavaScript framework. The pipeline is configured via `Jenkinsfile` and `jenkins_job_configs/config.xml` to offer robust testing features and to ensure the software quality at every stage of the development process. Here are the key features of our Jenkins pipeline Jenkinsfile:
+
+1. **Parameterized Test Execution**
+   The Jenkins job is parameterized with the ability to choose the browser (BROWSER) and the project (PROJECT) on which the tests are run. This provides flexibility in performing browser-based testing as per the specific requirements of the project.
+
+2. **Concurrent Builds**
+   Our system is designed to manage multiple build requests efficiently. We have a configuration in place that disables concurrent builds, which ensures that if a new build starts before the previous one finishes, the previous build gets aborted, avoiding any conflicts.
+
+3. **SCM Integration**
+   Our software testing system's Jenkins pipeline is linked to the SCM (Source Control Management). It's configured to poll the SCM every hour, and it triggers new test runs based on these changes - ensuring updated testing as the codebase evolves.
+
+4. **Branch Management and Dependency Installation**
+   Our Jenkins pipeline is capable of autonomously managing branch checkouts and dependency installations. It detects the latest branch in the git repository, checks it out, and installs the necessary dependencies for running the tests. Seamless browser installation is also incorporated, which is crucial for browser-based testing. This automation ensures the test setup process is quick, smooth, and reliable.
+
+5. **Artifact Archival**
+   After each test run, the results are archived for future reference. This ensures traceability, allowing us to look back at specific test runs' results if required.
+
+6. **Discards Old Builds**
+   Our system is designed to retain builds for a certain period (1 day in this particular configuration) and then discard older ones. This strategy optimizes memory usage by discarding out-of-date build information.
+
+### Playwright Configuration
+
+Our software testing system offers a highly configurable environment for running end-to-end tests via the `playwright.config.js` file. This allows the system to adapt to specific project needs and provide an efficient testing process. Here are some of the configurations that can be done:
+
+**Simultaneous Testing**: You can specify the number of tests that can run concurrently, improving testing efficiency.
+**Timeout Control**: Control the maximum time a test is allowed to run before marking it as failed. This prevents lengthy, unresponsive tests from consuming unnecessary resources.
+**Retry Attempts**: Configure the maximum number of retries when a test fails to ensure all tests are accurately verified.
+**Test Pathing**: Specify the file paths for your tests, enabling organized and precise test runs.
+**Environment Configurations**: Set specific settings unique to the projects being tested, enabling fine-tuned testing processes.
+Our system follows best practices such as cross-browser testing, device-specific settings, test-skipping for known failing tests, usage of environment variables, feature-specific testing, and multiple reporting options for both local and CI environments.
+
+### Test Lifecycle Management
+
+Our testing system incorporates smart test lifecycle management through the `baseWithSharedContext.mjs` file. The code manages the test lifecycle around known bugs. It determines if tests should be skipped or failed based on existing known bugs documented in a knownBugs JSON file. Each test is configured based on the context options.
+
+### Screenshot and Report Management
+
+Another feature of our testing system is efficient screenshot and report management. The system configures when screenshots should be taken and attaches them, along with known bug information, to the HTML report. This provides thorough documentation and eases debugging. Scenarios for successful tests can also have screenshots for better visualization.
+
+### Known Bugs Tracking
+
+Our testing system includes a `knownBugs.js` file that comprises a collection of known bugs. Each object in the file represents a specific bug and includes properties like the bug identifier, a brief description, the test spec file where the bug was found, the title of the test during which the bug was discovered, and its status across different environments. This feature enhances the traceability of the known bugs and helps handle them efficiently in subsequent test runs.
 
 ## Prerequisites and Installation
 
