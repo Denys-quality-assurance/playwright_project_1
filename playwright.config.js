@@ -40,6 +40,7 @@ module.exports = {
       },
       use: {
         ...devices['Desktop Chrome'],
+        defaultBrowserType: 'chromium',
         headless: false,
         baseURL: process.env.BASE_URL || 'https://www.google.com', // default PROD URL
       },
@@ -72,6 +73,7 @@ module.exports = {
       },
       use: {
         ...devices['Desktop Safari'],
+        defaultBrowserType: 'webkit',
         headless: false,
         baseURL: process.env.BASE_URL || 'https://www.google.com', // default PROD URL
       },
@@ -103,6 +105,7 @@ module.exports = {
       },
       use: {
         ...devices['Desktop Firefox'],
+        defaultBrowserType: 'firefox',
         headless: false,
         baseURL: process.env.BASE_URL || 'https://www.google.com', // default PROD URL
       },
@@ -119,6 +122,7 @@ module.exports = {
       },
       use: {
         ...devices['iPhone 14'],
+        defaultBrowserType: 'webkit',
         headless: false,
         baseURL: process.env.BASE_URL || 'https://www.google.com', // default PROD URL
       },
@@ -134,6 +138,7 @@ module.exports = {
       },
       use: {
         ...devices['iPhone 14 landscape'],
+        defaultBrowserType: 'webkit',
         headless: false,
         baseURL: process.env.BASE_URL || 'https://www.google.com', // default PROD URL
       },
