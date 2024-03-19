@@ -8,7 +8,7 @@
  * Useful methods for picture interaction are specified in the GoogleSearchPicturesPage class.
  * Helper functions for download, file existence check, and file deletion are imported from fileSystemHelper.
  *
- * The data for the search queries is imported from queryData.
+ * The data for the search queries is imported from queryData and can be used with Data-driven testing (DDT) approach.
  *
  */
 

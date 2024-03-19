@@ -8,6 +8,8 @@
  * Utilizing the GoogleSearchPage object, it carries out searches for queries.
  * Helper methods for interacting with storage and cookies are included in the GoogleSearchPage class.
  *
+ * The data for the search queries is imported from queryData and can be used with Data-driven testing (DDT) approach.
+ *
  */
 
 import { expect } from '@playwright/test';

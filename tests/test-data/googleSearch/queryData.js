@@ -1,6 +1,6 @@
 /*
  * This module exports a set of constant arrays that are used for testing various
- * aspects of a search engine or input field functionality.
+ * aspects of a search engine or input field functionality with Data-driven testing (DDT) approach.
  *
  * It test list includes:
  * - queryDataGeneral for testing general cases: single word, special characters,

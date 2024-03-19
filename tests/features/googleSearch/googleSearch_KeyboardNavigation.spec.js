@@ -9,6 +9,8 @@
  *
  * This suite assumes keyboard navigation on a desktop device and does not handle mobile scenarios.
  *
+ * The data for the search queries is imported from queryData and can be used with Data-driven testing (DDT) approach.
+ *
  */
 
 import { expect } from '@playwright/test';

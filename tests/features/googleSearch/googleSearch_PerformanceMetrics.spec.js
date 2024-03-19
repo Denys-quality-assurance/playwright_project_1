@@ -16,6 +16,8 @@
  * The GoogleSearchPage class includes helper methods for search interactions and performance metrics gathering.
  * The 'fileSystemHelper' module is utilized for handling file-related operations.
  *
+ * The data for the search queries is imported from queryData and can be used with Data-driven testing (DDT) approach.
+ *
  */
 
 import { expect } from '@playwright/test';

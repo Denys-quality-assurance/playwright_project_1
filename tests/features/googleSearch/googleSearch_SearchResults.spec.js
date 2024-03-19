@@ -6,7 +6,8 @@
  * For the testing environment setup, it navigates to the homepage and rejects all cookies.
  *
  * The GoogleSearchPage class contains helper methods for the entire mechanism of the functionality being evaluated.
- * The data for the search queries is imported from queryData.
+ *
+ * The data for the search queries is imported from queryData and can be used with Data-driven testing (DDT) approach.
  *
  */
 

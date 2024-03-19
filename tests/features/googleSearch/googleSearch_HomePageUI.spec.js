@@ -1,7 +1,6 @@
 /*
  * Google Search Test Suite:
- *
- * This script tests the alignment and visibility of UI elements present on the Google Home Page.
+ * This suite tests the alignment and visibility of UI elements present on the Google Home Page.
  *
  * Setup: An instance of the Page object and the GoogleSearchPage object are initialized,
  * with the test navigating to the Google homepage and rejecting all cookies.

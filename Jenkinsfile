@@ -15,7 +15,7 @@ pipeline {
     agent any
     parameters { 
         // Defines the project on which the tests are run
-        string(name: "PROJECT", defaultValue: params.PROJECT ?: "Desktop Google Chrome", description: "Project name") // If the job already has a defined default value, it will be retained rather than overwritten
+        string(name: "PROJECT", defaultValue: params.PROJECT ?: "Desktop_Google_Chrome_PROD", description: "Project name") // If the job already has a defined default value, it will be retained rather than overwritten
         // Defines the browser in which the tests are run
         string(name: "BROWSER", defaultValue: params.BROWSER ?: "chrome", description: "Browser to run the tests") // If the job already has a defined default value, it will be retained rather than overwritten     
     }

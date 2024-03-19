@@ -1,5 +1,4 @@
 node_modules/
-.env
 playwright-report/
 test-results
 baseline_homepage_logo_ERROR.png

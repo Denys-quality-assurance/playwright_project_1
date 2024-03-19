@@ -8,6 +8,8 @@
  * The testing process then involves searching the 'query' in the Google search engine within the frame.
  * Helper methods for Google search engine interactions are present in the GoogleCustomSearchEnginePage class.
  *
+ * The data for the search queries is imported from queryData and can be used with Data-driven testing (DDT) approach.
+ *
  */
 
 import { expect } from '@playwright/test';

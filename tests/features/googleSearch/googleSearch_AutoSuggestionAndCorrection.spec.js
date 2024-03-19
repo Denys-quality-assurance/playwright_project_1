@@ -5,8 +5,9 @@
  *
  * In the setup, a new page instance and a Google Search page object instance are created, and cookies are rejected.
  *
- * Helper functions and selectors are encapsulated in 'GoogleSearchPage' class,
- * and data used in tests are imported from queryData files.
+ * Helper functions and selectors are encapsulated in 'GoogleSearchPage' class.
+ *
+ *  The data for the search queries is imported from queryData and can be used with Data-driven testing (DDT) approach.
  *
  */
 
