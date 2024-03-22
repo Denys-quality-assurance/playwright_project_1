@@ -30,7 +30,7 @@ const testStatus = {
 test.describe(`Google Search results: Auto-suggestion and Correction`, () => {
   // Test should be failed when the condition is true: there is at least 1 unfixed bug
   test.fail(
-    ({ shouldFailTest }) => shouldFailTest > 0,
+    ({ shouldFailTest }) => shouldFailTest,
     `Test marked as "should fail" due to the presence of unfixed bug(s)`
   );
   // Test should be skipped when the condition is true: flag skipTestsWithKnownBugs is 'true' and there is at least 1 unfixed bug
