@@ -1,38 +1,96 @@
-# Software Testing System with Playwright and Jenkins
+<!-- TOC start  -->
 
-# Table of Contents
+- [Overview](#overview)
+- [Technology Stack](#technology-stack)
+  - [Primary Programming Languages](#primary-programming-languages)
+  - [Key Libraries and Frameworks](#key-libraries-and-frameworks)
+  - [Code Quality Tools](#code-quality-tools)
+  - [Environment Variable Management](#environment-variable-management)
+  - [Continuous Integration](#continuous-integration)
+  - [Version Control](#version-control)
+- [Features](#features)
+  - [Jenkins CI/CD Pipeline](#jenkins-cicd-pipeline)
+  - [Playwright Configuration](#playwright-configuration)
+  - [Data-Driven Testing (DDT)](#data-driven-testing-ddt)
+  - [iFrame Handling](#iframe-handling)
+  - [Screenshot Comparison & Visual Regression](#screenshot-comparison-visual-regression)
+    - [Screenshot Comparison](#screenshot-comparison)
+    - [Reporting Differences](#reporting-differences)
+  - [Performance Metrics Tracking](#performance-metrics-tracking)
+  - [Test Lifecycle Management](#test-lifecycle-management)
+  - [Screenshot and Report Management](#screenshot-and-report-management)
+  - [Known Bugs Tracking](#known-bugs-tracking)
+  - [Custom Test Reporting](#custom-test-reporting)
+    - [Issue Categorization](#issue-categorization)
+    - [Aggregate Test Reporting](#aggregate-test-reporting)
+- [Prerequisites and Installation](#prerequisites-and-installation)
+  - [Prerequisites](#prerequisites)
+    - [Tools and Software](#tools-and-software)
+    - [Skills and Knowledge](#skills-and-knowledge)
+    - [Operating System](#operating-system)
+  - [Installation](#installation)
+- [Codebase Structure](#codebase-structure)
+  - [Key Files and Directories](#key-files-and-directories)
+- [Configuration/Environment Setup](#configurationenvironment-setup)
+  - [Environment variables](#environment-variables)
+- [CI Setup](#ci-setup)
+  - [playwright.config.js](#playwrightconfigjs)
+  - [How to configure playwright.config.js](#how-to-configure-playwrightconfigjs)
+  - [Jenkinsfile](#jenkinsfile)
+    - [How to configure Jenkinsfile](#how-to-configure-jenkinsfile)
+  - [config.xml](#configxml)
+    - [How to configure config.xml](#how-to-configure-configxml)
+- [Running Tests](#running-tests)
+  - [Run All Test files](#run-all-test-files)
+  - [Run a Group of Test files](#run-a-group-of-test-files)
+  - [Run a Single Test file](#run-a-single-test-file)
+  - [Run Specific Project](#run-specific-project)
+  - [Run Tests Using Tags via project settings](#run-tests-using-tags-via-project-settings)
+  - [Run Tests that match a certain pattern via command-line](#run-tests-that-match-a-certain-pattern-via-command-line)
+- [Test Selection Using `test.describe.only`, `test.describe.skip`, `test.only` and `test.skip`](#test-selection-using-testdescribeonly-testdescribeskip-testonly-and-testskip)
+- [Test Result Analysis](#test-result-analysis)
+  - [Understanding Test Reports](#understanding-test-reports)
+  - [Interpreting Test Reports](#interpreting-test-reports)
+    - [HTML Report](#html-report)
+    - [Console Report](#console-report)
+  - [Analyzing Known Bug Issues](#analyzing-known-bug-issues)
+  - [Custom Test Reporting](#custom-test-reporting-1)
+  - [Troubleshooting Tests](#troubleshooting-tests)
+- [Writing Tests](#writing-tests)
+  - [Test Spec Naming and Folder Structure](#test-spec-naming-and-folder-structure)
+  - [Page Objects](#page-objects)
+  - [Describe](#describe)
+  - [Utilizing Conditional Test Execution](#utilizing-conditional-test-execution)
+  - [Proper Setup and Teardown](#proper-setup-and-teardown)
+  - [Test Case](#test-case)
+    - [Test Identification](#test-identification)
+    - [Tags](#tags)
+  - [Data-Driven Testing](#data-driven-testing)
+  - [Expect](#expect)
+    - [Using custom error messages in `expect` functions](#using-custom-error-messages-in-expect-functions)
+  - [Importing Needed Resources](#importing-needed-resources)
+  - [Consistent Naming Conventions](#consistent-naming-conventions)
+  - [Comprehensive Commenting](#comprehensive-commenting)
+- [Code Styleguides / Linting](#code-styleguides-linting)
+  - [ESLint](#eslint)
+  - [Prettier](#prettier)
+  - [VS Code Configuration](#vs-code-configuration)
+  - [Scripts](#scripts)
+- [Error Handling and Debugging](#error-handling-and-debugging)
+  - [Using `expect` for Assertions in Tests](#using-expect-for-assertions-in-tests)
+  - [Use Test Result Analysis](#use-test-result-analysis)
+  - [Using Try/Catch Blocks for Error Handling](#using-trycatch-blocks-for-error-handling)
+  - [Debugging with Playwright](#debugging-with-playwright)
+  - [Debugging with Visual Studio Code](#debugging-with-visual-studio-code)
+- [Contributing / Pull Request Process](#contributing-pull-request-process)
+  - [Branching Strategy](#branching-strategy)
+    - [Task Branch Naming](#task-branch-naming)
+    - [Git commands](#git-commands)
+  - [Pull Request Process](#pull-request-process)
 
-_Clicking on a section name will direct you straight to that section._
+<!-- TOC end -->
 
-1. [Overview](#Overview)
-2. [Technology Stack](#Technology-Stack)
-   - [Primary Programming Languages](#Primary-Programming-Languages)
-   - [Key Libraries and Frameworks](#Key-Libraries-and-Frameworks)
-   - [Code Quality Tools](#Code-Quality-Tools)
-   - [Environment Variable Management](#Environment-Variable-Management)
-   - [Continuous Integration](#Continuous-Integration)
-   - [Version Control](#Version-Control)
-3. [Features](#Features)
-   - [Jenkins CI/CD Pipeline](#Jenkins-CI/CD-Pipeline)
-   - [Playwright Configuration](#Playwright-Configuration)
-   - [Data-Driven Testing (DDT)](<#Data-Driven-Testing-(DDT)>)
-   - [iFrame Handling](#iFrame-Handling)
-   - [Screenshot Comparison & Visual Regression](#Screenshot-Comparison-&-Visual-Regression)
-   - [Performance Metrics Tracking](#Performance-Metrics-Tracking)
-   - [Test Lifecycle Management](#Test-Lifecycle-Management)
-   - [Screenshot and Report Management](#Screenshot-and-Report-Management)
-   - [Known Bugs Tracking](#Known-Bugs-Tracking)
-   - [Custom Test Reporting](#Custom-Test-Reporting)
-4. [Prerequisites and Installation](#Prerequisites-and-Installation)
-5. [Codebase Structure](#Codebase-Structure)
-   - [Key Files and Directories](#Key-Files-and-Directories)
-6. [Configuration/Environment Setup](#Configuration/Environment-Setup)
-   - [Environment Variables](#Environment-Variables)
-7. [CI Setup](#CI-Setup)
-   - [Jenkinsfile](#Jenkinsfile)
-     - [How to configure Jenkinsfile](#How-to-configure-Jenkinsfile)
-   - [Config.xml](#Config.xml)
-     - [How to configure Config.xml](#How-to-configure-Config.xml)
+<!-- TOC --><a name="overview"></a>
 
 ## Overview
 
@@ -42,13 +100,19 @@ The goal is not to fully cover all the features of the object under test, but to
 
 The secondary aim of the project is **testing the usage of CtahGPT as a mentor and co-pilot in test framework creation**. It provides an additional dimension and challenge for me to complete tasks with the AI system.
 
+<!-- TOC --><a name="technology-stack"></a>
+
 ## Technology Stack
 
 The Software Testing System is built leveraging diverse technology tools and libraries with JavaScript being the core programming language.
 
+<!-- TOC --><a name="primary-programming-languages"></a>
+
 ### Primary Programming Languages
 
 - **JavaScript (ES6+)**: JavaScript, specifically its ES6 version and above, forms the backbone of the project, enabling multiple functionalities of the Software Testing System.
+
+<!-- TOC --><a name="key-libraries-and-frameworks"></a>
 
 ### Key Libraries and Frameworks
 
@@ -58,25 +122,37 @@ The Software Testing System is built leveraging diverse technology tools and lib
 
 - **Pixelmatch (`pixelmatch`) and Pngjs (`pngjs`)**: Both are robust image comparison and processing libraries used to compare the testing snapshot with the baseline image.
 
+<!-- TOC --><a name="code-quality-tools"></a>
+
 ### Code Quality Tools
 
 - **ESLint (`eslint`)** (with several plugins and configurations): Used to enforce code quality and maintain consistency.
 
 - **Prettier (`prettier`)**: An opinionated code formatter enforcing a consistent coding style.
 
+<!-- TOC --><a name="environment-variable-management"></a>
+
 ### Environment Variable Management
 
 - **Dotenv (`dotenv`)**: Utilized for managing environment variables.
+
+<!-- TOC --><a name="continuous-integration"></a>
 
 ### Continuous Integration
 
 - **Jenkins**: Applied for continuous integration to automate the building and testing of the application.
 
+<!-- TOC --><a name="version-control"></a>
+
 ### Version Control
 
 - **Git and GitHub**: Used for source version control and project repository hosting, enabling collaborative work and contribution tracking.
 
+<!-- TOC --><a name="features"></a>
+
 ## Features
+
+<!-- TOC --><a name="jenkins-cicd-pipeline"></a>
 
 ### Jenkins CI/CD Pipeline
 
@@ -103,6 +179,8 @@ Our software testing system employs an automated Jenkins CI/CD pipeline that run
 7. **Discards Old Builds**
    Our system is designed to retain builds for a certain period (1 day in this particular configuration) and then discard older ones. This strategy optimizes memory usage by discarding out-of-date build information.
 
+<!-- TOC --><a name="playwright-configuration"></a>
+
 ### Playwright Configuration
 
 Our software testing system offers a highly configurable environment for running end-to-end tests via the `playwright.config.js` file. This allows the system to adapt to specific project needs and provide an efficient testing process. Here are some of the configurations that can be done:
@@ -115,6 +193,8 @@ Our software testing system offers a highly configurable environment for running
 **Environment Configurations**: Set specific settings unique to the projects being tested, enabling fine-tuned testing processes.
 Our system follows best practices such as cross-browser testing, device-specific settings, test-skipping for known failing tests, usage of environment variables, feature-specific testing, and multiple reporting options for both local and CI environments.
 
+<!-- TOC --><a name="data-driven-testing-ddt"></a>
+
 ### Data-Driven Testing (DDT)
 
 **Data-Driven Testing (DDT)** is a core feature of the testing structure provided by this system. This allows tests to be data-centric, making them highly scalable and maintainable. This functionality resides in the `queryData.js` file under the `tests/test-data/googleSearch` directory.
@@ -123,14 +203,20 @@ The queryData.js file exports a set of constant arrays that serve as pre-defined
 
 The DDT pattern makes the test suite more flexible and scalable. Adding a new test case is as simple as adding a new object to the relevant array. This approach significantly reduces the amount of code written and enhances the manageability of the test suite.
 
+<!-- TOC --><a name="iframe-handling"></a>
+
 ### iFrame Handling
 
 One of the notable features of the POM in the `tests/pages/googleCustomSearchEngineIframe.js` is the handling of iFrames. iFrames, or inline frames, are HTML documents embedded inside another HTML document on a website. They often present substantial challenges for automation testing, mainly because contents within iFrames are not immediately available for interaction.
 By integrating this functionality, our system can confidently handle and interact with webpages that are built using complex structures and multiple layers of iFrames.
 
+<!-- TOC --><a name="screenshot-comparison-visual-regression"></a>
+
 ### Screenshot Comparison & Visual Regression
 
 An integral part of our software testing system is the feature that compares actual screenshots to intended baseline screenshots for visual regression testing. This feature is encapsulated in the `compareScreenshotsAndReportDifferences()` method in the `utilities/fileSystemHelper.js` file.
+
+<!-- TOC --><a name="screenshot-comparison"></a>
 
 #### Screenshot Comparison
 
@@ -140,19 +226,27 @@ Pixel comparison between the two images is performed using the `pixelmatch` libr
 
 If there are any mismatches detected, the function will create a **difference image highlighting the distinct pixels**. This image is temporarily stored and then deleted after it has been processed for the final report.
 
+<!-- TOC --><a name="reporting-differences"></a>
+
 #### Reporting Differences
 
 Once the comparison is complete, if any mismatches are found, the function **links the baseline image, actual screenshot, and the differences image to the HTML report**. All images involved in the comparison are attached to this report, granting a clear overview of the differences and enabling easier troubleshooting.
 
 This approach provides a comprehensive method for visual testing, allowing testers to quickly identify visual regressions and enhance overall UI consistency.
 
+<!-- TOC --><a name="performance-metrics-tracking"></a>
+
 ### Performance Metrics Tracking
 
 One of the features of `GoogleSearchPage` class lies in its ability to measure and track performance. This feature utilizes various APIs (**Performance.mark(), window.performance.measure(), Chromium Performance tracing, Chrome DevTool Protocol**) to efficiently collect, calculate, and report performance metrics **attaching all collected information to the corresponding test in an HTML report**.
 
+<!-- TOC --><a name="test-lifecycle-management"></a>
+
 ### Test Lifecycle Management
 
 Our testing system incorporates smart test lifecycle management through the `baseWithSharedContext.mjs` file. The code manages the test lifecycle around known bugs. It determines if tests should be skipped or failed based on existing known bugs documented in a knownBugs JSON file. Each test is configured based on the context options.
+
+<!-- TOC --><a name="screenshot-and-report-management"></a>
 
 ### Screenshot and Report Management
 
@@ -166,15 +260,21 @@ KNOWN ISSUES:
 ------------------------
 ```
 
+<!-- TOC --><a name="known-bugs-tracking"></a>
+
 ### Known Bugs Tracking
 
 Our testing system includes a `knownBugs.js` file that comprises a collection of known bugs. Each object in the file represents a specific bug and includes properties like the bug identifier, a brief description, the test spec file where the bug was found, the title of the test during which the bug was discovered, and its status across different environments. This feature enhances the traceability of the known bugs and helps handle them efficiently in subsequent test runs.
+
+<!-- TOC --><a name="custom-test-reporting"></a>
 
 ### Custom Test Reporting
 
 The CustomReporter class located in `tests/setup/customReporter.js` is a feature of our software testing system that helps to generate detailed and specific test reports.
 
 Key features within the custom report include:
+
+<!-- TOC --><a name="issue-categorization"></a>
 
 #### Issue Categorization
 
@@ -184,6 +284,8 @@ Our system categorizes known bug issues related to tests based on the test outco
 - Failed tests without known bug issues
 - Passed tests with known unfixed bug issues
   These lists are created as instance variables of the CustomReporter class and are updated after each test concludes.
+
+<!-- TOC --><a name="aggregate-test-reporting"></a>
 
 #### Aggregate Test Reporting
 
@@ -225,11 +327,17 @@ RUN STATUS: failed
 ------------------------
 ```
 
+<!-- TOC --><a name="prerequisites-and-installation"></a>
+
 ## Prerequisites and Installation
 
 Before you can run the Software Testing System locally, there are a few prerequisites you must meet and installation steps to follow:
 
+<!-- TOC --><a name="prerequisites"></a>
+
 ### Prerequisites
+
+<!-- TOC --><a name="tools-and-software"></a>
 
 #### Tools and Software
 
@@ -239,15 +347,21 @@ Before you can run the Software Testing System locally, there are a few prerequi
 
 - **Git** - The project uses Git for version control. You will need Git to clone the project repository.
 
+<!-- TOC --><a name="skills-and-knowledge"></a>
+
 #### Skills and Knowledge
 
 - **JavaScript (ES6+)**: A solid understanding of JavaScript ES6 and later would be required to work on this project effectively.
 
 - **Playwright**: Good understanding or experience of testing with Playwright.
 
+<!-- TOC --><a name="operating-system"></a>
+
 #### Operating System
 
 - The configuration and commands provided are compatible with **Windows** operating systems.
+
+<!-- TOC --><a name="installation"></a>
 
 ### Installation
 
@@ -296,6 +410,8 @@ By following the above steps, the project should be set up and ready for use on 
 Thank you for the detailed information. Here's your requested README {chapter} for Codebase Structure:
 
 ---
+
+<!-- TOC --><a name="codebase-structure"></a>
 
 ## Codebase Structure
 
@@ -368,6 +484,8 @@ Below is a high-level outline of the Software Testing System's codebase structur
     └── regexHelper.js
 ```
 
+<!-- TOC --><a name="key-files-and-directories"></a>
+
 ### Key Files and Directories
 
 - **`package.json` & `package-lock.json`**: These files hold various metadata relevant to the project, including its dependencies.
@@ -388,9 +506,13 @@ The structure of the codebase is mainly feature-centric, focusing on modularizat
 
 If you're new to the project, a good place to start would be the `tests/features` directory to understand the test scenarios, followed by a look at the Page Object Models (`tests/pages`). For a deeper understanding of the codebase, you should explore the `hooks` and `utilities` directories, which would give you valuable insight into the underlying workings of the test cases.
 
+<!-- TOC --><a name="configurationenvironment-setup"></a>
+
 ## Configuration/Environment Setup
 
 This project supports environment variables for configuration. These are defined in the `playwright.config.js` and `Jenkinsfile` scripts and can be modified manually in the `package.json` file or via **terminal commands**.
+
+<!-- TOC --><a name="environment-variables"></a>
 
 ### Environment variables
 
@@ -418,9 +540,13 @@ This project supports environment variables for configuration. These are defined
 
 Please adjust these variables as necessary for your local development environment and system settings.
 
+<!-- TOC --><a name="ci-setup"></a>
+
 ## CI Setup
 
 The Continuous Integration (CI) setup for the project is performed using Jenkins. Jenkins pipelines defined in `Jenkinsfile` and `config.xml` constitute the CI setup to execute test projects defined in `playwright.config.js`.
+
+<!-- TOC --><a name="playwrightconfigjs"></a>
 
 ### playwright.config.js
 
@@ -463,6 +589,8 @@ Each project configuration object has multiple sub-sections:
   - **`headless`** - An option that allows you to run the browser without a graphical user interface (GUI)
   - **`baseURL`** - An option that provides a shorthand for your application's URL. Instead of typing the full URL of the application under test in each action or in each test, you can set a baseURL. Must correspond to the value of the `currentENV` variable
 
+<!-- TOC --><a name="how-to-configure-playwrightconfigjs"></a>
+
 ### How to configure playwright.config.js
 
 1. The `playwright.config.js` should be located at the root of your project folder.
@@ -470,9 +598,13 @@ Each project configuration object has multiple sub-sections:
 3. Under `projects -> use`, ensure to have `baseURL` appropriately configured as per project requirement.
 4. Save the changes and run your tests using the Playwright test runner command.
 
+<!-- TOC --><a name="jenkinsfile"></a>
+
 ### Jenkinsfile
 
 The `Jenkinsfile` defines the pipeline stages for the CI process. Stages include preparing the environment, pulling the latest branch of the project from the Git repository, installing dependencies, running tests, and archiving the results. Specific environment parameters such as 'PROJECT', 'BROWSER', 'CI', and 'CI_WORKERS' are also set in this file.
+
+<!-- TOC --><a name="how-to-configure-jenkinsfile"></a>
 
 #### How to configure Jenkinsfile
 
@@ -480,9 +612,13 @@ The `Jenkinsfile` defines the pipeline stages for the CI process. Stages include
 2. For Jenkins to recognize and run this file, it should be loaded into your Jenkins server. An option when creating a new Jenkins pipeline is to define the pipeline script from SCM (Source Control Management), where you can specify your Git repository's URL and set 'Script Path' to `Jenkinsfile`.
 3. Optional: Amend parameters and environment settings to customize the test run if needed.
 
+<!-- TOC --><a name="configxml"></a>
+
 ### config.xml
 
 `config.xml` is a sample Jenkins job configuration file that contains settings such as the job name, description, project repository URL, log rotation, concurrent build options, parameters, triggers, etc.
+
+<!-- TOC --><a name="how-to-configure-configxml"></a>
 
 #### How to configure config.xml
 
@@ -497,7 +633,11 @@ The `Jenkinsfile` defines the pipeline stages for the CI process. Stages include
 
 After setting up the CI files, you're all set to run the pipeline via Jenkins! The pipeline will trigger according to the schedule set in the configuration (currently set to every hour), fetch the latest Git branch, and run tests according to the parameters provided.
 
+<!-- TOC --><a name="running-tests"></a>
+
 ## Running Tests
+
+<!-- TOC --><a name="run-all-test-files"></a>
 
 ### Run All Test files
 
@@ -506,6 +646,8 @@ To run all your test files across all projects from `playwright.config.js` on yo
 ```
 npx playwright test
 ```
+
+<!-- TOC --><a name="run-a-group-of-test-files"></a>
 
 ### Run a Group of Test files
 
@@ -517,6 +659,8 @@ For example, to run all test files in the 'googleSearch' directory across all pr
 npx playwright test tests/features/googleSearch*.spec.js
 ```
 
+<!-- TOC --><a name="run-a-single-test-file"></a>
+
 ### Run a Single Test file
 
 To run a single test file across all projects from `playwright.config.js`, specify the path to the file:
@@ -524,6 +668,8 @@ To run a single test file across all projects from `playwright.config.js`, speci
 ```
 npx playwright test tests/features/googleSearch/googleSearch_SearchResults.spec.js
 ```
+
+<!-- TOC --><a name="run-specific-project"></a>
 
 ### Run Specific Project
 
@@ -533,9 +679,13 @@ To run all tests of a specific project as defined in your `playwright.config.js`
 npx playwright test --project=Desktop_Google_Chrome_PROD
 ```
 
+<!-- TOC --><a name="run-tests-using-tags-via-project-settings"></a>
+
 ### Run Tests Using Tags via project settings
 
 As defined in the `playwright.config.js`, we can include/exclude tests based on the tags provided in the `grep` and `grepInvert` property of the `project`. Add a project with the required properties using the explanations from [playwright.config.js](#playwright.config.js).
+
+<!-- TOC --><a name="run-tests-that-match-a-certain-pattern-via-command-line"></a>
 
 ### Run Tests that match a certain pattern via command-line
 
@@ -550,6 +700,8 @@ or
 ```
 npx playwright test --project=Desktop_Google_Chrome_PROD --grep='search results page'
 ```
+
+<!-- TOC --><a name="test-selection-using-testdescribeonly-testdescribeskip-testonly-and-testskip"></a>
 
 ## Test Selection Using `test.describe.only`, `test.describe.skip`, `test.only` and `test.skip`
 
@@ -573,7 +725,11 @@ test.describe.only('Describe Block Title', () => {
 });
 ```
 
+<!-- TOC --><a name="test-result-analysis"></a>
+
 ## Test Result Analysis
+
+<!-- TOC --><a name="understanding-test-reports"></a>
 
 ### Understanding Test Reports
 
@@ -586,7 +742,11 @@ In the `reporter` configuration:
 - `html` generates an HTML report that provides an overview of your test suites, individual test cases and, if applicable, details of known bugs, and screenshots of test runs.
 - `./tests/setup/customReporter.js` helps to generate detailed and specific test reports. Its main features described in the paragraph [Custom Test Reporting](#Custom-Test-Reporting)
 
+<!-- TOC --><a name="interpreting-test-reports"></a>
+
 ### Interpreting Test Reports
+
+<!-- TOC --><a name="html-report"></a>
 
 #### HTML Report
 
@@ -621,6 +781,8 @@ Here you can see if this test has related bugs and their fix statuses for all en
 
 [Test Lifecycle Management](#Test-Lifecycle-Management): If a test has related bugs in `knownBugs.js`, then it is marked as one that should fail, i.e. its expected status is `'failed'`, and if its actual status is `'passed'`, it will be considered a deviation from expectation and will be noted in the report.
 
+<!-- TOC --><a name="console-report"></a>
+
 #### Console Report
 
 The console has two forms of reporting, `dot` and `list`. After a test run, you will have a console report detailing your known bug issues. You may inspect this log to understand the failure points and link the issues to known bugs:
@@ -628,9 +790,13 @@ The console has two forms of reporting, `dot` and `list`. After a test run, you 
 - For `dot`: Each dot represents a test case, making up a concise report of passing, failing, and skipped tests.
 - For `list`: Each line represents a complete report of a single test. It provides more details on pass/fail status and error messages.
 
+<!-- TOC --><a name="analyzing-known-bug-issues"></a>
+
 ### Analyzing Known Bug Issues
 
 `knownBugs.js` contains a collection of known bugs that can aid in debugging failed test. When a test fails, the system checks if the failure is associated with a known issue. It provides additional information such as the bug identifier, status, and test details. By examining this file and the details attached, you can significantly improve your debugging process.
+
+<!-- TOC --><a name="custom-test-reporting-1"></a>
 
 ### Custom Test Reporting
 
@@ -668,6 +834,8 @@ RUN STATUS: failed
 ------------------------
 ```
 
+<!-- TOC --><a name="troubleshooting-tests"></a>
+
 ### Troubleshooting Tests
 
 To troubleshoot failing tests, examine the error messages and stack trace for any failed test case depicted in the console log or HTML report. If a failed test is attached with known bug information, examine the bug details and its status across different environments. Use this information to determine whether the test failure is due to this known bug. If a test without known bug info is failing, investigation may be necessary to identify the cause and link it with an existing bug or open a new one.
@@ -677,9 +845,13 @@ To troubleshoot failing tests, examine the error messages and stack trace for an
 - If the test `'failed'` and has `fixed` related bugs, it is worth to determine the cause and link or reopen the bug.
 - If the test `'passed'` and has `unfixed` related bugs, it is worth checking the fix status of these bugs for current environment (perhaps the status was not updated in `knownBugs.js` after the fix).
 
+<!-- TOC --><a name="writing-tests"></a>
+
 ## Writing Tests
 
 When creating new tests for the software testing system, it's **important to follow a standardized structure and naming conventions**. This section gives detailed guidelines on creating new tests.
+
+<!-- TOC --><a name="test-spec-naming-and-folder-structure"></a>
 
 ### Test Spec Naming and Folder Structure
 
@@ -703,6 +875,8 @@ Here is an example of a good folder and test spec structure:
 
 Spec files are saved with the `.spec.js` extension and a description of the functionality they are testing.
 
+<!-- TOC --><a name="page-objects"></a>
+
 ### Page Objects
 
 Each test file should **import its required page objects**, which are classes that encapsulate the page-level operations that your tests will use. This helps keep your test code clean and maintainable.
@@ -710,6 +884,8 @@ Each test file should **import its required page objects**, which are classes th
 ```javascript
 import GoogleSearchPage from '../../pages/googleSearchPage';
 ```
+
+<!-- TOC --><a name="describe"></a>
 
 ### Describe
 
@@ -722,6 +898,8 @@ test.describe('Describe Block Title @tags', () => {
 ```
 
 You can include additional tags in your test title, which help categorize the tests.
+
+<!-- TOC --><a name="utilizing-conditional-test-execution"></a>
 
 ### Utilizing Conditional Test Execution
 
@@ -740,6 +918,8 @@ test.describe(`Describe Block Title @tags`, () => {
     `Test skipped due to the presence of unfixed bug(s)`
   );
 ```
+
+<!-- TOC --><a name="proper-setup-and-teardown"></a>
 
 ### Proper Setup and Teardown
 
@@ -760,6 +940,8 @@ test.beforeEach(
 );
 ```
 
+<!-- TOC --><a name="test-case"></a>
+
 ### Test Case
 
 Each individual test case should be defined with the `test` function. The first argument should be the title of the test case, and the second should be a callback function, which is the test's code.
@@ -772,6 +954,8 @@ test('TEST-1: Test Title @tags', async ({}) => {
 
 You can include additional tags in your test title, which help categorize the tests.
 
+<!-- TOC --><a name="test-identification"></a>
+
 #### Test Identification
 
 Each test case must have an **unique identifier**. This helps to easily identify and reference a specific test. The identifier should be at the beginning of the test's title and follow the format `TEST-X` where `X` is the test's unique number.
@@ -783,6 +967,8 @@ test('TEST-1: Test Title @tags', async ({ sharedContext }) => {
   // test code
 });
 ```
+
+<!-- TOC --><a name="tags"></a>
 
 #### Tags
 
@@ -819,6 +1005,8 @@ test('TEST-1: Test Title @only-desktop @mocked @results @filters', async ({
 - @filters
   ...
 
+<!-- TOC --><a name="data-driven-testing"></a>
+
 ### Data-Driven Testing
 
 The test is not hardcoded with specific data. Instead, it derives its inputs from an external data source, this enhances coverage with various combinations of inputs.
@@ -831,6 +1019,8 @@ queryDataGeneral.forEach((queryData) => {
 });
 ```
 
+<!-- TOC --><a name="expect"></a>
+
 ### Expect
 
 Use `expect` to make assertions on some data. Most tests will include at least one `expect` statement, but not more than 6.
@@ -838,6 +1028,8 @@ Use `expect` to make assertions on some data. Most tests will include at least o
 ```javascript
 expect(response.status()).toEqual(200);
 ```
+
+<!-- TOC --><a name="using-custom-error-messages-in-expect-functions"></a>
 
 #### Using custom error messages in `expect` functions
 
@@ -855,6 +1047,8 @@ expect(
 
 gives a much clearer idea of what went wrong if the test fails.
 
+<!-- TOC --><a name="importing-needed-resources"></a>
+
 ### Importing Needed Resources
 
 Test utilities, helper classes, and data for tests are imported at the top of the file, allowing easy modification if resources' location changes.
@@ -870,6 +1064,8 @@ import {
 import { performSearchAndFetchResultsForNewPage } from '../../../utilities/pagesHelper';
 ```
 
+<!-- TOC --><a name="consistent-naming-conventions"></a>
+
 ### Consistent Naming Conventions
 
 Variables and constants are written in camel case, following JavaScript conventions.
@@ -879,6 +1075,8 @@ const testStatus = {
   SKIPPED: 'skipped',
 };
 ```
+
+<!-- TOC --><a name="comprehensive-commenting"></a>
 
 ### Comprehensive Commenting
 
@@ -899,11 +1097,15 @@ A well-documented codebase is easy to understand and maintain. The initial block
  */
 ```
 
+<!-- TOC --><a name="code-styleguides-linting"></a>
+
 ## Code Styleguides / Linting
 
 Maintaining coding style and conventions is vital in every project, especially when collaborating with a team. This would involve following a set styleguide or rules that enforces consistency in the code.
 
 In this project, we prioritize readability and maintainability. To help us achieve this, we use ESLint for identifying and reporting coding issues, and Prettier for automated formatting of our code.
+
+<!-- TOC --><a name="eslint"></a>
 
 ### ESLint
 
@@ -911,15 +1113,21 @@ ESLint is a highly configurable and pluggable JavaScript linter. An `.eslintrc.j
 
 The ESLint configuration includes various environments, plugins, and rules. Notable configurations include "eslint:recommended", providing a base set of rules, 'playwright/recommended', that enforces best practices for Playwright, and 'plugin:prettier/recommended', which ensures that Prettier and ESLint do not conflict.
 
+<!-- TOC --><a name="prettier"></a>
+
 ### Prettier
 
 Prettier is a code formatter that ensures that all output code conforms to a consistent style by parsing your code and re-printing it with its own rules. A `prettier.config.js` file is added to the project to specify preferred code format options.
+
+<!-- TOC --><a name="vs-code-configuration"></a>
 
 ### VS Code Configuration
 
 For people using the Visual Studio Code editor, a `settings.json` file in the `.vscode` directory has been created. This file defines the configuration of the Prettier extension for VS Code. It applies the ESLint rules when you save or copy-paste the code.
 
 To apply the configurations, you need to have the **Prettier - Code formatter** and **ESLint** extension installed in your VS Code editor.
+
+<!-- TOC --><a name="scripts"></a>
 
 ### Scripts
 
@@ -934,9 +1142,13 @@ Running these scripts will help in keeping the codebase clean and consistent.
 
 **Please ensure you run these commands before committing your code.**
 
+<!-- TOC --><a name="error-handling-and-debugging"></a>
+
 ## Error Handling and Debugging
 
 Detecting, handling and debugging errors are important aspects of developing a robust test suite. This guide will help you understand how our testing framework handles errors and provides debugging capabilities.
+
+<!-- TOC --><a name="using-expect-for-assertions-in-tests"></a>
 
 ### Using `expect` for Assertions in Tests
 
@@ -953,9 +1165,13 @@ expect(
 
 This uses `toContain` to check that the `correctedQueryLocatorText` includes the `correctedQuery`.
 
+<!-- TOC --><a name="use-test-result-analysis"></a>
+
 ### Use Test Result Analysis
 
 Look at [Test Result Analysis](#Test-Result-Analysis)
+
+<!-- TOC --><a name="using-trycatch-blocks-for-error-handling"></a>
 
 ### Using Try/Catch Blocks for Error Handling
 
@@ -974,6 +1190,8 @@ async viewSelectedPictureInPreview(picture) {
 
 In the above snippet, if there's an error when trying to select a picture, it will not stop the whole execution. It catches the error and logs it, allowing the developer to understand what went wrong.
 
+<!-- TOC --><a name="debugging-with-playwright"></a>
+
 ### Debugging with Playwright
 
 To debug your test suite, Playwright provides a way to run your tests in debug mode. You can run tests in debug mode with the following npm script:
@@ -986,6 +1204,8 @@ This starts the test runner in debug mode. This will launch the browser in non-h
 
 The debug mode outputs helpful information about the test runner, including a step-by-step advancement of the test.
 
+<!-- TOC --><a name="debugging-with-visual-studio-code"></a>
+
 ### Debugging with Visual Studio Code
 
 Visual Studio Code (VS Code) offers an integrated debugger that helps you set breakpoints, step through code, inspect variables and view the call stack. VS Code’s built-in debugger helps accelerate your edit, compile and debug cycle.
@@ -997,9 +1217,13 @@ Here are the steps on how to set it up:
 2. **Start Debugging:** Go to `package.json`, hover over the script (for example: `"run_test_project"`) and select `Debug Script`.
    At this point, you can inspect variables, execute commands in the Debug Console, and even change the value of variables.
 
+<!-- TOC --><a name="contributing-pull-request-process"></a>
+
 ## Contributing / Pull Request Process
 
 Contributing to a project is a fantastic opportunity to improve software that you rely on. Here is a guide that will help you understand how to make a valuable contribution to this project. We look forward to your input!
+
+<!-- TOC --><a name="branching-strategy"></a>
 
 ### Branching Strategy
 
@@ -1010,6 +1234,8 @@ The main and develop branches are permanent branches in this project.
 - **`develop`** branch: This branch is used for integration of features. All development work converges into the `develop` branch. New features are pulled from this branch.
 
 For task-specific updates, create a new branch from `develop` branch.
+
+<!-- TOC --><a name="task-branch-naming"></a>
 
 #### Task Branch Naming
 
@@ -1024,6 +1250,8 @@ Branch naming could follow this pattern: **`TASK_TYPE/TASK_ID:TASK_DESCRIPTION`*
 ```shell
 ta/TASK-123:Auto_suggestion
 ```
+
+<!-- TOC --><a name="git-commands"></a>
 
 #### Git commands
 
@@ -1054,6 +1282,8 @@ git branch --show-current
 ```
 
 Now, you have created a new branch from the `develop` branch and have switched to it.
+
+<!-- TOC --><a name="pull-request-process"></a>
 
 ### Pull Request Process
 
