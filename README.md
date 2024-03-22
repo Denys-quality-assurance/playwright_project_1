@@ -35,7 +35,7 @@
   - [Environment variables](#environment-variables)
 - [CI Setup](#ci-setup)
   - [playwright.config.js](#playwrightconfigjs)
-  - [How to configure playwright.config.js](#how-to-configure-playwrightconfigjs)
+    - [How to configure playwright.config.js](#how-to-configure-playwrightconfigjs)
   - [Jenkinsfile](#jenkinsfile)
     - [How to configure Jenkinsfile](#how-to-configure-jenkinsfile)
   - [config.xml](#configxml)
@@ -53,8 +53,8 @@
   - [Interpreting Test Reports](#interpreting-test-reports)
     - [HTML Report](#html-report)
     - [Console Report](#console-report)
-  - [Analyzing Known Bug Issues](#analyzing-known-bug-issues)
-  - [Custom Test Reporting](#custom-test-reporting-1)
+    - [Analyzing Known Bug Issues](#analyzing-known-bug-issues)
+    - [Custom Test Reporting](#custom-test-reporting-1)
   - [Troubleshooting Tests](#troubleshooting-tests)
 - [Writing Tests](#writing-tests)
   - [Test Spec Naming and Folder Structure](#test-spec-naming-and-folder-structure)
@@ -591,7 +591,7 @@ Each project configuration object has multiple sub-sections:
 
 <!-- TOC --><a name="how-to-configure-playwrightconfigjs"></a>
 
-### How to configure playwright.config.js
+#### How to configure playwright.config.js
 
 1. The `playwright.config.js` should be located at the root of your project folder.
 2. Configure your project settings accordingly based on the categories — `workers`, `timeout`, `retries`, `testMatch`, `projects`, `reporter`, etc.
@@ -792,13 +792,13 @@ The console has two forms of reporting, `dot` and `list`. After a test run, you 
 
 <!-- TOC --><a name="analyzing-known-bug-issues"></a>
 
-### Analyzing Known Bug Issues
+#### Analyzing Known Bug Issues
 
 `knownBugs.js` contains a collection of known bugs that can aid in debugging failed test. When a test fails, the system checks if the failure is associated with a known issue. It provides additional information such as the bug identifier, status, and test details. By examining this file and the details attached, you can significantly improve your debugging process.
 
 <!-- TOC --><a name="custom-test-reporting-1"></a>
 
-### Custom Test Reporting
+#### Custom Test Reporting
 
 [Aggregate Test Reporting](#Aggregate-Test-Reporting): With the custom reporter configured in `./tests/setup/customReporter.js`, after your test execution, there's an aggregated report that consolidates the known issue categorization in the console, empowering you to have a lucid understanding of your test execution status.
 
@@ -1291,7 +1291,7 @@ When you have implemented a test in your task branch, create a Pull Request (PR)
 
 Follow these steps for submitting a pull request:
 
-1. Run `npm run format` and `npm run lint` ([Scripts](#Scripts))
+1. **Format & Lint** - Run `npm run format` and `npm run lint` ([Scripts](#Scripts))
 2. **Commit & Push** - Commit your changes and push your task branch to the remote repository.
 
 ```shell
