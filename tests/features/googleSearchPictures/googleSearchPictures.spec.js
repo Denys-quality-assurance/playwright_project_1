@@ -1,17 +1,47 @@
+/*
+ * Google Search Pictures Test Suite:
+ * This suite of tests validates the functionality of Google Search for Pictures.
+ *
+ * Setup: The suite creates a page instance and a Google Search Pictures Page object.
+ * It navigates to the home page, rejects all cookies, and performs a search query.
+ *
+ * Useful methods for picture interaction are specified in the GoogleSearchPicturesPage class.
+ * Helper functions for download, file existence check, and file deletion are imported from fileSystemHelper.
+ *
+ * The data for the search queries is imported from queryData and can be used with Data-driven testing (DDT) approach.
+ *
+ */
+
 import { expect } from '@playwright/test';
 import test from '../../../hooks/testWithAfterEachHooks.mjs';
 import GoogleSearchPicturesPage from '../../pages/googleSearchPicturesPage';
 import {
   downloadImageFromUrlToTempDir,
   checkFileExists,
-  deleteTempFile,
+  deleteFileAtPath,
 } from '../../../utilities/fileSystemHelper';
 import { escapeRegexSpecialCharacters } from '../../../utilities/regexHelper';
 import { queryDataGeneral } from '../../test-data/googleSearch/queryData';
+
+const testStatus = {
+  SKIPPED: 'skipped',
+};
+
 const query = queryDataGeneral[1].query;
 const queryWithExtension = query + ' jpg';
 
 test.describe(`Google Home Pictures Page: Download picture by '${query}' query, Search by picture`, () => {
+  // Test should be failed when the condition is true: there is at least 1 unfixed bug
+  test.fail(
+    ({ shouldFailTest }) => shouldFailTest,
+    `Test marked as "should fail" due to the presence of unfixed bug(s)`
+  );
+  // Test should be skipped when the condition is true: flag skipTestsWithKnownBugs is 'true' and there is at least 1 unfixed bug
+  test.skip(
+    ({ shouldSkipTest }) => shouldSkipTest,
+    `Test skipped due to the presence of unfixed bug(s)`
+  );
+
   let page; // Page instance
   let googleSearchPicturesPage; // Page object instance
 
@@ -19,11 +49,12 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
   test.beforeEach(
     'Navigate to Home page, reject all Cookies and search the query',
     async ({ sharedContext }, testInfo) => {
-      if (testInfo.expectedStatus !== 'skipped') {
+      // Prepare the test only if the test is not skipped
+      if (testInfo.expectedStatus !== testStatus.SKIPPED) {
         page = await sharedContext.newPage();
         const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
         googleSearchPicturesPage = new GoogleSearchPicturesPage(page, isMobile);
-        await googleSearchPicturesPage.navigateAndSearchPictures(
+        await googleSearchPicturesPage.goToHomeAndSearchPictures(
           queryWithExtension
         );
       }
@@ -33,7 +64,7 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
   test(`TEST-23: User can download picture from test results, User can search by picture @skip-for-webkit @only-desktop`, async ({}, testInfo) => {
     // Get description and picture link of the the 1st picture search result
     const { pictureDescription, imageUrl } =
-      await googleSearchPicturesPage.get1stPictureDescriptionAndDownload();
+      await googleSearchPicturesPage.getFirstPictureDescriptionAndDownloadLink();
     // Case insensitive regex for the query
     let queryRegex = new RegExp(escapeRegexSpecialCharacters(query), 'i'); // 'i' flag for case insensitive
     // Check if the picture's description contains the query
@@ -53,14 +84,14 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
     ).toBe(true);
 
     // Upload the picture to search by picture
-    await googleSearchPicturesPage.uploadPictureToSearch(imagePath);
+    await googleSearchPicturesPage.performPictureSearchByUploading(imagePath);
 
     // Get search results
     const searchResultsLocator =
       await googleSearchPicturesPage.getSearchByPictureResultsLocator();
 
     // Delete the picture from PC
-    deleteTempFile(imagePath);
+    deleteFileAtPath(imagePath);
 
     // Check if any search result description contains the downloaded picture query
     const doesAnySearchResultContainsPictureQuery =
@@ -77,7 +108,7 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
   test(`TEST-24: User can download picture from test results, User can search by picture @only-mobile`, async ({}, testInfo) => {
     // Get description and picture link of the the 1st picture search result
     const { pictureDescription, imageUrl } =
-      await googleSearchPicturesPage.get1stPictureDescriptionAndDownload();
+      await googleSearchPicturesPage.getFirstPictureDescriptionAndDownloadLink();
     // Case insensitive regex for the query
     let queryRegex = new RegExp(escapeRegexSpecialCharacters(query), 'i'); // 'i' flag for case insensitive
     // Check if the picture's description contains the query
@@ -97,6 +128,6 @@ test.describe(`Google Home Pictures Page: Download picture by '${query}' query, 
     ).toBe(true);
 
     // Delete the picture from PC
-    deleteTempFile(imagePath);
+    deleteFileAtPath(imagePath);
   });
 });

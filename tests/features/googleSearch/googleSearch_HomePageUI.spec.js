@@ -1,9 +1,37 @@
+/*
+ * Google Search Test Suite:
+ * This suite tests the alignment and visibility of UI elements present on the Google Home Page.
+ *
+ * Setup: An instance of the Page object and the GoogleSearchPage object are initialized,
+ * with the test navigating to the Google homepage and rejecting all cookies.
+ *
+ * Helper methods for UI interactions are present in the GoogleSearchPage class.
+ * The utilities function 'compareScreenshotsAndReportDifferences' from fileSystemHelper is used to
+ * conduct pixel comparisons between actual and baseline screenshots.
+ *
+ */
+
 import { expect } from '@playwright/test';
 import test from '../../../hooks/testWithAfterEachHooks.mjs';
 import GoogleSearchPage from '../../pages/googleSearchPage';
-import { getMismatchedPixelsCount } from '../../../utilities/fileSystemHelper';
+import { compareScreenshotsAndReportDifferences } from '../../../utilities/fileSystemHelper';
+
+const testStatus = {
+  SKIPPED: 'skipped',
+};
 
 test.describe(`Google Home Page: User Interface`, () => {
+  // Test should be failed when the condition is true: there is at least 1 unfixed bug
+  test.fail(
+    ({ shouldFailTest }) => shouldFailTest,
+    `Test marked as "should fail" due to the presence of unfixed bug(s)`
+  );
+  // Test should be skipped when the condition is true: flag skipTestsWithKnownBugs is 'true' and there is at least 1 unfixed bug
+  test.skip(
+    ({ shouldSkipTest }) => shouldSkipTest,
+    `Test skipped due to the presence of unfixed bug(s)`
+  );
+
   let page; // Page instance
   let googleSearchPage; // Page object instance
 
@@ -11,23 +39,24 @@ test.describe(`Google Home Page: User Interface`, () => {
   test.beforeEach(
     'Navigate to Home page and reject all Cookies',
     async ({ sharedContext }, testInfo) => {
-      if (testInfo.expectedStatus !== 'skipped') {
+      // Prepare the test only if the test is not skipped
+      if (testInfo.expectedStatus !== testStatus.SKIPPED) {
         page = await sharedContext.newPage();
         const isMobile = sharedContext._options.isMobile || false; // type of device is mobile
         googleSearchPage = new GoogleSearchPage(page, isMobile);
-        await googleSearchPage.navigateAndRejectCookies();
+        await googleSearchPage.goToHomeAndRejectCookies();
       }
     }
   );
 
-  test(`TEST-14: Google logo is visiable on the Home page @UI`, async ({
+  test(`TEST-14: Google logo is visiable on the Home page (pixel check) @UI`, async ({
     sharedContext,
   }, testInfo) => {
     // Make and save a screenshot of the Google Logo
     const actualScreenshotPath =
-      await googleSearchPage.saveGoogleLogoScreenshot(testInfo);
+      await googleSearchPage.captureAndSaveGoogleLogoScreenshot(testInfo);
     // Compare the actual Logo against the expected baseline Logo, attach results to the report, delete temporary files
-    const mismatchedPixelsCount = await getMismatchedPixelsCount(
+    const mismatchedPixelsCount = await compareScreenshotsAndReportDifferences(
       actualScreenshotPath,
       testInfo,
       sharedContext
@@ -40,7 +69,7 @@ test.describe(`Google Home Page: User Interface`, () => {
 
   test(`TEST-15: Google logo is centre aligned on the Home page @UI`, async () => {
     // Get horizontal centre of the logo
-    const logoCentre = await googleSearchPage.getHorizontalCentreBySelector(
+    const logoCentre = await googleSearchPage.getHorizontalMiddleOfElement(
       googleSearchPage.selectors.googleLogo
     );
 
@@ -56,7 +85,7 @@ test.describe(`Google Home Page: User Interface`, () => {
   test(`TEST-16: Google search input area is centre aligned on the Home page @UI`, async () => {
     // Get horizontal centre of the search input area
     const searchInputCentre =
-      await googleSearchPage.getHorizontalCentreBySelector(
+      await googleSearchPage.getHorizontalMiddleOfElement(
         googleSearchPage.selectors.searchInputBox
       );
 

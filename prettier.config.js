@@ -1,3 +1,14 @@
+/*
+ * This configuration file establishes the rules for Prettier.
+ * Prettier automatically enforces a consistent code style in your project.
+ *
+ * The main purpose of the file is to override the default Prettier
+ * options for this specific project.
+ *
+ * By including this Prettier configuration in our project, we
+ * ensure that all code is formatted consistently.
+ */
+
 module.exports = {
   arrowParens: 'always', // Include parens around a single arrow function parameter
   bracketSpacing: true, // Print spaces between brackets in object literals

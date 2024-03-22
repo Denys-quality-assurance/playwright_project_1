@@ -1,3 +1,10 @@
+/*
+ * The main purpose of this code file is to provide utility functions for reading and writing files,
+ * and manipulating images. It provides functions to create unique file names, shorten long names,
+ * check if a file exists, delete a file, download an image from a URL, and compare images.
+ *
+ */
+
 import fs from 'fs';
 import util from 'util';
 import https from 'https';
@@ -8,10 +15,22 @@ import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
 import sharp from 'sharp';
 
-// Create unique file name
-export function createUniqueFileName(testInfo, fileName) {
+// Path to the baseline image
+// The path depends on the device type(mobile or not) and the browser type
+const BASE_IMG_PATHS = {
+  MOBILE_WEBKIT:
+    './tests/test-data/googleSearch/baseline-images/baseline_homepage_logo_Webkit_Mobile.png',
+  DESKTOP:
+    './tests/test-data/googleSearch/baseline-images/baseline_homepage_logo.png',
+};
+const PIXEL_MATCH_THRESHOLD = 0.19; // Sensitivity of the pixel-to-pixel comparison
+
+// A function to generate a unique filename by combining the project name, a timestamp and the filename.
+export function generateUniqueFileName(testInfo, fileName) {
   try {
-    const shortenFilename = getShortenName(fileName);
+    // Shorten the name
+    const shortenFilename = getShortenedName(fileName);
+
     const projectName = testInfo.project.name;
     let timestamp;
     let filePath;
@@ -25,15 +44,15 @@ export function createUniqueFileName(testInfo, fileName) {
   }
 }
 
-// Shorten the string
-export function getShortenName(str) {
+// A function to shorten a given fileName
+export function getShortenedName(fileName) {
   try {
     const MAX_LENGTH = 30;
 
     // Check if the string contains underscore
-    if (str.includes('_')) {
+    if (fileName.includes('_')) {
       // Split the string on the underscore
-      const parts = str.split('_');
+      const parts = fileName.split('_');
       const beforeUnderscore = parts[0].slice(0, MAX_LENGTH); // Get first part, cut up to 30 symbols
       const afterUnderscore = parts.slice(1).join('_'); // If there are multiple underscores, join the strings after the first underscore
       // Concatenate the parts into one string using template literals
@@ -44,13 +63,13 @@ export function getShortenName(str) {
     }
 
     // If there is no underscore, cut the string up to 30 characters
-    return str.slice(0, MAX_LENGTH);
+    return fileName.slice(0, MAX_LENGTH);
   } catch (error) {
     console.error(`Error while getting the short file name: ${error.message}`);
   }
 }
 
-// Get path to the system's temp directory
+// Get path of the operating system's temporary directory
 export function getTempDirPath() {
   try {
     // Get the system's temp directory
@@ -63,7 +82,7 @@ export function getTempDirPath() {
   }
 }
 
-// Get path to the system's temp directory with the temporaty file
+// Get path of a given filename under the system temporary directory
 export function getTempFilePath(fileName) {
   try {
     // Get the system's temp directory
@@ -78,11 +97,13 @@ export function getTempFilePath(fileName) {
   }
 }
 
-// Download image from url to the system's directory for temporary files
+// Download an image from a specified URL to the system's directory for temporary files
 export async function downloadImageFromUrlToTempDir(url, testInfo) {
   return new Promise((resolve, reject) => {
     https
       .get(url, (response) => {
+        // Check if the response status code is not successful or if the Content-Type of the response is not an 'image'.
+        // If any check fails, reject the Promise with the appropriate error message
         if (
           response.statusCode < 200 ||
           response.statusCode >= 300 ||
@@ -95,35 +116,37 @@ export async function downloadImageFromUrlToTempDir(url, testInfo) {
           );
           return;
         }
-        // Path to a new temp file
-        const fileName = createUniqueFileName(
+        // Create a unique filename for the downloaded image and generate its path in the system's temporary files directory
+        const fileName = generateUniqueFileName(
           testInfo,
           'downloaded_picture.jpg'
         );
         const filePath = getTempFilePath(fileName);
 
+        // Create a writable stream to write the image file to the filesystem
         const fileStream = fs.createWriteStream(filePath);
 
-        // Cleanup function to delete file and reject promise
-        function cleanupAndReject(error) {
-          fs.unlink(filePath, () => {}); // deletes the file if any error occurs
-          console.error(
-            `Error while deleting file after a previous error: ${error.message}`
-          );
-          reject(error); // Promise is rejected
-        }
+        // Attach 'error' event listeners to the response and file writing stream to handle any errors by invoking the cleanup function
+        response.on('error', (error) =>
+          cleanupAndReject(error, filePath, reject)
+        ); // attaching error event on response
+        fileStream.on('error', (error) =>
+          cleanupAndReject(error, filePath, reject)
+        ); // attaching error event on fileStream
 
-        response.on('error', cleanupAndReject); // attaching error event on response
-        fileStream.on('error', cleanupAndReject); // attaching error event on fileStream
-
+        // Use the 'pipeline' function to pipe the response (readable stream) into the file writing stream.
+        // If there is any error during this process, invoke the cleanup function;
+        // otherwise, resolve the Promise with the filePath
         pipeline(response, fileStream, (error) => {
           if (error) {
-            cleanupAndReject(error);
+            cleanupAndReject(error, filePath, reject);
           } else {
             resolve(filePath);
           }
         });
       })
+
+      // If there is any error during the HTTPS GET request, log the error and reject the promise with the error
       .on('error', (error) => {
         console.error(
           `Error while downloading image from url to the system's directory for temporary files: ${error.message}`
@@ -133,22 +156,28 @@ export async function downloadImageFromUrlToTempDir(url, testInfo) {
   });
 }
 
-// Check file exists
+// Cleanup function to delete the file and reject the promise in case of any error during file saveing process
+function cleanupAndReject(error, filePath, reject) {
+  fs.unlink(filePath, () => {}); // deletes the file if any error occurs
+  console.error(`Error while saveing the file: ${error.message}`);
+  reject(error); // Promise is rejected
+}
+
+// Checking if a file exists at the specified file path
 export function checkFileExists(filePath) {
   try {
     if (fs.existsSync(filePath)) {
       //file exists
       return true;
     }
+    return false;
   } catch (error) {
     console.error(`Error while checking the file existance: ${error.message}`);
-    return false;
   }
-  return false;
 }
 
-// Delete the temporaty file
-export function deleteTempFile(filePath) {
+// Deletes a file at the specified path
+export function deleteFileAtPath(filePath) {
   try {
     fs.unlinkSync(filePath);
   } catch (error) {
@@ -156,11 +185,14 @@ export function deleteTempFile(filePath) {
   }
 }
 
-// Read the file data into a buffer asynchronously
-export async function readFile(filePath) {
+// Asynchronously read a file from the disk and return its contents as a buffer
+export async function readDataFromFileAsync(filePath) {
   try {
-    const readFilePromise = util.promisify(fs.readFile); // Create a promisified version of fs.readFile
+    // Use built-in util.promisify to convert the fs.readFile callback function into a function that supports Promises
+    const readFilePromise = util.promisify(fs.readFile);
+    // Perform the async file read operation and wait for it to complete
     const fileBuffer = await readFilePromise(filePath);
+    // Return the file's contents as a buffer
     return fileBuffer;
   } catch (error) {
     console.error(
@@ -169,8 +201,8 @@ export async function readFile(filePath) {
   }
 }
 
-// Read the file data into a buffer synchronously
-export function readFileSync(filePath) {
+// Synchronously read a file from the disk and return its contents as a buffer
+export function readDataFromFileSync(filePath) {
   try {
     return fs.readFileSync(filePath);
   } catch (error) {
@@ -180,72 +212,54 @@ export function readFileSync(filePath) {
   }
 }
 
-// Write data to file
-export async function writeFile(filePath, data) {
+// Asynchronously write data to a file in the disk
+export async function writeDataToFileAsync(filePath, data) {
   try {
-    const writeFilePromise = util.promisify(fs.writeFile); // Create a promisified version of fs.writeFile
+    // Use built-in util.promisify to convert the fs.writeFile callback function into a function that supports Promises
+    const writeFilePromise = util.promisify(fs.writeFile);
+    // Perform the async file write operation and wait for it to complete
     await writeFilePromise(filePath, data);
   } catch (error) {
     console.error(`Error while writing file: ${error.message}`);
   }
 }
 
-// Compare the actual screenshot against the expected baseline Logo, attach results to the report, delete temporary files
-export async function getMismatchedPixelsCount(
+// Compare the actual screenshot to the expected baseline logo.
+// If the pixels don't match, it saves a difference image, attaches all images to the report, and deletes temporary files.
+export async function compareScreenshotsAndReportDifferences(
   actualScreenshotPath,
   testInfo,
   sharedContext
 ) {
   try {
-    let expectedBaselinePath;
-    // Get browser type
-    const defaultBrowserType = testInfo.project.use.defaultBrowserType;
-    // Get device type
+    // Device type
     const isMobile = sharedContext._options.isMobile || false;
+    // Browser type
+    const defaultBrowserType = testInfo.project.use.defaultBrowserType;
+
     // Path of the expected Baseline Logo image
-    if (isMobile && defaultBrowserType == 'webkit') {
-      expectedBaselinePath =
-        './tests/test-data/googleSearch/baseline-images/baseline_homepage_logo_Webkit_Mobile.png';
-    } else {
-      expectedBaselinePath =
-        './tests/test-data/googleSearch/baseline-images/baseline_homepage_logo.png';
-    }
+    const expectedBaselinePath = getBaselineImagePath(
+      isMobile,
+      defaultBrowserType
+    );
 
     // Convert binaris into Buffers, transform Buffers into pixel data for direct comparison
     const expectedBaseline = PNG.sync.read(
       fs.readFileSync(expectedBaselinePath)
     );
-    const actualScreenshotOriginalSize = PNG.sync.read(
-      fs.readFileSync(actualScreenshotPath)
+
+    // If needed, resize the actual screenshot to the baseline dimensions
+    const actualScreenshot = await resizeActualScreenshotToBaselineDimension(
+      expectedBaseline,
+      actualScreenshotPath
     );
 
-    // Resize the screenshot if needed
-    let actualScreenshot;
-    if (
-      expectedBaseline.width !== actualScreenshotOriginalSize.width ||
-      expectedBaseline.height !== actualScreenshotOriginalSize.height
-    ) {
-      // The sizes don't match. Resize the screenshot buffer.
-      const actualScreenshotOriginalBuffer =
-        fs.readFileSync(actualScreenshotPath);
-      const resizedScreenshotBuffer = await sharp(
-        actualScreenshotOriginalBuffer
-      )
-        .resize(expectedBaseline.width, expectedBaseline.height) // Resize to expectedBaseline dimensions
-        .png()
-        .toBuffer();
-
-      // Use resized screenshot buffer
-      actualScreenshot = PNG.sync.read(resizedScreenshotBuffer);
-    } else {
-      // The sizes match. No need to resize.
-      actualScreenshot = actualScreenshotOriginalSize;
-    }
-
+    // Initialize difference image container
     // Create mismatchedPixelsDiff PNG object
     const { width, height } = expectedBaseline;
     const mismatchedPixelsDiff = new PNG({ width, height });
-    // Compare images
+
+    // Compare baseline and actual images
     const mismatchedPixelsCount = pixelmatch(
       expectedBaseline.data,
       actualScreenshot.data,
@@ -253,31 +267,37 @@ export async function getMismatchedPixelsCount(
       width,
       height,
       {
-        threshold: 0.19,
+        threshold: PIXEL_MATCH_THRESHOLD,
       }
     );
+
+    // If there are any mismatches between the two images
     if (mismatchedPixelsCount > 0) {
-      const diffImageName = createUniqueFileName(
+      // Create a unique filename for the difference image
+      const diffImageName = generateUniqueFileName(
         testInfo,
         'difference_between_basaline_and_actual_screenshot.png'
       );
-      const diffImagePath = writeDataToFile(
-        mismatchedPixelsDiff,
-        diffImageName
-      );
 
-      // Attach images to test report
-      Promise.all([
-        await attachImage(testInfo, expectedBaselinePath),
-        await attachImage(testInfo, actualScreenshotPath),
-        await attachImage(testInfo, diffImagePath),
-      ]);
+      // Get path of diffImageName under the system temporary directory
+      const diffImagePath = getTempFilePath(diffImageName);
 
-      // Delete the temporaty files
-      deleteTempFile(diffImagePath);
+      // Write the difference image to file
+      await writePNGToFile(mismatchedPixelsDiff, diffImagePath);
+
+      // Collect paths of all images for report
+      const paths = [expectedBaselinePath, actualScreenshotPath, diffImagePath];
+
+      // Attach images to HTML report
+      await attachAllImagesToReport(testInfo, paths);
+
+      // Delete the difference image file after it has been attached to the HTML report
+      deleteFileAtPath(diffImagePath);
     }
-    // Delete the temporaty files
-    deleteTempFile(actualScreenshotPath);
+    // Delete the temporary actual screenshot
+    deleteFileAtPath(actualScreenshotPath);
+
+    // Return the amount of mismatched pixels
     return mismatchedPixelsCount;
   } catch (error) {
     console.error(
@@ -286,36 +306,111 @@ export async function getMismatchedPixelsCount(
   }
 }
 
-// Write the data into new file via stream
-export function writeDataToFile(data, fileName) {
+// Return the path to the baseline image
+// The path depends on the device type(mobile or not) and the browser type
+export function getBaselineImagePath(isMobile, defaultBrowserType) {
   try {
-    const filePath = getTempFilePath(fileName);
-    data.pack().pipe(fs.createWriteStream(filePath));
-    return filePath;
+    return isMobile && defaultBrowserType == 'webkit'
+      ? BASE_IMG_PATHS.MOBILE_WEBKIT
+      : BASE_IMG_PATHS.DESKTOP;
   } catch (error) {
-    console.error(
-      `Error while writing the data into new file via stream: ${error.message}`
-    );
+    `Error while returning the path to the baseline image: ${error.message}`;
   }
 }
 
-// Attach image to test report
-export async function attachImage(testInfo, imagePath) {
+// Resize the Actual screenshot to match the dimensions of the baseline
+export async function resizeActualScreenshotToBaselineDimension(
+  expectedBaseline,
+  actualScreenshotPath
+) {
   try {
-    return testInfo.attach(getFileName(imagePath), {
+    // Convert binaris into Buffers, transform Buffers into pixel data
+    const actualScreenshotOriginalSize = PNG.sync.read(
+      fs.readFileSync(actualScreenshotPath)
+    );
+
+    // If the dimensions of the actual screenshot don't match the dimensions of the baseline
+    if (
+      expectedBaseline.width !== actualScreenshotOriginalSize.width ||
+      expectedBaseline.height !== actualScreenshotOriginalSize.height
+    ) {
+      // Resize the screenshot buffer to match the baseline dimensions
+      const actualScreenshotOriginalBuffer =
+        fs.readFileSync(actualScreenshotPath);
+      const resizedScreenshotBuffer = await sharp(
+        actualScreenshotOriginalBuffer
+      )
+        .resize(expectedBaseline.width, expectedBaseline.height)
+        .png()
+        .toBuffer();
+
+      // Return resized screenshot buffer
+      return PNG.sync.read(resizedScreenshotBuffer);
+    } else {
+      // If the sizes already match, return the original screenshot buffer
+      return actualScreenshotOriginalSize;
+    }
+  } catch (error) {
+    `Error while resizing the Actual screenshot to match the dimensions of the baseline: ${error.message}`;
+  }
+}
+
+// Attach each image from the paths to the HTML report
+export function attachAllImagesToReport(testInfo, paths) {
+  try {
+    // Promise.all is used to execute attachImageToReport function for all path of image
+    // It waits until all these operations complete and then returns the result
+    return Promise.all(
+      paths.map((path) => attachImageToReport(testInfo, path))
+    );
+  } catch (error) {
+    `Error while attaching each image from the paths to the HTML report: ${error.message}`;
+  }
+}
+
+// Write the PNG into new file via stream
+export function writePNGToFile(image, filePath) {
+  return new Promise((resolve, reject) => {
+    try {
+      const fileStream = fs.createWriteStream(filePath);
+
+      // Attach 'error' event listener to the file writing stream to handle any errors by invoking the cleanup function
+      fileStream.on('error', (error) =>
+        cleanupAndReject(error, filePath, reject)
+      );
+
+      // Use the 'end' event to resolve the Promise with the filePath when file is fully written
+      fileStream.on('finish', () => resolve(filePath));
+
+      // Write PNG image to the file through the stream
+      image.pack().pipe(fileStream);
+    } catch (error) {
+      console.error(
+        `Error while writing data into a new file: ${error.message}`
+      );
+      reject(error);
+    }
+  });
+}
+
+// Attach image to HTML report
+export async function attachImageToReport(testInfo, imagePath) {
+  try {
+    return testInfo.attach(extractFileNameFromPath(imagePath), {
       path: imagePath,
       contentType: 'image/png',
     });
   } catch (error) {
     console.error(
-      `Error while attaching image to test report: ${error.message}`
+      `Error while attaching image to HTML report: ${error.message}`
     );
   }
 }
 
 // Get the file name from the file path
-export function getFileName(filePath) {
+export function extractFileNameFromPath(filePath) {
   try {
+    // The path.basename() method returns the last portion of a path
     return path.basename(filePath);
   } catch (error) {
     console.error(

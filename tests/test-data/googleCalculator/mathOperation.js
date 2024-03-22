@@ -1,3 +1,20 @@
+/*
+ * This module exports an array of objects to test mathematical operations.
+ * The data includes multiple scenarios for each type of mathematical operation
+ * such as addition, subtraction, division, multiplication and exponentiation.
+ *
+ * Each object in the array has the properties: 'firstNumber', 'secondNumber',
+ * 'operationName' and sometimes 'expectedResult'. The 'firstNumber' and 'secondNumber'
+ * properties represent the numbers on which the operation will be performed.
+ * The 'operationName' property specifies the operation to be performed and 'expectedResult'
+ * is included when the result of the operation is not a simple numerical answer,
+ * such as an error or infinity, to aid with expected outcome.
+ *
+ * The purpose is to reuse these sets of data in different tests, and add more cases easily when necessary,
+ * promoting the DRY (Do Not Repeat Yourself) principle in the test code.
+ *
+ */
+
 export const mathOperation = [
   // divide
   {

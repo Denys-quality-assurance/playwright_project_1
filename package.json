@@ -1,20 +1,22 @@
 {
   "name": "playwright_project_1",
   "version": "1.0.0",
-  "description": "",
-  "main": "lesson2.js",
+  "description": "Software Testing System with Playwright and Jenkins",
+  "main": "playwright.config.js",
   "scripts": {
-    "Desktop_Google_Chrome_PROD": "npx playwright test --project=Desktop_Google_Chrome_PROD",
-    "firefox": "npx playwright test --project=Desktop_Firefox_PROD",
-    "webkit": "npx playwright test --project=Desktop_Webkit_PROD",
+    "run_test_project": "npx playwright test --project=Desktop_Google_Chrome_PROD",
+    "change_base_url_and_env": "cross-env BASE_URL='http://new_base_url.com' CURRENT_ENV='QA' npx playwright test --project=Desktop_Google_Chrome_PROD",
+    "skip_tests_with_known_bugs": "cross-env SKIP_TESTS_WITH_KNOWN_BUGS='true' npx playwright test --project=Desktop_Google_Chrome_PROD",
+    "screenshots_for_passed_tests": "cross-env PASSED_TESTS_SCREENSHOT='true' npx playwright test --project=Desktop_Google_Chrome_PROD",
     "format": "prettier --write .",
     "lint": "eslint ."
   },
   "keywords": [],
-  "author": "",
+  "author": "Denys Matolikov",
   "license": "ISC",
   "devDependencies": {
     "@playwright/test": "^1.40.1",
+    "cross-env": "^7.0.3",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-config-standard": "^17.1.0",

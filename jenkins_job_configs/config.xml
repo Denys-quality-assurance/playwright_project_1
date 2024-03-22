@@ -1,0 +1,118 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<!-- This is the config.xml sample file for a Jenkins job. 
+This Jenkins job configuration file defines a pipeline job with the following features:
+- The job is defined using the 'flow-definition' element.
+- Uses the 'workflow-job' and 'pipeline-model-definition' plugins for building the job.
+- The Job discards old builds after 1 day of retention ('artifactDaysToKeep' is set to 1).
+- Concurrent builds are disabled ('DisableConcurrentBuildsJobProperty' is in place). If a new build starts before the previous build finishes, the previous build will be aborted.
+- The job is associated with a GitHub project (specified by 'GithubProjectProperty') with the repository URL given.
+- The job has two parameters 'PROJECT' and 'BROWSER' that are string parameters and have default values. They must be updated for each job.
+- The job is configured to poll the SCM (Source Control Management) every hour ('H * * * *' in 'spec' tag under 'SCMTrigger'). 
+- The job uses a Git repository for fetching the code as specified in the 'scm' tag. All the branches in the repository are built as specified in 'BranchSpec'.
+- The Git repository is fetched in a lightweight mode (only a single branch is fetched instead of fetching the whole repository).
+-->
+<!-- Import this file into your Jenkins server to create a new job with the same settings. -->
+<!-- Update the plugin version if required -->
+<flow-definition plugin="workflow-job@1385.vb_58b_86ea_fff1">
+  <actions>
+    <!-- These actions define settings for a declarative Jenkins pipeline project. -->
+    <!-- Update the plugin version if required -->
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction plugin="pipeline-model-definition@2.2151.ve32c9d209a_3f"/>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@2.2151.ve32c9d209a_3f">
+      <jobProperties/>
+      <triggers/>
+      <parameters>
+        <!-- The defaults for the parameters PROJECT and BROWSER are defined in this section. -->
+        <string>PROJECT</string>
+        <string>BROWSER</string>
+      </parameters>
+      <options/>
+    </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
+  </actions>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <!-- This section defines the build rotation strategy and log rotation. -->
+    <jenkins.model.BuildDiscarderProperty>
+      <strategy class="hudson.tasks.LogRotator">
+        <daysToKeep>-1</daysToKeep>
+        <numToKeep>-1</numToKeep>
+        <artifactDaysToKeep>1</artifactDaysToKeep>
+        <artifactNumToKeep>-1</artifactNumToKeep>
+      </strategy>
+    </jenkins.model.BuildDiscarderProperty>
+    <!-- This property ensures that no two builds for this job will run simultaneously -->
+    <org.jenkinsci.plugins.workflow.job.properties.DisableConcurrentBuildsJobProperty>
+      <abortPrevious>true</abortPrevious>
+    </org.jenkinsci.plugins.workflow.job.properties.DisableConcurrentBuildsJobProperty>
+    <!-- This property defines the GitHub project for this job. -->
+    <!-- Update the plugin version if required -->
+    <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.37.3.1">
+      <projectUrl>https://github.com/Denys-quality-assurance/playwright_project_1/</projectUrl>
+      <displayName></displayName>
+    </com.coravy.hudson.plugins.github.GithubProjectProperty>
+    <!-- This section includes the configuration for parameters we're passing to the build - PROJECT and BROWSER-->
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <!-- This parameter is for selecting the project to be build.
+        The default project is "Desktop_Google_Chrome_PROD", but this can be updated to any project in your playwright.config.js file > projects > name
+        Please, change this value, if you want to build other project. -->
+        <hudson.model.StringParameterDefinition>
+          <name>PROJECT</name>
+          <description>Project name</description>
+          <defaultValue>Desktop_Google_Chrome_PROD</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <!-- This parameter is for selecting the browser to run the tests.
+          The default is "chrome", but this can be updated to any defaultBrowserType or channel in your playwright.config.js file > projects > use > defaultBrowserType or channel
+          Please, change this value, if you want to to use a different browser. -->
+          <name>BROWSER</name>
+          <description>Browser to run the tests</description>
+          <defaultValue>chrome</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+    <!-- This property specifies any triggers for the job. -->
+    <org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+      <triggers>
+        <!-- This job is configured to poll the SCM system every hour ('H * * * *'). -->
+        <hudson.triggers.SCMTrigger>
+          <spec>H * * * *</spec>
+          <ignorePostCommitHooks>false</ignorePostCommitHooks>
+        </hudson.triggers.SCMTrigger>
+      </triggers>
+    </org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+  </properties>
+  <!-- Definition of the pipeline script from the SCM (Source Control Management)
+  It uses Git as SCM. Make sure to keep the plugins up-to-date before importing. -->
+  <!-- Update the plugin version if required -->
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition" plugin="workflow-cps@3826.v3b_5707fe44da_">
+    <scm class="hudson.plugins.git.GitSCM" plugin="git@5.2.1">
+      <configVersion>2</configVersion>
+      <userRemoteConfigs>
+        <hudson.plugins.git.UserRemoteConfig>
+          <!-- This is the URL of the Git repository this Jenkins job will build. 
+          Update this URL if you're using a different repo. 
+          Also replace the credential ID as per your Jenkins system. -->
+          <url>https://github.com/Denys-quality-assurance/playwright_project_1</url>
+          <credentialsId>GHT</credentialsId>
+        </hudson.plugins.git.UserRemoteConfig>
+      </userRemoteConfigs>
+      <branches>
+        <!-- The pattern in <name> tag specifies what branches this job will build. '**' means all branches. -->
+        <hudson.plugins.git.BranchSpec>
+          <name>**/**</name>
+        </hudson.plugins.git.BranchSpec>
+      </branches>
+      <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+      <submoduleCfg class="empty-list"/>
+      <extensions/>
+    </scm>
+    <scriptPath>Jenkinsfile</scriptPath>
+    <lightweight>true</lightweight>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>

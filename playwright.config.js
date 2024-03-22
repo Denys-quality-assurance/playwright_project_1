@@ -1,3 +1,23 @@
+/*
+ * This configuration file controls the settings for running end-to-end tests using Playwright test.
+ *
+ * The file configures:
+ * - The number of tests that can run at the same time
+ * - The maximum time a test is allowed to run before it is considered failed
+ * - The maximum number of retries when a test fails
+ * - The file paths and tags for the tests
+ * - The environment specific settings for the projects we're testing.
+ *
+ * The best practices enforced in this config include:
+ * - Testing across multiple browsers (Chrome, Safari, Firefox, Edge) for comprehensive coverage
+ * - Inclusion of device-specific settings for both desktop and mobile testing
+ * - Use of relevant configurations to skip tests known to fail, maximizing efficiency
+ * - Use of environment variables, allowing for flexibility and security
+ * - Ability to test individual features
+ * - Ability to filter tests by tags that define rules for skipping tests or including them in test suites by functionality, device type, browser type
+ * - Different reporter options for Continuous Integration (CI) and local environments: customReporter.js + 'dot'/'list' + 'html'
+ */
+
 import { devices } from '@playwright/test';
 
 module.exports = {
@@ -14,12 +34,15 @@ module.exports = {
       testMatch: 'tests/**/*.spec.js', // glob patterns or regular expressions that match test files
       grep: /^(.*@(filters|result_description)).*$/, // only tests with @<feature name>
       metadata: {
-        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
-        skipKnownBugs: process.env.SKIP_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_KNOWN_BUGS is 'true'
+        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PrePROD or PROD
+        skipTestsWithKnownBugs:
+          process.env.SKIP_TESTS_WITH_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_TESTS_WITH_KNOWN_BUGS is 'true'
+        passedTestsScreenshots: process.env.PASSED_TESTS_SCREENSHOT || 'false', // screenshots for passed tests are taken when PASSED_TESTS_SCREENSHOT is 'true'
       },
       use: {
         ...devices['Desktop Chrome'],
-        headless: false,
+        defaultBrowserType: 'chromium',
+        headless: process.env.CI ? true : false,
         baseURL: process.env.BASE_URL || 'https://www.google.com', // default PROD URL
       },
     },
@@ -28,121 +51,143 @@ module.exports = {
       name: 'Desktop_Google_Chrome_PROD',
       grepInvert: /^(.*@(skip-for-chromium|only-mobile)).*$/, // skip tests with @skip-for-chromium or @only-mobile
       metadata: {
-        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
-        skipKnownBugs: process.env.SKIP_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_KNOWN_BUGS is 'true'
+        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PrePROD or PROD
+        skipTestsWithKnownBugs:
+          process.env.SKIP_TESTS_WITH_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_TESTS_WITH_KNOWN_BUGS is 'true'
+        passedTestsScreenshots: process.env.PASSED_TESTS_SCREENSHOT || 'false', // screenshots for passed tests are taken when PASSED_TESTS_SCREENSHOT is 'true'
       },
       use: {
         ...devices['Desktop Chrome'],
         channel: 'chrome', // or 'chrome-beta'
-        headless: false,
+        headless: process.env.CI ? true : false,
         baseURL: process.env.BASE_URL || 'https://www.google.com', // default PROD URL
       },
     },
     {
       name: 'Desktop_Webkit_PROD',
-      grepInvert: /^(.*@(skip-for-webkit|only-mobile)).*$/, // skip tests with @skip-for-webkit or @only-mobile
+      grepInvert: /^(.*@(skip-for-webkit|only-mobile|only-chromium)).*$/, // skip tests with @skip-for-webkit, @only-mobile, @only-chromium
       metadata: {
-        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
-        skipKnownBugs: process.env.SKIP_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_KNOWN_BUGS is 'true'
+        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PrePROD or PROD
+        skipTestsWithKnownBugs:
+          process.env.SKIP_TESTS_WITH_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_TESTS_WITH_KNOWN_BUGS is 'true'
+        passedTestsScreenshots: process.env.PASSED_TESTS_SCREENSHOT || 'false', // screenshots for passed tests are taken when PASSED_TESTS_SCREENSHOT is 'true'
       },
       use: {
         ...devices['Desktop Safari'],
-        headless: false,
-        baseURL: process.env.BASE_URL || 'https://www.google.com', //default PROD URL
+        defaultBrowserType: 'webkit',
+        headless: process.env.CI ? true : false,
+        baseURL: process.env.BASE_URL || 'https://www.google.com', // default PROD URL
       },
     },
     {
       name: 'Desktop_Microsoft_Edge_PROD',
-      grepInvert: /^(.*@(skip-for-edge|only-mobile)).*$/, // skip tests with @skip-for-edge or @only-mobile
+      grepInvert: /^(.*@(skip-for-edge|skip-for-chromium|only-mobile)).*$/, // skip tests with @skip-for-edge, @skip-for-chromium, @only-mobile
       metadata: {
-        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
-        skipKnownBugs: process.env.SKIP_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_KNOWN_BUGS is 'true'
+        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PrePROD or PROD
+        skipTestsWithKnownBugs:
+          process.env.SKIP_TESTS_WITH_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_TESTS_WITH_KNOWN_BUGS is 'true'
+        passedTestsScreenshots: process.env.PASSED_TESTS_SCREENSHOT || 'false', // screenshots for passed tests are taken when PASSED_TESTS_SCREENSHOT is 'true'
       },
       use: {
         ...devices['Desktop Edge'],
-        channel: 'msedge', // or "msedge-beta" or 'msedge-dev'
-        headless: false,
-        baseURL: process.env.BASE_URL || 'https://www.google.com', //default PROD URL
+        channel: 'msedge', // or 'msedge-beta' or 'msedge-dev'
+        headless: process.env.CI ? true : false,
+        baseURL: process.env.BASE_URL || 'https://www.google.com', // default PROD URL
       },
     },
     {
       name: 'Desktop_Firefox_PROD',
-      grepInvert: /^(.*@(skip-for-firefox|only-mobile)).*$/, // skip tests with @skip-for-firefox or @only-mobile
+      grepInvert: /^(.*@(skip-for-firefox|only-mobile|only-chromium)).*$/, // skip tests with @skip-for-firefox, @only-mobile, @only-chromium
       metadata: {
-        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
-        skipKnownBugs: process.env.SKIP_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_KNOWN_BUGS is 'true'
+        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PrePROD or PROD
+        skipTestsWithKnownBugs:
+          process.env.SKIP_TESTS_WITH_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_TESTS_WITH_KNOWN_BUGS is 'true'
+        passedTestsScreenshots: process.env.PASSED_TESTS_SCREENSHOT || 'false', // screenshots for passed tests are taken when PASSED_TESTS_SCREENSHOT is 'true'
       },
       use: {
         ...devices['Desktop Firefox'],
-        headless: false,
-        baseURL: process.env.BASE_URL || 'https://www.google.com', //default PROD URL
+        defaultBrowserType: 'firefox',
+        headless: process.env.CI ? true : false,
+        baseURL: process.env.BASE_URL || 'https://www.google.com', // default PROD URL
       },
     },
     /* Test against mobile viewports. */
     {
       name: 'iPhone_14_Safari_PROD',
-      grepInvert: /^(.*@(skip-for-webkit|only-desktop)).*$/, // skip tests with @skip-for-webkit or @only-desktop
+      grepInvert: /^(.*@(skip-for-webkit|only-desktop|only-chromium)).*$/, // skip tests with @skip-for-webkit,@only-desktop, @only-chromium
       metadata: {
-        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
-        skipKnownBugs: process.env.SKIP_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_KNOWN_BUGS is 'true'
+        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PrePROD or PROD
+        skipTestsWithKnownBugs:
+          process.env.SKIP_TESTS_WITH_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_TESTS_WITH_KNOWN_BUGS is 'true'
+        passedTestsScreenshots: process.env.PASSED_TESTS_SCREENSHOT || 'false', // screenshots for passed tests are taken when PASSED_TESTS_SCREENSHOT is 'true'
       },
       use: {
         ...devices['iPhone 14'],
-        headless: false,
-        baseURL: process.env.BASE_URL || 'https://www.google.com', //default PROD URL
+        defaultBrowserType: 'webkit',
+        headless: process.env.CI ? true : false,
+        baseURL: process.env.BASE_URL || 'https://www.google.com', // default PROD URL
       },
     },
     {
       name: 'iPhone_14_Safari_landscape_PROD',
-      grepInvert: /^(.*@(skip-for-webkit|only-desktop)).*$/, // skip tests with @skip-for-webkit or @only-desktop
+      grepInvert: /^(.*@(skip-for-webkit|only-desktop|only-chromium)).*$/, // skip tests with @skip-for-webkit,@only-desktop, @only-chromium
       metadata: {
-        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
-        skipKnownBugs: process.env.SKIP_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_KNOWN_BUGS is 'true'
+        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PrePROD or PROD
+        skipTestsWithKnownBugs:
+          process.env.SKIP_TESTS_WITH_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_TESTS_WITH_KNOWN_BUGS is 'true'
+        passedTestsScreenshots: process.env.PASSED_TESTS_SCREENSHOT || 'false', // screenshots for passed tests are taken when PASSED_TESTS_SCREENSHOT is 'true'
       },
       use: {
         ...devices['iPhone 14 landscape'],
-        headless: false,
-        baseURL: process.env.BASE_URL || 'https://www.google.com', //default PROD URL
+        defaultBrowserType: 'webkit',
+        headless: process.env.CI ? true : false,
+        baseURL: process.env.BASE_URL || 'https://www.google.com', // default PROD URL
       },
     },
     {
       name: 'Galaxy_Tab_S4_Chrome_PROD',
       grepInvert: /^(.*@(skip-for-chromium|only-desktop)).*$/, // skip tests with @skip-for-chromium or @only-desktop
       metadata: {
-        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
-        skipKnownBugs: process.env.SKIP_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_KNOWN_BUGS is 'true'
+        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PrePROD or PROD
+        skipTestsWithKnownBugs:
+          process.env.SKIP_TESTS_WITH_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_TESTS_WITH_KNOWN_BUGS is 'true'
+        passedTestsScreenshots: process.env.PASSED_TESTS_SCREENSHOT || 'false', // screenshots for passed tests are taken when PASSED_TESTS_SCREENSHOT is 'true'
       },
       use: {
         ...devices['Galaxy Tab S4'],
         channel: 'chrome', // or 'chrome-beta'
-        headless: false,
-        baseURL: process.env.BASE_URL || 'https://www.google.com', //default PROD URL
+        headless: process.env.CI ? true : false,
+        baseURL: process.env.BASE_URL || 'https://www.google.com', // default PROD URL
       },
     },
     {
       name: 'Galaxy_Tab_S4_Chrome_landscape_PROD',
       grepInvert: /^(.*@(skip-for-chromium|only-desktop)).*$/, // skip tests with @skip-for-chromium or @only-desktop
       metadata: {
-        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PREPROD or PROD
-        skipKnownBugs: process.env.SKIP_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_KNOWN_BUGS is 'true'
+        currentENV: process.env.CURRENT_ENV || 'PROD', // current environment of the project: QA, PrePROD or PROD
+        skipTestsWithKnownBugs:
+          process.env.SKIP_TESTS_WITH_KNOWN_BUGS || 'false', // test with unfixed bugs is skipped when SKIP_TESTS_WITH_KNOWN_BUGS is 'true'
+        passedTestsScreenshots: process.env.PASSED_TESTS_SCREENSHOT || 'false', // screenshots for passed tests are taken when PASSED_TESTS_SCREENSHOT is 'true'
       },
       use: {
         ...devices['Galaxy Tab S4 landscape'],
         channel: 'chrome', // or 'chrome-beta'
-        headless: false,
-        baseURL: process.env.BASE_URL || 'https://www.google.com', //default PROD URL
+        headless: process.env.CI ? true : false,
+        baseURL: process.env.BASE_URL || 'https://www.google.com', // default PROD URL
       },
     },
   ],
   reporter: process.env.CI
     ? [
-        ['dot'],
-        ['./tests/setup/customReporter.js'],
-        ['html', { outputFolder: 'playwright-report' }],
-      ] // for CI: use concise 'dot' and 'html' reporters
+        // for CI: use concise 'dot', customReporter and 'html' reporters:
+        ['dot'], // 'dot' reporter displays a very concise output. Well-suited for less verbose reporting of test runs in continuous integration (CI) environments.
+        ['./tests/setup/customReporter.js'], // A Custom reporter defined in the project.
+        ['html', { outputFolder: 'playwright-report' }], // 'html' reporter generates a static website with test results. The outputFolder option specifies the directory where the report should be saved.
+      ]
     : [
-        ['list'],
+        // for local run: use default 'list', customReporter and 'html' reporters
+        ['list'], // 'list' reporter prints test progress and results in a detailed list format. Useful for local development.
         ['./tests/setup/customReporter.js'],
         ['html', { outputFolder: 'playwright-report' }],
-      ], // fol local run: use default 'list' and 'html' reporters
+      ],
 };

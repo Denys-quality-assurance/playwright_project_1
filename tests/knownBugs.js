@@ -1,3 +1,25 @@
+/*
+ * This file contains a collection of known bugs in the system.
+ * Each object represents a specific bug, having the following properties:
+ *   - id: The identifier of the bug.
+ *   - summary: A brief description of the bug.
+ *   - testFile: The file where the bug was found.
+ *   - testTitle: The tutle of the test during which the bug was found.
+ *   - status: An object that maps the bug's status to different environments: QA, PrePROD, and PROD.
+ *
+ * When adding new bugs to the knownBugs array, a new object is added with the above properties.
+ *
+ * Initially, the status of a bug for all environments is 'unfixed'.
+ * After error correction and rechecking,the status is changed to 'FIXED'.
+ *
+ * On the basis of the information provided in the knownBugs array, additional data is passed
+ * to the custom report. Tests associated with known bugs are automatically marked as
+ * "should fail" and can be skipped during the test run to save time and resources, focusing on new issues.
+ *
+ * NOTE: If the testFile ot testTitle of the test have changed, make sure that they have been updated in this document as well.
+ *
+ */
+
 export const knownBugs = [
   {
     id: 'BUG-1',
@@ -5,7 +27,7 @@ export const knownBugs = [
     testFile: 'googleSearch_AutoSuggestionAndCorrection.spec.js',
     testTitle: `TEST-20: Google search results page contains the corrected 'новости' query when the query 'новоти' is misspelled @results @correction`,
     status: {
-      QA: 'unfixed', // change to 'FIXED' after error correction and rechecking // change to 'FIXED' after error correction and rechecking
+      QA: 'unfixed', // change to 'FIXED' after error correction and rechecking
       PrePROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
       PROD: 'unfixed', // change to 'FIXED' after error correction and rechecking
     },
